@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 class PaymentRequest(BaseModel):
-    amount: int = Field(..., gt=1, description="The amount must be a positive integer greater than 1")
+    amount: int = Field(..., gt=0, description="The amount must be an integer greater than 0")
     email: EmailStr
 
 class PaymentResponse(BaseModel):
