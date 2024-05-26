@@ -50,7 +50,7 @@ def make_post_request(endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         "Idempotency-Key": generate_idempotency_key()
     }
     response = requests.post(f"{api_url}/{endpoint}", headers=headers, data=data_str)
-    if response.status_code != 200:
+    if not response.ok:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
 

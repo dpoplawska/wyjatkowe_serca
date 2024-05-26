@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .alert {
+            margin-top: 15px;
+            padding: 10px;
+            color: white;
+            display: none;
+        }
+        .alert-success {
+            background-color: #28a745;
+        }
+        .alert-error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Payment Form</h2>
+    <form id="payment-form">
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount" required min="1">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <button type="submit">Submit Payment</button>
+    </form>
+    <div class="alert alert-success" id="success-alert">Payment created successfully!</div>
+    <div class="alert alert-error" id="error-alert">An error occurred. Please try again.</div>
+</div>
+
+<script>
+    document.getElementById('payment-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const amount = document.getElementById('amount').value;
+        const email = document.getElementById('email').value;
+
+        const paymentData = {
+            amount: parseInt(amount),
+            email: email
+        };
+
+        try {
+            const response = await fetch('http://localhost:8000/payments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(paymentData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+
+            if (data.paymentId) {
+                document.getElementById('success-alert').style.display = 'block';
+                document.getElementById('error-alert').style.display = 'none';
+                // Redirect to the payment URL
+                window.location.href = data.redirectUrl;
+            } else {
+                throw new Error('Invalid response data');
+            }
+        } catch (error) {
+            document.getElementById('success-alert').style.display = 'none';
+            document.getElementById('error-alert').style.display = 'block';
+            console.error('Error:', error);
+        }
+    });
+</script>
+
+</body>
+</html>

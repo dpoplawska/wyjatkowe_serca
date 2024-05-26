@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.routes import router
 
 # Ensure ENV is set
@@ -10,13 +11,13 @@ if not env:
 app = FastAPI()
 
 # Set CORS policy
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # Adjust this to the specific origins you want to allow
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to the specific origins you want to allow
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(router)
 
