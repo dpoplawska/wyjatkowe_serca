@@ -62,7 +62,7 @@
 <body>
 
 <div class="container">
-    <h2>Payment Form</h2>
+    <h2>Wesprzyj nas</h2>
     <form id="payment-form">
         <div class="form-group">
             <label for="amount">kwota</label>
@@ -91,7 +91,7 @@
         };
 
         try {
-            const response = await fetch('http://localhost:8000/payments', {
+            const response = await fetch('https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/payments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
