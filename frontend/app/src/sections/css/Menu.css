@@ -1,0 +1,11 @@
+:root {
+  --primary_blue: #2383C5;
+  --primary_red: #EC1A3B;
+  --font-family-quicksand: 'Quicksand';
+}
+
+li {
+    color: var(--primary_blue);
+    font-family: var(--font-family-quicksand);
+    font-weight: bold;
+}

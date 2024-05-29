@@ -1,0 +1,22 @@
+section {
+  display: flex;
+  height: 100vh;
+}
+
+aside {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 15%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content > * {
+  flex: 1;
+}
+
