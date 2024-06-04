@@ -1,8 +1,15 @@
-# Use an Nginx image
-FROM nginx:alpine
+# Stage 1: Build the React application
+FROM node:14 as build
+WORKDIR /app
+COPY ./app/package.json ./app/package-lock.json ./
+RUN npm install
+COPY ./app ./
+RUN npm run build
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy the frontend files to the Nginx HTML directory
-COPY . /usr/share/nginx/html
+# Stage 2: Serve the application with Nginx
+FROM nginx:1.19.0-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
