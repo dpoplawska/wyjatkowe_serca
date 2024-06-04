@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Menu from './sections/Menu';
 import Main from './sections/Main';
@@ -13,7 +13,8 @@ function App() {
         <Menu />
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/thankyou" element={<ThankYou />} />
+          <Route path="/dziekujemy" element={<ThankYou />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Footer />
       </div>
