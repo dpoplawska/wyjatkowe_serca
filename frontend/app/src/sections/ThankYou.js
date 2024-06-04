@@ -28,7 +28,7 @@ export default function ThankYou() {
                         <p>Dziękujemy za wsparcie<FavoriteIcon fontSize="40px" /></p>
                     </div>
                     <div className="logo">
-                        <img src={logo} alt="Logo" width="50%" height="auto" />
+                        <img src={logo} alt="Logo" width="60%" height="auto" />
                     </div>
                 </section>
                 <aside className="right-side">

@@ -6,19 +6,18 @@
   gap: 1em;
   position: fixed;
   margin-top: 10%;
-  padding: 0.1em;
 }
 
 .icons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .supportUs {
-    font-size: 30px;
-    font-family: "Quicksand";
-    color:#EC1A3B
+  font-size: 28px;
+  font-family: "Quicksand";
+  color:#EC1A3B
 }
 
 
@@ -44,11 +43,11 @@
   }
 
   .textfield-container > * {
-    width: 150%; 
+    width: 120%; 
   }
 
   .button-container > * {
-    width: 150%; 
+    width: 120%; 
   }
 
   .icons > * {

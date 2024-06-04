@@ -1,53 +1,61 @@
 .main {
   display: flex;
   flex-direction: row;
+  margin-right: 5vw;
 }
 
 aside {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 1%;
   width: 15%;
-}
+  flex-basis: auto;
+  box-sizing: border-box;
+  flex-shrink: 0;
 
-@media screen and (min-width: 1024px) {
-
-.right-side {
-  margin-right: 3em;
-}
-
-.left-side {
-  margin-right: 3em;
-}
 }
 
 .main-content, .thankyou {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.1rem;
+  justify-content: center;
+  margin: auto
 }
 
 .thanks {
+  margin: 1em;
   display: flex;
   margin-top: 10%;
   font-size: 50px;
   font-family: "Quicksand";
   color: #EC1A3B;
+  justify-content: center;
+  align-items: center;
 }
 
-.logo   {
+.logo {
   display: flex;
   justify-content: center;
   width: 100%;
+  margin-bottom: auto;
+  justify-content: center;
 }
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+}
+
+.hero .logo {
+  margin-top: 10%;
+}
+
 
 @media screen and (max-width: 1024px) {
   .thankyou {
     order: 0;
     align-items: center;
-    /* width: 100%; */
   }
 
   .main {
@@ -67,7 +75,7 @@ aside {
   .left-side {
     order: 1;
   }
-  
+
   .thankyou .main-content {
     order: 1;
   }
@@ -102,13 +110,19 @@ aside {
   }
 
   .thanks {
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-
     padding: 5px;
+    white-space: pre-line;
+    align-content: center;
+  }
+}
 
+@media screen and (min-width: 1024px) {
+
+  .right-side {
+    margin-right: 3em;
   }
 
-
+  .left-side {
+    margin-right: 3em;
+  }
 }

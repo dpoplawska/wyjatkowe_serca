@@ -84,9 +84,6 @@ export default function HelpUsSide() {
                     onClick={handlePayment}
                     style={{
                         cursor: loading ? "wait" : "pointer",
-                        minWidth: "160px",
-                        minHeight: "40px",
-                        fontSize: "20px",
                     }}>Wesprzyj🤍</button>
             </div>
 

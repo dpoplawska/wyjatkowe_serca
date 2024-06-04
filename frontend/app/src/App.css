@@ -1,7 +1,14 @@
 .App {
   text-align: center;
-  width: 95%;
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
+
+
 .App-link {
   color: #61dafb;
 }
@@ -17,4 +24,13 @@ button {
   font-family: Quicksand;
   font-size: 23px;
   font-weight: 800;
+}
+
+@media screen and (max-width: 1024px) {
+  button {
+    font-size: 16px;
+    width: 160px;
+    height: 40px;
+  }
+
 }
