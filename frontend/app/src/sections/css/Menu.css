@@ -1,11 +1,85 @@
-:root {
-  --primary_blue: #2383C5;
-  --primary_red: #EC1A3B;
-  --font-family-quicksand: 'Quicksand';
-}
+  :root {
+    --primary_blue: #2383C5;
+    --primary_red: #EC1A3B;
+    --font-family-quicksand: 'Quicksand';
+  }
 
-li {
+  .menu {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1em;
+    background-color: white;
+    position: relative;
+    z-index:1000;
+  }
+
+  li {
     color: var(--primary_blue);
     font-family: var(--font-family-quicksand);
     font-weight: bold;
-}
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+
+  .hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--primary_blue);
+    margin: 4px 0;
+    transition: 0.4s;
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      list-style-type: none;
+      margin-top: 0%;
+      margin-bottom: 100%;
+      width: 100%;
+      background-color: white;
+      position: absolute;
+      justify-content: center;
+      top: 60px;
+      left: 0;
+      padding: 1em;
+      border-radius: 10px;
+
+    }
+
+    .container li {
+      margin: 5px 0;
+    }
+
+    .hamburger {
+      display: none;
+      /* display: flex;  ---wlaczyc do pokazania menu*/
+      height: auto;
+    }
+
+      .hide-on-small-screen {
+    display: none;
+  }
+  }
+
+  @media screen and (min-width: 769px) {
+    .container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 2em;
+      list-style-type: none;
+    }
+  }
+
+  .container.active {
+    display: flex;
+  }

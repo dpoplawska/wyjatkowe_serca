@@ -1,22 +1,110 @@
-section {
+.main {
   display: flex;
-  height: 100vh;
+  flex-direction: row; 
+  /* height: 100vh; */
 }
 
 aside {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 1%;
   width: 15%;
 }
 
-.main-content {
+.main-content, .thankyou {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
-.main-content > * {
-  flex: 1;
+.thanks {
+  display: flex;
+  margin-top: 10%;
+  font-size: 50px;
+  font-family: "Quicksand";
+  color: #EC1A3B;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+    align-items: center;
+
 }
 
+.logo   {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+  .thankyou {
+    order: 0;
+    align-items: center;
+    width: 100%;
+  }
+
+  .main {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+  }
+
+  aside, .main-content, .thankyou {
+    width: 100%;
+    height: auto;
+    position: relative;
+    margin-top: 0;
+    padding: 10px;
+  }
+
+  .left-side {
+    order: 1;
+  }
+  
+  .thankyou .main-content {
+    order: 1;
+  }
+
+  .right-side {
+    order: 2;
+  }
+
+  .side {
+    height: auto;
+    margin-top: 0;
+    position: static;
+  }
+
+  .main-content {
+    height: auto;
+    order: 3;
+  }
+
+  .help-us, .socials {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .help-us .textfield-container, .button-container, .icons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .thanks {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+
+    padding: 5px;
+
+  }
+
+
+}

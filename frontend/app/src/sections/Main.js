@@ -10,17 +10,17 @@ import HelpUs from "./HelpUs";
 
 export default function Main() {
     return (
-        <section>
+        <section className="main">
             <aside className="left-side">
                 <HelpUsSide />
             </aside>
-            <div className="main-content">
+            <section className="main-content">
                 <HeroSection />
-                <WhatWeDo />
+                {/* <WhatWeDo />
                 <GetToKnowUs />
                 <Parents />
-                <HelpUs />
-            </div>
+                <HelpUs /> */}
+            </section>
             <aside className="right-side">
                 <SocialsSide />
             </aside>

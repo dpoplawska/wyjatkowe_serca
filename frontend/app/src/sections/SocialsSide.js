@@ -7,11 +7,11 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 export default function SocialsSide() {
     return (
         <section className="socials side">
-            <div style={{ fontFamily: "Quicksand", fontSize: "30px", color: "#EC1A3B" }}>
+            <div className="supportUs">
                 Odwiedź Nasze Social Media
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div className="icons">
                 <a href="https://www.youtube.com/@FundacjaWyjatkoweSerca" target="_blank" rel="noopener noreferrer">
                     <YouTubeIcon style={{ fontSize: "50px", color: "#000" }} />
                 </a>

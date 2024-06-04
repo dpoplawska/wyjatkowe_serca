@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material"
+import { CircularProgress, TextField } from "@mui/material"
 import React, { useState } from "react"
 import "./css/Sides.css"
 
@@ -9,6 +9,8 @@ export default function HelpUsSide() {
     }
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
+    const [loading, setLoading] = useState(false);
+
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -20,17 +22,14 @@ export default function HelpUsSide() {
         }
     }
 
-
-
     const handlePayment = async (event) => {
         event.preventDefault();
+        setLoading(true);
 
         const paymentData = {
             amount: value,
             email: email
         };
-
-        console.log("elo")
 
         try {
             const response = await fetch('https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/payments', {
@@ -59,32 +58,38 @@ export default function HelpUsSide() {
 
     return (
         <section className="help-us side">
-            <div style={{ fontFamily: "Quicksand", fontSize: "32px", color: "#EC1A3B" }}>Wesprzyj Nas</div>
-            <TextField
-                id="outlined"
-                label="Kwota wpłaty"
-                value={value}
-                onChange={handleValueChange}
-                type="number"
-            />
-            <TextField
-                id="outlined"
-                label="Adres e-mail"
-                value={email}
-                onChange={handleEmailChange}
-                type="email"
-                error={emailError}
-                helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
-            />
-            <button
-                onClick={handlePayment}
+            <div className="supportUs">Wesprzyj Nas</div>
+            <div className="textfield-container">
+                <TextField
+                    id="outlined"
+                    label="Kwota wpłaty"
+                    value={value}
+                    onChange={handleValueChange}
+                    type="number"
+                />
+            </div>
+            <div className="textfield-container">
+                <TextField
+                    id="outlined"
+                    label="Adres e-mail"
+                    value={email}
+                    onChange={handleEmailChange}
+                    type="email"
+                    error={emailError}
+                    helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
+                />
+            </div>
+            <div className="button-container">
+                <button
+                    onClick={handlePayment}
+                    style={{
+                        cursor: loading ? "wait" : "pointer",
+                        minWidth: "160px",
+                        minHeight: "40px",
+                        fontSize: "20px",
+                    }}>Wesprzyj🤍</button>
+            </div>
 
-                style={{
-                    cursor: "pointer",
-                    width: "160px",
-                    height: "40px",
-                    fontSize: "16px",
-                }}>Wesprzyj🤍</button>
         </section >
     )
 }
