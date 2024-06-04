@@ -33,8 +33,9 @@
   }
   .icons {
     flex-direction: row;
-    justify-content: space-evenly;
-    /* gap: 35px; */
+    /* justify-content: space-evenly; */
+    /* max-width: 100px; */
+    gap: 35px;
   }
 }
 
