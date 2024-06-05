@@ -1,11 +1,9 @@
 .side {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 100vh;
+  /* height: 100vh; */
   gap: 1em;
-  position: fixed;
-  margin-top: 10%;
+  /* margin-top: 10%; */
 }
 
 .icons {
@@ -17,8 +15,9 @@
 .supportUs {
   font-size: 28px;
   font-family: "Quicksand";
-  color:#EC1A3B
+  color:#EC1A3B;
 }
+
 
 
 @media screen and (max-width: 1024px) {

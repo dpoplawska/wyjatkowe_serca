@@ -7,7 +7,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 export default function SocialsSide() {
     return (
         <section className="socials side">
-            <div className="supportUs">
+            <div className="supportUs" >
                 Odwiedź Nasze Social Media
             </div>
 
@@ -22,6 +22,6 @@ export default function SocialsSide() {
                     <InstagramIcon style={{ fontSize: "50px", color: "#000" }} />
                 </a>
             </div>
-        </section>
+        </section >
     )
 }

@@ -1,5 +1,5 @@
 import { CircularProgress, TextField } from "@mui/material"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./css/Sides.css"
 
 export default function HelpUsSide() {
@@ -10,7 +10,7 @@ export default function HelpUsSide() {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const [isDisabled, setIsDisabled] = useState(true)
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -21,6 +21,12 @@ export default function HelpUsSide() {
             setEmailError(true);
         }
     }
+
+    useEffect(() => {
+        if (email.length > 0 && value !== undefined) {
+            setIsDisabled(false)
+        }
+    }, [email, value])
 
     const handlePayment = async (event) => {
         event.preventDefault();
@@ -53,9 +59,12 @@ export default function HelpUsSide() {
             }
         } catch (error) {
             console.error('Error:', error);
+        } finally {
+            setIsDisabled(true);
+            setValue("");
+            setEmail("");
         }
     };
-
     return (
         <section className="help-us side">
             <div className="supportUs">Wesprzyj Nas</div>
@@ -80,11 +89,20 @@ export default function HelpUsSide() {
                 />
             </div>
             <div className="button-container">
-                <button
-                    onClick={handlePayment}
-                    style={{
-                        cursor: loading ? "wait" : "pointer",
-                    }}>Wesprzyj🤍</button>
+                {loading ? (
+                    <button
+                        onClick={handlePayment}
+                    ><i className="fa fa-circle-o-notch fa-spin"></i></button>
+                ) : (
+                    <button
+                        disabled={isDisabled}
+                        onClick={handlePayment}
+                        style={{
+                            cursor: "pointer",
+                        }}>
+                        Wesprzyj🤍
+                    </button>
+                )}
             </div>
 
         </section >
