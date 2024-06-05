@@ -36,6 +36,7 @@
     transition: 0.4s;
   }
 
+
   @media screen and (max-width: 768px) {
     .container {
       display: none;
@@ -52,7 +53,10 @@
       left: 0;
       padding: 1em;
       border-radius: 10px;
+    }
 
+    .logo-small {
+      margin-top: 20px;
     }
 
     .container li {
@@ -66,8 +70,8 @@
     }
 
       .hide-on-small-screen {
-    display: none;
-  }
+        display: none;
+      }
   }
 
   @media screen and (min-width: 769px) {

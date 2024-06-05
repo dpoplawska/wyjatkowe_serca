@@ -12,7 +12,7 @@ export default function Menu() {
     return (
         <div className="menu">
             <a href="/" title="Strona główna">
-                <img src={logo} alt="Logo" width="100px" height="auto" />
+                <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
             </a>
             <div className="hamburger" onClick={toggleMenu}>
                 <div></div>
