@@ -33,5 +33,10 @@ button {
     width: 170px;
     height: 50px;
   }
+}
 
+@media screen and (min-width: 1524px) {
+  .logo img {
+    width: 80%;
+  }
 }
