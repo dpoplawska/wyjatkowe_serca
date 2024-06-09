@@ -7,7 +7,7 @@
 
 aside {
   height: 80%;
-  display: 'flex';
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -22,7 +22,7 @@ aside {
 }
 
 .right-side, .left-side {
-  transform: translateY(35%);
+  transform: translateY(40%);
   flex-direction: column;
   align-items: center;
 }
@@ -50,13 +50,13 @@ aside {
 .logo {
   display: flex;
   justify-content: center;
-  width: 100%;
   margin-bottom: auto;
+  margin-top: -2%;
   justify-content: center;
 }
 
 .logo img {
-  max-width: 90%;
+  max-width: 80%;
   height: auto;
 }
 
@@ -131,8 +131,12 @@ aside {
   }
 }
 
-@media screen and (min-width: 1524px) {
-  .logo img {
-    width: 80%;
+@media screen and (min-width: 1024px) {
+  .right-side {
+    margin-left: -100px;
+  }
+
+  .left-side {
+      margin-right: -100px;
   }
 }

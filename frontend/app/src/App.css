@@ -6,7 +6,6 @@
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-  /* position: absolute; */
 }
 
 
@@ -35,8 +34,8 @@ button {
   }
 }
 
-@media screen and (min-width: 1524px) {
-  .logo img {
-    width: 80%;
+@media screen and (min-width: 1480px) {
+  .App {
+    width: 1480px;
   }
 }

@@ -1,9 +1,7 @@
 .side {
   display: flex;
   flex-direction: column;
-  /* height: 100vh; */
   gap: 1em;
-  /* margin-top: 10%; */
 }
 
 .icons {
@@ -18,8 +16,6 @@
   color:#EC1A3B;
 }
 
-
-
 @media screen and (max-width: 1024px) {
   .side {
     height: auto;
@@ -30,6 +26,7 @@
   .supportUs {
     font-size: 27px;
   }
+
   .icons {
     flex-direction: row;
     gap: 35px;
