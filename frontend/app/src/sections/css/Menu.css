@@ -16,6 +16,10 @@
     z-index:1000;
   } */
 
+  .menu {
+    margin-top: 1%;
+  }
+
   li {
     color: var(--primary_blue);
     font-family: var(--font-family-quicksand);

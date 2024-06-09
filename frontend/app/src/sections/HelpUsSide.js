@@ -4,19 +4,28 @@ import "./css/Sides.css"
 
 export default function HelpUsSide() {
     const [value, setValue] = useState();
-    const handleValueChange = (event) => {
-        setValue(event.target.value)
-    }
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [emptyData, setEmptyData] = useState(false);
+    const [emptyValue, setEmptyValue] = useState(false);
+    const [emptyEmail, setEmptyEmail] = useState(false);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    const handleValueChange = (event) => {
+        setValue(event.target.value)
+        setEmptyValue(false);
+    }
 
     const handleEmailChange = (event) => {
+        setEmptyEmail(false);
+        setEmailError(false)
         setEmail(event.target.value);
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (emailRegex.test(event.target.value)) {
             setEmailError(false);
+            setEmptyEmail(false);
+        } else if (event.target.value.length < 1) {
+            setEmptyEmail(true)
         } else {
             setEmailError(true);
         }
@@ -24,8 +33,9 @@ export default function HelpUsSide() {
 
     const handlePayment = async (event) => {
         event.preventDefault();
-        if (email.length > 0 && value !== undefined) {
-            setEmptyData(false);
+        if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
+            setEmptyValue(false);
+            setEmptyEmail(false);
             setLoading(true);
 
             const paymentData = {
@@ -60,7 +70,8 @@ export default function HelpUsSide() {
                 setEmail("");
             }
         } else {
-            setEmptyData(true);
+            setEmptyValue(value === undefined);
+            setEmptyEmail(!(email.length > 0))
         }
     };
 
@@ -76,7 +87,7 @@ export default function HelpUsSide() {
                     value={value}
                     onChange={handleValueChange}
                     type="number"
-                    helperText={emptyData ? "Wymagane pole" : ""}
+                    error={emptyValue}
                 />
             </div>
             <div className="textfield-container">
@@ -88,8 +99,8 @@ export default function HelpUsSide() {
                     value={email}
                     onChange={handleEmailChange}
                     type="email"
-                    error={emailError}
-                    helperText={emailError ? "Nieprawidłowy adres e-mail" : "" || emptyData ? "Wymagane pole" : ""}
+                    error={emailError || emptyEmail}
+                    helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
                 />
             </div>
             <div className="button-container">

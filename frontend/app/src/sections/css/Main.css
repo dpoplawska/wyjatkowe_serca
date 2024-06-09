@@ -2,26 +2,27 @@
   display: flex;
   flex-direction: row;
   position: relative;
+  margin-top: 5%;
 }
 
 aside {
-  display: flex;
+  height: 80%;
+  display: 'flex';
   flex-direction: column;
-  box-sizing: border-box;
+  justify-content: center;
   align-items: center;
-
 }
 
 .right-side {
-  right: 0;
+  margin-right: 10px;
 }
 
 .left-side {
-  left: 0;
+    margin-left: 10px;
 }
 
 .right-side, .left-side {
-  transform: translateY(20%);
+  transform: translateY(35%);
   flex-direction: column;
   align-items: center;
 }
@@ -55,7 +56,7 @@ aside {
 }
 
 .logo img {
-  max-width: 100%;
+  max-width: 90%;
   height: auto;
 }
 
@@ -127,5 +128,11 @@ aside {
     padding: 5px;
     white-space: pre-line;
     align-content: center;
+  }
+}
+
+@media screen and (min-width: 1524px) {
+  .logo img {
+    width: 80%;
   }
 }

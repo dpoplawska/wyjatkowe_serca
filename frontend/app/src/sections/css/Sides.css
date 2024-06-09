@@ -36,21 +36,8 @@
   }
 }
 
-@media screen and (min-width: 1540px) {
-  .text > * {
-    font-size: large;
-  }
-
-  .textfield-container > * {
-    width: 120%; 
-  }
-
-  .button-container > * {
-    width: 120%; 
-  }
-
-  .icons > * {
-    width: 150%;
-    height: 150%;
+@media screen and (min-width: 1524px) {
+  .logo img {
+    width: 80%;
   }
 }
