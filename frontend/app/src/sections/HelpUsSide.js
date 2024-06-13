@@ -77,50 +77,52 @@ export default function HelpUsSide() {
                 setEmptyEmail(!(email.length > 0));
             }
         };
-
-        return (
-            <section className="help-us side">
-                <div className="supportUs">Wesprzyj Nas</div>
-                <div className="textfield-container">
-                    <TextField
-                        aria-label="Pole tekstowe na kwotę wpłaty"
-                        required
-                        id="outlined"
-                        label="Kwota wpłaty"
-                        value={value}
-                        onChange={handleValueChange}
-                        type="number"
-                        error={emptyValue}
-                    />
-                </div>
-                <div className="textfield-container">
-                    <TextField
-                        aria-label="Pole tekstowe na email"
-                        required
-                        id="outlined"
-                        label="Adres e-mail"
-                        value={email}
-                        onChange={handleEmailChange}
-                        type="email"
-                        error={emailError || emptyEmail}
-                        helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
-                    />
-                </div>
-                <div className="button-container">
-                    {loading ? (
-                        <button
-                            onClick={handlePayment}
-                        ><i className="fa fa-circle-o-notch fa-spin"></i></button>
-                    ) : (
-                        <button
-                            onClick={handlePayment}
-                            style={{
-                                cursor: "pointer",
-                            }}>
-                            Wesprzyj🤍
-                        </button>
-                    )}
-                </div>
-            </section >
-        )
     }
+
+    return (
+        <section className="help-us side">
+            <div className="supportUs">Wesprzyj Nas</div>
+            <div className="textfield-container">
+                <TextField
+                    aria-label="Pole tekstowe na kwotę wpłaty"
+                    required
+                    id="outlined"
+                    label="Kwota wpłaty"
+                    value={value}
+                    onChange={handleValueChange}
+                    type="number"
+                    error={emptyValue}
+                />
+            </div>
+            <div className="textfield-container">
+                <TextField
+                    aria-label="Pole tekstowe na email"
+                    required
+                    id="outlined"
+                    label="Adres e-mail"
+                    value={email}
+                    onChange={handleEmailChange}
+                    type="email"
+                    error={emailError || emptyEmail}
+                    helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
+                />
+            </div>
+            <div className="button-container">
+                {loading ? (
+                    <button
+                        onClick={handlePayment}
+                    ><i className="fa fa-circle-o-notch fa-spin"></i></button>
+                ) : (
+                    <button
+                        onClick={handlePayment}
+                        style={{
+                            cursor: "pointer",
+                        }}>
+                        Wesprzyj🤍
+                    </button>
+                )}
+            </div>
+        </section >
+    )
+
+}
