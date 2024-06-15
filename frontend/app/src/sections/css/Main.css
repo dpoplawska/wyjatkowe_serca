@@ -18,7 +18,7 @@ aside {
 }
 
 .left-side {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .right-side, .left-side {
@@ -61,7 +61,7 @@ aside {
 }
 
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 992px) {
   .right-side, .left-side {
     transform: translateY(0);
   }
@@ -131,7 +131,7 @@ aside {
   }
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 992px) {
   .right-side {
     margin-left: -100px;
   }
