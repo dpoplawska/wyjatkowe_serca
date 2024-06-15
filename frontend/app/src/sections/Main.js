@@ -40,7 +40,6 @@ export default function Main() {
 
     return (
         <section className="main">
-            {/* {isMediumScreen ? ( */}
             <div className="row">
                 <div className="col-xs-12 col-lg-3">{isMediumScreen ? (<div className="position-fixed"><HelpUsSide /> </div>) : <HelpUsSide />}</div>
                 <div className="col-xs-12 col-lg-6 ">
@@ -51,27 +50,7 @@ export default function Main() {
                     <HelpUs />
                 </div>
                 <div className="col-xs-12 col-lg-3">{isMediumScreen ? (<div className="position-fixed"><SocialsSide /> </div>) : <HelpUsSide />}</div>
-
-                {/* <div className="col-lg-3 col-xs-12"> <div className="col-lg-position-fixed"><SocialsSide /> </div> </div> */}
             </div>
-            {/* ) */}
-            {/* : (
-                <div>
-                    <aside className="left-side">
-                        <HelpUsSide />
-                    </aside>
-                    <section className="main-content">
-                        <HeroSection />
-                        <WhatWeDo />
-                        <GetToKnowUs />
-                        <Parents />
-                        <HelpUs />
-                    </section>
-                    <aside className="right-side">
-                        <SocialsSide />
-                    </aside>
-                </div>
-            ) */}
         </section>
     );
 }
