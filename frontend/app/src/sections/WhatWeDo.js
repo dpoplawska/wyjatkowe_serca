@@ -1,5 +1,5 @@
 import React from "react"
-import "../sections/css/WhatWeDo.css"
+import "../sections/css/InfoContent.css"
 import zdjecie from "../media/zdjecie_zespolu.jpg"
 
 export default function WhatWeDo() {

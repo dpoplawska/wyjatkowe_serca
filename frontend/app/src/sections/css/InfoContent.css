@@ -1,0 +1,60 @@
+#container {
+    display: grid;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.header {
+  font-size: 44px;
+  font-family: "Kalam";
+  color:#EC1A3B;
+  display: flex;
+  align-self: flex-start;
+}
+
+.highlight {
+    color: #EC1A3B;
+    font-weight: bold;
+    font-family: "Grandstander";
+}
+
+.sub-highlight {
+    color: #2383C5;
+    font-weight: bold;
+    font-family: "Nunito Sans";
+    font-size: 24px;
+}
+
+.section-title {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: 500;
+    text-align: left;
+    font-family: "Nunito Sans";
+    color: #2E2E2E;
+}
+
+.content {
+    margin-top: 10px;
+    text-align: left;
+    font-family: "Nunito Sans";
+    color: #616161;
+    font-size: 18px;
+}
+
+h1, h2 {
+    text-align: left;
+}
+
+#team-pic {
+    object-fit: cover;
+    border-radius: 20px;
+    width: 100%;
+    margin-bottom: 1vh;
+}
+
+.photo-caption {
+    color: #616161;
+    font-size: 13px;
+}
