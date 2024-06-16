@@ -21,6 +21,7 @@ export default function HelpUs() {
                     </p>
                 </div>
 
+
                 <div className="col-xs-6 col-lg-7 logo-help">
                     <img src={logo} alt="Logo Fundacji - Miś" />
                 </div>

@@ -1,8 +1,6 @@
 .main {
   display: flex;
   flex-direction: row;
-  position: relative;
-
 }
 
 #right-side, #left-side {
@@ -47,12 +45,17 @@
   margin-bottom: 4vw;
 }
 
+.hero .buttons {
+   display: flex;
+   justify-content: center; 
+   gap: 10%;
+}
+
 
 @media screen and (max-width: 992px) {
   #right-side, #left-side {
     transform: translateY(0);
   }
-
 
   .thankyou {
     order: 0;
@@ -68,7 +71,7 @@
     margin-right: 0px;
   }
 
-  #main-content, .thankyou {
+  aside, .main-content, .thankyou {
     width: 100%;
     height: auto;
     position: relative;
@@ -110,14 +113,8 @@
   }
 }
 
-
-@media screen and (min-width: 992px) {
-
-  #right-side, #left-side {
-      margin-bottom: 300px;
-  }
-
-  .main {
-    padding-bottom: 100px;
+@media screen and (max-width: 480px) {
+  .hero .buttons {
+    display: grid;
   }
 }

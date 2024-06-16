@@ -92,7 +92,7 @@ h1, h2 {
 }
 
 .logo-help {
-    margin-top: -15%;
+    margin-top: -10%;
 }
 
 .logo-help img{
@@ -106,20 +106,25 @@ h1, h2 {
     font-family: "Great Vibes";
 }
 
+
+@media screen and (min-width: 993px) and (max-width: 1200px) {
+    .logo-help {
+        margin-top: -5%;
+    }
+
+    .logo-help img{
+        width: 300px;
+    }
+}
+
 @media screen and (max-width: 992px) {
-    #container {
-        width: 100%;
-    }
-
-    .header, .section-title {
-        width: 80%;
-    }
-
     .content {
-        width: 80%;
         display: flex;
         flex-wrap: wrap;
             height: auto;
+            height: auto;
+    /* position: static; */
+        height: auto;
     /* position: static; */
     }
 
@@ -134,8 +139,41 @@ h1, h2 {
 
     .hashtags {
         display: flex;
-        font-size: 18px;
+        font-size: 16px;
         align-self: flex-start;
         flex-wrap: wrap;
     }
+}
+
+@media screen and (max-width: 480px) {
+  #container {
+    width: 95%;
+  }
+
+  .header {
+    font-size: 28px;
+  }
+
+  .sub-highlight {
+    font-size: 18px;
+  }
+
+  .hashtags {
+    font-size: 16px;
+  }
+
+  .content {
+    font-size: 14px;
+  }
+
+  .playlist {
+    margin-bottom: -10px;
+    display: grid;
+    justify-content: center;
+  }
+
+  .playlist .icon{
+    display: flex;
+
+  }
 }
