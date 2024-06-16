@@ -1,28 +1,39 @@
+:root {
+  --red: #EC1A3B;
+  --blue: #2383C5;
+  --grey1: #2E2E2E;
+  --grey2: #616161;
+  --font-family-grandstander: 'Grandstander';
+  --font-family-nunito-sans: 'Nunito Sans';
+  --font-family-kalam: 'Kalam';
+}
+
 #container {
     display: grid;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 2vh;
 }
 
 .header {
   font-size: 44px;
-  font-family: "Kalam";
-  color:#EC1A3B;
+  font-family: var(--font-family-kalam);
+  color: var(--red);
   display: flex;
   align-self: flex-start;
 }
 
 .highlight {
-    color: #EC1A3B;
+    color: var(--red);
     font-weight: bold;
-    font-family: "Grandstander";
+    font-family: var(--font-family-grandstander);
 }
 
 .sub-highlight {
-    color: #2383C5;
+    color: var(--blue);
     font-weight: bold;
-    font-family: "Nunito Sans";
+    font-family: var(--font-family-nunito-sans);
     font-size: 24px;
 }
 
@@ -31,15 +42,15 @@
     font-size: 1.2em;
     font-weight: 500;
     text-align: left;
-    font-family: "Nunito Sans";
-    color: #2E2E2E;
+    font-family: var(--font-family-nunito-sans);
+    color: var(--grey1);
 }
 
 .content {
     margin-top: 10px;
     text-align: left;
-    font-family: "Nunito Sans";
-    color: #616161;
+    font-family: var(--font-family-nunito-sans);
+    color: var(--grey2);
     font-size: 18px;
 }
 
@@ -55,6 +66,27 @@ h1, h2 {
 }
 
 .photo-caption {
-    color: #616161;
+    color: var(--grey2);
     font-size: 13px;
+}
+
+.hashtags {
+    margin-top: 3vh;
+    font-family: var(--font-family-grandstander);
+    font-size: 28px;
+    color:#ec1a39c4;
+    font-weight: 600;
+}
+
+.playlist {
+    display: flex;
+    align-items: center;
+}
+
+.playlist #icon {
+    color: var(--red)
+}
+
+#icon:hover {
+  color:#2383C5;
 }
