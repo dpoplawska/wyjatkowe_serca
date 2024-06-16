@@ -1,6 +1,8 @@
 .main {
   display: flex;
   flex-direction: row;
+  position: relative;
+
 }
 
 #right-side, #left-side {
@@ -51,6 +53,7 @@
     transform: translateY(0);
   }
 
+
   .thankyou {
     order: 0;
     align-items: center;
@@ -65,7 +68,7 @@
     margin-right: 0px;
   }
 
-  aside, .main-content, .thankyou {
+  #main-content, .thankyou {
     width: 100%;
     height: auto;
     position: relative;
@@ -104,5 +107,17 @@
     padding: 5px;
     white-space: pre-line;
     align-content: center;
+  }
+}
+
+
+@media screen and (min-width: 992px) {
+
+  #right-side, #left-side {
+      margin-bottom: 300px;
+  }
+
+  .main {
+    padding-bottom: 100px;
   }
 }

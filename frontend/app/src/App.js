@@ -16,8 +16,8 @@ function App() {
           <Route path="/dziekujemy" element={<ThankYou />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <Footer />
       </div>
+      <Footer />
     </Router>
   );
 }

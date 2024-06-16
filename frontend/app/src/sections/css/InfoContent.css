@@ -105,3 +105,37 @@ h1, h2 {
     font-size: 50px;
     font-family: "Great Vibes";
 }
+
+@media screen and (max-width: 992px) {
+    #container {
+        width: 100%;
+    }
+
+    .header, .section-title {
+        width: 80%;
+    }
+
+    .content {
+        width: 80%;
+        display: flex;
+        flex-wrap: wrap;
+            height: auto;
+    /* position: static; */
+    }
+
+    .logo-help img{
+        width: 250px;
+    }
+
+    .dziekujemy-text{
+        display: flex;
+        justify-content: center;
+    }
+
+    .hashtags {
+        display: flex;
+        font-size: 18px;
+        align-self: flex-start;
+        flex-wrap: wrap;
+    }
+}
