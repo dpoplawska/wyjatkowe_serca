@@ -104,6 +104,8 @@ h1, h2 {
     color: var(--blue);
     font-size: 50px;
     font-family: "Great Vibes";
+    margin-bottom: 5%;
+
 }
 
 
@@ -121,11 +123,9 @@ h1, h2 {
     .content {
         display: flex;
         flex-wrap: wrap;
-            height: auto;
-            height: auto;
-    /* position: static; */
         height: auto;
-    /* position: static; */
+        height: auto;
+        height: auto;
     }
 
     .logo-help img{
@@ -146,6 +146,10 @@ h1, h2 {
 }
 
 @media screen and (max-width: 480px) {
+  .dziekujemy-text{
+    margin-top: -15%;
+  }
+
   #container {
     width: 95%;
   }

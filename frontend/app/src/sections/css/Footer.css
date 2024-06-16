@@ -1,4 +1,18 @@
 .footer {
-    width: 100%;
-    /* background-color:aqua; */
+    padding: 1rem 0;
+    order: 10;
+
 }
+
+@media (max-width: 576px) {
+    .footer .col-12 {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .footer img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+
