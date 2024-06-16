@@ -10,6 +10,15 @@
   gap: 10px;
 }
 
+#icon {
+  font-size: 50px;
+   color: #000;
+}
+
+#icon:hover {
+  color:#2383C5;
+}
+
 .supportUs {
   font-size: 28px;
   font-family: "Quicksand";
