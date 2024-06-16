@@ -88,5 +88,20 @@ h1, h2 {
 }
 
 #icon:hover {
-  color:#2383C5;
+  color:var(--blue);
+}
+
+.logo-help {
+    margin-top: -15%;
+}
+
+.logo-help img{
+    width: 454px;
+}
+
+.dziekujemy-text{
+    display: flex;
+    color: var(--blue);
+    font-size: 50px;
+    font-family: "Great Vibes";
 }
