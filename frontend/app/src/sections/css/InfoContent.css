@@ -81,10 +81,12 @@ h1, h2 {
 .playlist {
     display: flex;
     align-items: center;
+    text-align: center;
 }
 
 .playlist #icon {
-    color: var(--red)
+    color: var(--red);
+    font-size: 36px;
 }
 
 #icon:hover {

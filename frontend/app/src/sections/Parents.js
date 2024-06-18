@@ -12,7 +12,6 @@ const Playlist = ({ title, description, link }) => (
             </a>
         </div>
         <p className="content">{description}</p>
-
     </div>
 );
 
