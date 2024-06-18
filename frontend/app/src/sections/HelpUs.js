@@ -4,7 +4,7 @@ import logo from "../media/logo_sammis.png"
 
 export default function HelpUs() {
     return (
-        <div id="container">
+        <div id="container" className="helpUs">
             <div className="row">
 
                 <div className="col-xs-12">

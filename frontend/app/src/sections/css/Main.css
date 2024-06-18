@@ -42,18 +42,33 @@
   height: auto;
 }
 
-.hero {
-  margin-bottom: 4vw;
-}
-
 .hero .buttons {
    display: flex;
    justify-content: center; 
    gap: 10%;
 }
 
+#myBtn {
+  display: flex;
+  position: fixed;
+  right: 250px;
+  z-index: 10;
+  border-radius: 50px;
+  width:50px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+}
 
 @media screen and (max-width: 992px) {
+  #myBtn {
+    display: flex;
+    left: 5px;
+    bottom: 5px;
+    width: 30px;
+    height: 30px;
+  }
+
   #right-side, #left-side {
     transform: translateY(0);
   }
@@ -111,6 +126,10 @@
     padding: 5px;
     white-space: pre-line;
     align-content: center;
+  }
+
+  .hero {
+    margin-top: 4vw;
   }
 }
 

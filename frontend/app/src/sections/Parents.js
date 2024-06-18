@@ -19,7 +19,7 @@ const Playlist = ({ title, description, link }) => (
 
 export default function Parents() {
     return (
-        <div id="container">
+        <div id="container" className="forParents">
             <h1 className="header">Dla Rodzica</h1>
             <h2 className="sub-highlight">
                 Kompendium wiedzy, czyli <span className="highlight">nasze projekty</span>

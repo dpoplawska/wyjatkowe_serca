@@ -1,12 +1,10 @@
 import './css/Menu.css'
-import React, { useEffect, useState } from "react";
-import logo from "./logo_podstawowe.png"
-
-
+import React, { useEffect, useState, useRef } from "react";
+import logo from "./logo_podstawowe.png";
 import { useClickAway } from "react-use";
-import { useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";
+import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
 
 export default function Menu() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -32,14 +30,19 @@ export default function Menu() {
         return () => {
             mediaQuery.removeEventListener('change', handleScreenSizeChange);
         };
-    }, [window]);
+    }, []);
 
     const [isOpen, setOpen] = useState(false);
     const ref = useRef(null);
 
     useClickAway(ref, () => setOpen(false));
 
-    const routes = ['CO ROBIMY', 'POZNAJ NAS', 'DLA RODZICA', 'KONTAKT']
+    const routes = [
+        { name: 'CO ROBIMY', to: 'whatWeDo' },
+        { name: 'POZNAJ NAS', to: 'getToKnowUs' },
+        { name: 'DLA RODZICA', to: 'forParents' },
+        { name: 'KONTAKT', to: 'footer' }
+    ];
 
     return (
         <div className="menu">
@@ -61,7 +64,6 @@ export default function Menu() {
                                 >
                                     <ul className={`grid gap-2 container ${isOpen ? 'active' : ''}`}>
                                         {routes.map((route, idx) => {
-
                                             return (
                                                 <motion.li
                                                     initial={{ scale: 0, opacity: 0 }}
@@ -72,18 +74,21 @@ export default function Menu() {
                                                         damping: 20,
                                                         delay: 0.1 + idx / 10,
                                                     }}
-                                                    key={route}
+                                                    key={route.name}
                                                     className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
                                                 >
-                                                    <a
+                                                    <ScrollLink
+                                                        to={route.to}
+                                                        smooth={true}
+                                                        duration={500}
+                                                        offset={-50} // Adjust this value if you have a fixed header
                                                         onClick={() => setOpen((prev) => !prev)}
                                                         className={
-                                                            "flex items-center justify-between w-full p-5 rounded-xl bg-neutral-950"
+                                                            "flex items-center justify-between w-full p-5 rounded-xl bg-neutral-950 cursor-pointer"
                                                         }
-                                                    // href={route.href}
                                                     >
-                                                        <span className="flex gap-1 text-lg">{route}</span>
-                                                    </a>
+                                                        <span className="flex gap-1 text-lg">{route.name}</span>
+                                                    </ScrollLink>
                                                 </motion.li>
                                             );
                                         })}
@@ -93,17 +98,22 @@ export default function Menu() {
                         </AnimatePresence>
                     </div>
                 </div>
-            ) : (<ul className={`container ${menuOpen ? 'active' : ''}`}>
-                <a href="/" title="Strona główna">
-                    <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
-                </a>
-                <li>CO ROBIMY</li>
-                <li>POZNAJ NAS</li>
-                <li>DLA RODZICA</li>
-                <li>KONTAKT</li>
-            </ul>)
-            }
-
+            ) : (
+                <ul className={`container ${menuOpen ? 'active' : ''}`}>
+                    <a href="/" title="Strona główna">
+                        <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
+                    </a>
+                    {routes.map((route) => (
+                        <li key={route.name}>
+                            <ScrollLink
+                                to={route.to}
+                            >
+                                {route.name}
+                            </ScrollLink>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
-    )
+    );
 }

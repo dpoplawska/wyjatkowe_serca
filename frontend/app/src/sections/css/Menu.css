@@ -17,6 +17,10 @@
     flex: 1;
   }
 
+  .menu:hover{
+    cursor: pointer;
+  }
+
   .menu {
     margin-top: 2%;
   }
@@ -25,6 +29,10 @@
     color: var(--primary_blue);
     font-family: var(--font-family-quicksand);
     font-weight: bold;
+  }
+
+  li:hover {
+    color: var(--primary_red)
   }
 
 
