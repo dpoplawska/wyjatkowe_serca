@@ -9,10 +9,6 @@ export default function HeroSection() {
             <div className="logo" >
                 <img src={logo} alt="Logo" />
             </div>
-            <div className="buttons" style={{ display: "none" /* do zmiany na flex */, justifyContent: "center", gap: "10%" }}>
-                <button>Dla Rodzica</button>
-                <button>Poznaj Nas</button>
-            </div>
         </section>
     )
 }

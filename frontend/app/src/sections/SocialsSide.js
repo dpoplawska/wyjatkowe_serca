@@ -13,13 +13,13 @@ export default function SocialsSide() {
 
             <div className="icons">
                 <a href="https://www.youtube.com/@FundacjaWyjatkoweSerca" target="_blank" rel="noopener noreferrer">
-                    <YouTubeIcon style={{ fontSize: "50px", color: "#000" }} />
+                    <YouTubeIcon id="icon" />
                 </a>
                 <a href="https://www.facebook.com/wyjatkoweserca" target="_blank" rel="noopener noreferrer">
-                    <FacebookIcon style={{ fontSize: "50px", color: "#000" }} />
+                    <FacebookIcon id="icon" />
                 </a>
                 <a href="https://www.instagram.com/wyjatkoweserca/" target="_blank" rel="noopener noreferrer">
-                    <InstagramIcon style={{ fontSize: "50px", color: "#000" }} />
+                    <InstagramIcon id="icon" />
                 </a>
             </div>
         </section >

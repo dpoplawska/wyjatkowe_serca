@@ -8,7 +8,6 @@
   padding-right: 1.5rem;
 }
 
-
 .App-link {
   color: #61dafb;
 }
@@ -25,6 +24,11 @@ button {
   font-size: 23px;
   font-weight: 800;
 }
+
+button:hover {
+  background-color: #2383C5
+}
+
 
 @media screen and (max-width: 1024px) {
   button {

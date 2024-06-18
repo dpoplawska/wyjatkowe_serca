@@ -15,11 +15,11 @@ export default function HelpUsSide() {
     const handleValueChange = (event) => {
         setValue(event.target.value)
         setEmptyValue(false);
-    }
+    };
 
     const handleEmailChange = (event) => {
-        setEmptyEmail(false);
         setEmailError(false)
+        setEmptyEmail(false);
         setEmail(event.target.value);
         if (emailRegex.test(event.target.value)) {
             setEmailError(false);
@@ -36,44 +36,48 @@ export default function HelpUsSide() {
         if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
             setEmptyValue(false);
             setEmptyEmail(false);
-            setLoading(true);
+            if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
+                setEmptyValue(false);
+                setEmptyEmail(false);
+                setLoading(true);
 
-            const paymentData = {
-                amount: value,
-                email: email
-            };
+                const paymentData = {
+                    amount: value,
+                    email: email
+                };
 
-            try {
-                const response = await fetch('https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/payments', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(paymentData)
-                });
+                try {
+                    const response = await fetch('https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/payments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(paymentData)
+                    });
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.paymentId) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        throw new Error('Invalid response data');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                } finally {
+                    setValue("");
+                    setEmail("");
                 }
-
-                const data = await response.json();
-
-                if (data.paymentId) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    throw new Error('Invalid response data');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                setValue("");
-                setEmail("");
+            } else {
+                setEmptyValue(value === undefined);
+                setEmptyEmail(!(email.length > 0));
             }
-        } else {
-            setEmptyValue(value === undefined);
-            setEmptyEmail(!(email.length > 0))
-        }
-    };
+        };
+    }
 
     return (
         <section className="help-us side">
@@ -118,7 +122,7 @@ export default function HelpUsSide() {
                     </button>
                 )}
             </div>
-
         </section >
     )
+
 }

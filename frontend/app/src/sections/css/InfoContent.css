@@ -1,0 +1,182 @@
+:root {
+  --red: #EC1A3B;
+  --blue: #2383C5;
+  --grey1: #2E2E2E;
+  --grey2: #616161;
+  --font-family-grandstander: 'Grandstander';
+  --font-family-nunito-sans: 'Nunito Sans';
+  --font-family-kalam: 'Kalam';
+}
+
+#container {
+    display: grid;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vh;
+}
+
+.header {
+  font-size: 44px;
+  font-family: var(--font-family-kalam);
+  color: var(--red);
+  display: flex;
+  align-self: flex-start;
+}
+
+.highlight {
+    color: var(--red);
+    font-weight: bold;
+    font-family: var(--font-family-grandstander);
+}
+
+.sub-highlight {
+    color: var(--blue);
+    font-weight: bold;
+    font-family: var(--font-family-nunito-sans);
+    font-size: 24px;
+}
+
+.section-title {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: 500;
+    text-align: left;
+    font-family: var(--font-family-nunito-sans);
+    color: var(--grey1);
+}
+
+.content {
+    margin-top: 10px;
+    text-align: left;
+    font-family: var(--font-family-nunito-sans);
+    color: var(--grey2);
+    font-size: 18px;
+}
+
+h1, h2 {
+    text-align: left;
+}
+
+#team-pic {
+    object-fit: cover;
+    border-radius: 20px;
+    width: 100%;
+    margin-bottom: 1vh;
+}
+
+.photo-caption {
+    color: var(--grey2);
+    font-size: 13px;
+}
+
+.hashtags {
+    margin-top: 3vh;
+    font-family: var(--font-family-grandstander);
+    font-size: 28px;
+    color:#ec1a39c4;
+    font-weight: 600;
+}
+
+.playlist {
+    display: flex;
+    align-items: center;
+}
+
+.playlist #icon {
+    color: var(--red)
+}
+
+#icon:hover {
+  color:var(--blue);
+}
+
+.logo-help {
+    margin-top: -10%;
+}
+
+.logo-help img{
+    width: 454px;
+}
+
+.dziekujemy-text{
+    display: flex;
+    color: var(--blue);
+    font-size: 50px;
+    font-family: "Great Vibes";
+    margin-bottom: 5%;
+}
+
+
+@media screen and (min-width: 993px) and (max-width: 1200px) {
+    .logo-help {
+        margin-top: -5%;
+    }
+
+    .logo-help img{
+        width: 300px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        height: auto;
+        height: auto;
+        height: auto;
+    }
+
+    .logo-help img{
+        width: 250px;
+    }
+
+    .dziekujemy-text{
+        display: flex;
+        justify-content: center;
+    }
+
+    .hashtags {
+        display: flex;
+        font-size: 16px;
+        align-self: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
+@media screen and (max-width: 480px) {
+  .dziekujemy-text{
+    margin-top: -15%;
+  }
+
+  #container {
+    width: 95%;
+  }
+
+  .header {
+    font-size: 28px;
+  }
+
+  .sub-highlight {
+    font-size: 18px;
+  }
+
+  .hashtags {
+    font-size: 16px;
+  }
+
+  .content {
+    font-size: 14px;
+  }
+
+  .playlist {
+    margin-bottom: -10px;
+    display: grid;
+    justify-content: center;
+  }
+
+  .playlist .icon{
+    display: flex;
+
+  }
+}

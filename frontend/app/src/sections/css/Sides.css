@@ -10,13 +10,22 @@
   gap: 10px;
 }
 
+#icon {
+  font-size: 50px;
+   color: #000;
+}
+
+#icon:hover {
+  color:#2383C5;
+}
+
 .supportUs {
   font-size: 28px;
   font-family: "Quicksand";
   color:#EC1A3B;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 992px) {
   .side {
     height: auto;
     position: static;
@@ -33,8 +42,3 @@
   }
 }
 
-@media screen and (min-width: 1524px) {
-  .logo img {
-    width: 80%;
-  }
-}
