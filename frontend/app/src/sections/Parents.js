@@ -6,9 +6,8 @@ import { Typography } from "@mui/material";
 const Playlist = ({ title, description, link }) => (
     <div>
         <div className="playlist">
-            <h2 className="hashtags">{title}</h2>
-            <a href={link} target="_blank" rel="noopener noreferrer">
-                <YouTube id="icon" />
+            <a href={link} target="_blank" rel="noopener noreferrer" className="hashtags">
+                {title} <YouTube id="icon" />
             </a>
         </div>
         <p className="content">{description}</p>
