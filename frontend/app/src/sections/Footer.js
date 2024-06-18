@@ -36,26 +36,5 @@ export default function Footer() {
                 </div>
             </div>
         </footer>
-        // <div className="footer" aria-label="footer"  >
-        //     <div className="container">
-        //         <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-1 border-top">
-        //             <div className="col mb-3">
-        //                 <img src={logo} alt="Logo Fundacji - Miś" width="200px" />
-        //             </div>
-        //             <div className="col mb-3"></div>
-        //             <div className="col mb-3">
-        //                 <h5>Kontakt</h5>
-        //                 <ul className="nav flex-column">
-        //                     <li className="nav-item mb-2">
-        //                         Al. Jerozolimskie 123A
-        //                         02-017 Warszawa</li>
-        //                 </ul>
-        //             </div>
-        //             <div className="col mb-3"></div>
-        //             <div className="col mb-3"></div>
-
-        //         </footer>
-        //     </div>
-        // </div>
     )
 }
