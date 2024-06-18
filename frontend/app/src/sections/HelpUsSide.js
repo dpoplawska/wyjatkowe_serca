@@ -62,7 +62,7 @@ export default function HelpUsSide() {
                     const data = await response.json();
 
                     if (data.paymentId) {
-                        window.location.href = data.redirectUrl;
+                        window.open(data.redirectUrl, '_blank')?.focus();
                     } else {
                         throw new Error('Invalid response data');
                     }
@@ -71,6 +71,7 @@ export default function HelpUsSide() {
                 } finally {
                     setValue("");
                     setEmail("");
+                    setLoading(false);
                 }
             } else {
                 setEmptyValue(value === undefined);
