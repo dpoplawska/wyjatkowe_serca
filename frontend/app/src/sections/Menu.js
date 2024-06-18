@@ -79,13 +79,7 @@ export default function Menu() {
                                                 >
                                                     <ScrollLink
                                                         to={route.to}
-                                                        smooth={true}
-                                                        duration={500}
-                                                        offset={-50} // Adjust this value if you have a fixed header
                                                         onClick={() => setOpen((prev) => !prev)}
-                                                        className={
-                                                            "flex items-center justify-between w-full p-5 rounded-xl bg-neutral-950 cursor-pointer"
-                                                        }
                                                     >
                                                         <span className="flex gap-1 text-lg">{route.name}</span>
                                                     </ScrollLink>
