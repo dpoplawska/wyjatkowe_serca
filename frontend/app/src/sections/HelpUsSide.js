@@ -31,6 +31,8 @@ export default function HelpUsSide() {
         }
     }
 
+    var windowReference = window.open();
+
     const handlePayment = async (event) => {
         event.preventDefault();
         if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
@@ -61,8 +63,9 @@ export default function HelpUsSide() {
 
                     const data = await response.json();
 
-                    if (data.paymentId) {
-                        window.open(data.redirectUrl, '_blank')?.focus();
+                    if (data.paymentId && windowReference) {
+                        windowReference.location = data.redirectUrl;
+                        // window.open(data.redirectUrl, '_blank')?.focus();
                     } else {
                         throw new Error('Invalid response data');
                     }
@@ -71,7 +74,6 @@ export default function HelpUsSide() {
                 } finally {
                     setValue("");
                     setEmail("");
-                    setLoading(false);
                 }
             } else {
                 setEmptyValue(value === undefined);
