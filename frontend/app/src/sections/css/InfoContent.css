@@ -76,6 +76,7 @@ h1, h2 {
     font-size: 28px;
     color:#ec1a39c4;
     font-weight: 600;
+    text-decoration: none;
 }
 
 .playlist {
@@ -86,7 +87,6 @@ h1, h2 {
 
 .playlist #icon {
     color: var(--red);
-    font-size: 36px;
 }
 
 #icon:hover {
@@ -138,11 +138,21 @@ h1, h2 {
         justify-content: center;
     }
 
-    .hashtags {
+   .hashtags{
         display: flex;
-        font-size: 16px;
-        align-self: flex-start;
-        flex-wrap: wrap;
+        flex-direction: column;
+        font-size: 18px;
+        align-items: center;
+    }
+
+    .playlist {
+        margin-bottom: -10px;
+        display: grid;
+        justify-content: center;
+    }
+
+    .playlist .icon{
+      display: flex;
     }
 }
 
@@ -169,16 +179,5 @@ h1, h2 {
 
   .content {
     font-size: 14px;
-  }
-
-  .playlist {
-    margin-bottom: -10px;
-    display: grid;
-    justify-content: center;
-  }
-
-  .playlist .icon{
-    display: flex;
-
   }
 }
