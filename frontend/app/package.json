@@ -11,11 +11,15 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.3.3",
+    "framer-motion": "^11.2.10",
+    "hamburger-react": "^2.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-emotion": "^10.0.0",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-scroll": "^1.9.0",
+    "react-use": "^17.5.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
