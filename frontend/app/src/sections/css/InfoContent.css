@@ -89,10 +89,6 @@ h1, h2 {
     color: var(--red);
 }
 
-#icon:hover {
-  color:var(--blue);
-}
-
 .logo-help {
     margin-top: -10%;
 }
@@ -119,6 +115,13 @@ h1, h2 {
         width: 300px;
     }
 }
+
+@media screen and (min-width: 992px) {
+  #icon:hover {
+    color:#2383C5;
+  }
+}
+
 
 @media screen and (max-width: 992px) {
     .content {

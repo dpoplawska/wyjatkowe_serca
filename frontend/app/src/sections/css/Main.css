@@ -63,7 +63,7 @@
 @media screen and (max-width: 992px) {
   #myBtn {
     display: flex;
-    left: 5px;
+    right: 5px;
     bottom: 5px;
     width: 30px;
     height: 30px;

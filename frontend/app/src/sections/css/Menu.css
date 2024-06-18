@@ -31,10 +31,11 @@
     font-weight: bold;
   }
 
-  li:hover {
-    color: var(--primary_red)
+  @media screen and (min-width: 992px) {
+    li:hover {
+       color: var(--primary_red)
+    }
   }
-
 
   @media screen and (max-width: 768px) {
     .smallerScreenMenu {

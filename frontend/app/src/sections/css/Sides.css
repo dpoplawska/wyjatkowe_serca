@@ -15,14 +15,16 @@
    color: #000;
 }
 
-#icon:hover {
-  color:#2383C5;
-}
-
 .supportUs {
   font-size: 28px;
   font-family: "Quicksand";
   color:#EC1A3B;
+}
+
+@media screen and (min-width: 992px) {
+  #icon:hover {
+    color:#2383C5;
+  }
 }
 
 @media screen and (max-width: 992px) {

@@ -11,7 +11,6 @@ export default function HelpUsSide() {
     const [emptyEmail, setEmptyEmail] = useState(false);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
     const handleValueChange = (event) => {
         setValue(event.target.value)
         setEmptyValue(false);
