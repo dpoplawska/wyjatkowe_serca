@@ -25,14 +25,14 @@ export default function GetToKnowUs() {
 
             <img id="team-pic" src={zdjecie} alt={"Zespół Fundacji Wyjątkowe Serca wraz z lekarzami"} />
             <p className="photo-caption">
-                Nasz Zespół: od lewej
-                Dr n. med. Michał Buczyński - Członek Rady Naukowej Fundacji,
-                Dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,
-                Radosław Zawadzi - Członek Rady Fundacji,
-                Patryk Perlejewski - Członek Rady Fundacji,
-                lek. Karolina Szymczak - Członek Rady Naukowej Fundacji,
-                Marta Zawadzka - Prezes Zarządu,
-                Małgorzata Pietranis - Członkini Rady Fundacji,
+                Nasz Zespół (od lewej):<br />
+                Dr n. med. Michał Buczyński - Członek Rady Naukowej Fundacji,<br />
+                Dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,<br />
+                Radosław Zawadzi - Członek Rady Fundacji,<br />
+                Patryk Perlejewski - Członek Rady Fundacji,<br />
+                lek. Karolina Szymczak - Członek Rady Naukowej Fundacji,<br />
+                Marta Zawadzka - Prezes Zarządu,<br />
+                Małgorzata Pietranis - Członkini Rady Fundacji,<br />
                 Joanna Suchodolska - Członkini Rady Fundacji
             </p>
 

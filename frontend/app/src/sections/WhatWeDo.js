@@ -15,7 +15,7 @@ export default function WhatWeDo() {
             <div className="section">
                 <h3 className="section-title">Dzieci</h3>
                 <p className="content">
-                    Pomagamy <span className="highlight">#WyjątkowymSerduszkom</span> bić jak najdłużej, a dzieciom z niepełnosprawnością cieszyć się pełnią życia. Odczarowujemy szpitalną rzeczywistość. Choroba sprawia, że dzieci przebywają w szpitalu przez kilka tygodni, a nawet miesięcy, dlatego nasza Fundacja stara się skierować ich uwagę na rzeczy wesołe i przyjemne poprzez organizowanie wydarzeń charytatywnych. Pomagamy także w zbiórkach pieniędzy na leczenie oraz rehabilitację.
+                    Pomagamy  <span className="highlight">#WyjątkowymSerduszkom</span> bić jak najdłużej, a dzieciom z niepełnosprawnością cieszyć się pełnią życia. Odczarowujemy szpitalną rzeczywistość. Choroba sprawia, że dzieci przebywają w szpitalu przez kilka tygodni, a nawet miesięcy, dlatego nasza Fundacja stara się skierować ich uwagę na rzeczy wesołe i przyjemne poprzez organizowanie wydarzeń charytatywnych. Pomagamy także w zbiórkach pieniędzy na leczenie oraz rehabilitację.
                 </p>
             </div>
 

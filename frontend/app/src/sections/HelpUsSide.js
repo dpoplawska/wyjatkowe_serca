@@ -30,17 +30,16 @@ export default function HelpUsSide() {
         }
     }
 
-    var windowReference = window.open();
-
     const handlePayment = async (event) => {
         event.preventDefault();
         if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
             setEmptyValue(false);
             setEmptyEmail(false);
+            setLoading(true);
+
             if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
                 setEmptyValue(false);
                 setEmptyEmail(false);
-                setLoading(true);
 
                 const paymentData = {
                     amount: value,
@@ -62,9 +61,10 @@ export default function HelpUsSide() {
 
                     const data = await response.json();
 
-                    if (data.paymentId && windowReference) {
-                        windowReference.location = data.redirectUrl;
-                        // window.open(data.redirectUrl, '_blank')?.focus();
+                    if (data.paymentId) {
+                        setTimeout(() => {
+                            window.open(data.redirectUrl, '_blank');
+                        })
                     } else {
                         throw new Error('Invalid response data');
                     }
@@ -73,6 +73,7 @@ export default function HelpUsSide() {
                 } finally {
                     setValue("");
                     setEmail("");
+                    setLoading(false);
                 }
             } else {
                 setEmptyValue(value === undefined);
@@ -112,10 +113,12 @@ export default function HelpUsSide() {
             <div className="button-container">
                 {loading ? (
                     <button
+                        type="submit"
                         onClick={handlePayment}
-                    ><i className="fa fa-circle-o-notch fa-spin"></i></button>
+                    ><i className="fa fa-circle-o-notch" aria-hidden="true"></i></button>
                 ) : (
                     <button
+                        type="submit"
                         onClick={handlePayment}
                         style={{
                             cursor: "pointer",
