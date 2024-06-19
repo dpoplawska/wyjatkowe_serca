@@ -124,6 +124,10 @@ h1, h2 {
 
 
 @media screen and (max-width: 992px) {
+    .kids {
+    margin-left: 8px;
+  }
+
     .content {
         display: flex;
         flex-wrap: wrap;

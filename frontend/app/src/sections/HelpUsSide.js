@@ -3,17 +3,31 @@ import React, { useEffect, useState } from "react"
 import "./css/Sides.css"
 
 export default function HelpUsSide() {
-    const [value, setValue] = useState();
+    const [value, setValue] = useState("");
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
+    const [valueError, setValueError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [emptyValue, setEmptyValue] = useState(false);
     const [emptyEmail, setEmptyEmail] = useState(false);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const valueRegex = /^[0-9]*$/
+    const wrongRegex = /[\.,]/
 
     const handleValueChange = (event) => {
-        setValue(event.target.value)
         setEmptyValue(false);
+        let value = event.target.value;
+        if (wrongRegex.test(value)) {
+            value.replace(".", "")
+            value.replace(",", "")
+        }
+        if (valueRegex.test(value)) {
+            setValueError(false)
+            setValue(value)
+        } else {
+            setValueError(true)
+        }
+
     };
 
     const handleEmailChange = (event) => {
@@ -82,6 +96,12 @@ export default function HelpUsSide() {
         };
     }
 
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handlePayment(event);
+        }
+    };
+
     return (
         <section className="help-us side">
             <div className="supportUs">Wesprzyj Nas</div>
@@ -93,8 +113,9 @@ export default function HelpUsSide() {
                     label="Kwota wpłaty"
                     value={value}
                     onChange={handleValueChange}
-                    type="number"
-                    error={emptyValue}
+                    onKeyDown={handleKeyPress}
+                    error={emptyValue || valueError}
+                    helperText={valueError ? "Wartość musi być liczbą całkowitą" : ""}
                 />
             </div>
             <div className="textfield-container">
@@ -105,6 +126,7 @@ export default function HelpUsSide() {
                     label="Adres e-mail"
                     value={email}
                     onChange={handleEmailChange}
+                    onKeyDown={handleKeyPress}
                     type="email"
                     error={emailError || emptyEmail}
                     helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
@@ -115,7 +137,7 @@ export default function HelpUsSide() {
                     <button
                         type="submit"
                         onClick={handlePayment}
-                    ><i className="fa fa-circle-o-notch" aria-hidden="true"></i></button>
+                    ><i className="fa fa-circle-o-notch fa-1x fa-spin" aria-hidden="true"></i></button>
                 ) : (
                     <button
                         type="submit"
