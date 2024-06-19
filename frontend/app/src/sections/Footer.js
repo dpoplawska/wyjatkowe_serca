@@ -15,7 +15,7 @@ export default function Footer() {
                         <h5>Kontakt</h5>
                         <p>Numer telefonu: +48 792 262 345</p>
                         <p>Email: fundacja@wyjatkoweserca.pl</p>
-                        <p className="contact">
+                        <p className="address">
                             <a href="https://www.google.com/maps/place/al.+Jerozolimskie+123A,+02-017+Warszawa/@52.2249832,20.988533,17z/data=!3m1!4b1!4m6!3m5!1s0x471ecc912dcfbc11:0x914920fa7b955f73!8m2!3d52.2249832!4d20.9911079!16s%2Fg%2F11bw3wtd2n?entry=ttu" target="_blank" rel="noopener noreferrer">
                                 <PlaceIcon id="addressIcon" />
                                 Al. Jerozolimskie 123A

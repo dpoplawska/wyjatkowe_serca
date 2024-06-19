@@ -8,23 +8,19 @@
 
 .footerNav {
     margin-top: 10px;
-
-}
-
-.contact {
-    display: flex;
-    align-items: center;
 }
 
 #addressIcon {
-    font-size: 15px;
+    font-size: 18px;
     color: #EC1A3B;
-
 }
 
-.contact a {
+.address a {
+    display: flex;
     text-decoration: none;
     color: black;
+    align-items: center;
+
 }
 
 @media (max-width: 576px) {
@@ -37,5 +33,12 @@
         height: auto;
     }
 }
+
+@media screen and (min-width: 992px) {
+  #addressIcon:hover {
+    color:#2383C5;
+  }
+}
+
 
 
