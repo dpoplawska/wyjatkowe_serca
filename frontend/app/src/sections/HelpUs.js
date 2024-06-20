@@ -1,10 +1,10 @@
 import React from "react"
 import "../sections/css/InfoContent.css"
-import logo from "../media/logo_sammis.png"
+import logo from "../media/logo_sam_mis.png"
 
 export default function HelpUs() {
     return (
-        <div id="container" className="helpUs">
+        <div className="container helpUs">
             <div className="row">
 
                 <div className="col-xs-12">

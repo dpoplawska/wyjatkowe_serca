@@ -4,7 +4,7 @@ import zdjecie from "../media/zdjecie_zespolu.jpg"
 
 export default function WhatWeDo() {
     return (
-        <div id="container" className="whatWeDo">
+        <div className="container whatWeDo">
             <h1 className="header">Co robimy?</h1>
             <h2 className="sub-highlight">Pomagamy <span className="highlight">#WyjątkowymSerduszkom</span> oraz ich najbliższym</h2>
 

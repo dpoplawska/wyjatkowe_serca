@@ -5,7 +5,7 @@ import zdjecie from "../media/zdjecie_zespolu_z_lekarzami.jpg"
 
 export default function GetToKnowUs() {
     return (
-        <div id="container" className="getToKnowUs">
+        <div className="container getToKnowUs">
             <h1 className="header">Poznaj Nas</h1>
             <h2 className="sub-highlight">Fundacja <span className="highlight">Wyjątkowe Serca</span> powstała z potrzeby serca.</h2>
 

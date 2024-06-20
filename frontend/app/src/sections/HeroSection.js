@@ -1,5 +1,5 @@
 import React from "react"
-import logo from "./logo_podstawowe.png"
+import logo from "../media/logo_podstawowe.png"
 import "./css/Main.css"
 
 

@@ -46,7 +46,7 @@
       margin-top: 20px;
    }
 
-    .container {
+    .containerMenu {
       flex-direction: column;
       list-style-type: none;
       margin-top: 5%;
@@ -59,11 +59,11 @@
       border-radius: 10px;
     }
 
-    .container li {
+    .containerMenu li {
       margin: 5px 0;
     }
 
-    .container a {
+    .containerMenu a {
       color: var(--primary_blue);
       font-family: var(--font-family-quicksand);
       font-weight: bold;
@@ -81,7 +81,7 @@
   }
 
   @media screen and (min-width: 769px) {
-    .container {
+    .containerMenu {
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -92,6 +92,6 @@
     }
   }
 
-  .container.active {
+  .containerMenu.active {
     display: flex;
   }

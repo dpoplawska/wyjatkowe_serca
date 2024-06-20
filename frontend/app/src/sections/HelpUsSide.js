@@ -7,12 +7,12 @@ export default function HelpUsSide() {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [valueError, setValueError] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [emptyValue, setEmptyValue] = useState(false);
     const [emptyEmail, setEmptyEmail] = useState(false);
+    const [loading, setLoading] = useState(false);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const valueRegex = /^[0-9]*$/
-    const wrongRegex = /[\.,]/
+    const valueRegex = /^[0-9]*$/;
+    const wrongRegex = /[\.,]/;
 
     const handleValueChange = (event) => {
         setEmptyValue(false);

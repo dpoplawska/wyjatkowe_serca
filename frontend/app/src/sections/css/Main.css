@@ -1,3 +1,8 @@
+:root {
+  --red: #EC1A3B;
+  --font-family-quicksand: "Quicksand";
+}
+
 .main {
   display: flex;
   flex-direction: row;
@@ -12,26 +17,29 @@
 
 #main-content, .thankyou {
   display: flex;
+  margin: auto;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
 }
 
 .thanks {
-  margin: 1em;
-  display: flex;
-  margin-top: 10%;
   font-size: 50px;
-  font-family: "Quicksand";
-  color: #EC1A3B;
+  font-family: var(--font-family-quicksand);
+  color: var(--red);
+  display: flex;
+  margin: 1em;
+  margin-top: 10%;
   justify-content: center;
   align-items: center;
+}
+
+#favIcon{
+   font-size: 50px;
 }
 
 .logo {
   display: flex;
-  justify-content: center;
   margin-bottom: auto;
   margin-top: -2%;
   justify-content: center;
@@ -44,11 +52,11 @@
 
 .hero .buttons {
    display: flex;
-   justify-content: center; 
+   justify-content: center;
    gap: 10%;
 }
 
-#myBtn {
+#topButton {
   display: flex;
   position: fixed;
   right: 250px;
@@ -60,8 +68,15 @@
   justify-content: center;
 }
 
+@media screen and (max-width: 480px) {
+  .hero .buttons {
+    display: grid;
+  }
+}
+
+
 @media screen and (max-width: 992px) {
-  #myBtn {
+  #topButton {
     display: flex;
     right: 5px;
     bottom: 5px;
@@ -130,12 +145,6 @@
 
   .hero {
     margin-top: 4vw;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .hero .buttons {
-    display: grid;
   }
 }
 

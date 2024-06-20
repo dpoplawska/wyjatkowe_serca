@@ -10,34 +10,50 @@
     margin-top: 10px;
 }
 
+.bear {
+    margin-top: 5%;
+    width: 250px;
+    margin-left: 10%;
+}
+
+.address a {
+    text-decoration: none;
+    color: black;
+    align-items: center;
+}
+
 #addressIcon {
     font-size: 18px;
     color: #EC1A3B;
 }
 
-.address a {
-    display: flex;
-    text-decoration: none;
-    color: black;
-    align-items: center;
-
-}
-
-@media (max-width: 576px) {
+@media screen and (max-width: 780px) {
     .footer .col-12 {
         text-align: center;
         margin-bottom: 1rem;
     }
+
     .footer img {
         max-width: 100%;
         height: auto;
     }
+
+    .bear {
+        margin-top: 0;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .bear {
+        width: 200px;
+        margin-left: 0;
+    }
 }
 
 @media screen and (min-width: 992px) {
-  #addressIcon:hover {
-    color:#2383C5;
-  }
+    #addressIcon:hover {
+        color:#2383C5;
+    }
 }
 
 

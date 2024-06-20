@@ -1,3 +1,13 @@
+:root {
+  --red: #EC1A3B;
+  --blue: #2383C5;
+  --grey1: #2E2E2E;
+  --grey2: #616161;
+  --font-family-grandstander: 'Grandstander';
+  --font-family-nunito-sans: 'Nunito Sans';
+  --font-family-kalam: 'Kalam';
+}
+
 .side {
   display: flex;
   flex-direction: column;
@@ -12,7 +22,7 @@
 
 #icon {
   font-size: 50px;
-   color: #000;
+  color: #000;
 }
 
 .supportUs {

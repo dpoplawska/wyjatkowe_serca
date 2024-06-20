@@ -1,6 +1,6 @@
 import './css/Menu.css'
 import React, { useEffect, useState, useRef } from "react";
-import logo from "./logo_podstawowe.png";
+import logo from "../media/logo_podstawowe.png";
 import { useClickAway } from "react-use";
 import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";
@@ -62,7 +62,7 @@ export default function Menu() {
                                     transition={{ duration: 0.2 }}
                                     className="fixed left-0 shadow-4xl right-0 bottom-0 bg-white z-50 flex items-center justify-center"
                                 >
-                                    <ul className={`grid gap-2 container ${isOpen ? 'active' : ''}`}>
+                                    <ul className={`grid gap-2 containerMenu ${isOpen ? 'active' : ''}`}>
                                         {routes.map((route, idx) => {
                                             return (
                                                 <motion.li
@@ -93,7 +93,7 @@ export default function Menu() {
                     </div>
                 </div>
             ) : (
-                <ul className={`container ${menuOpen ? 'active' : ''}`}>
+                <ul className={`containerMenu ${menuOpen ? 'active' : ''}`}>
                     <a href="/" title="Strona główna">
                         <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
                     </a>

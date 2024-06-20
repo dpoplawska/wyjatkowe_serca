@@ -81,7 +81,7 @@ export default function Main() {
                     <GetToKnowUs />
                     <Parents />
                     <HelpUs />
-                    <button onClick={topFunction} id="myBtn" title="Do góry" style={{ bottom: buttonBottom + 'px' }} > <KeyboardArrowUpIcon /></button>
+                    <button onClick={topFunction} id="topButton" title="Do góry" style={{ bottom: buttonBottom + 'px' }} > <KeyboardArrowUpIcon /></button>
 
                 </div>
                 <div className="col-xs-12 col-lg-2" id="right-side">

@@ -1,19 +1,25 @@
 :root {
   --red: #EC1A3B;
+  --redish: #ec1a39c4;
   --blue: #2383C5;
   --grey1: #2E2E2E;
   --grey2: #616161;
   --font-family-grandstander: 'Grandstander';
   --font-family-nunito-sans: 'Nunito Sans';
   --font-family-kalam: 'Kalam';
+  --font-family-great-vibes: 'Great Vibes';
 }
 
-#container {
+.container {
     display: grid;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2vh;
+}
+
+h1, h2 {
+    text-align: left;
 }
 
 .header {
@@ -54,10 +60,6 @@
     font-size: 18px;
 }
 
-h1, h2 {
-    text-align: left;
-}
-
 #team-pic {
     object-fit: cover;
     border-radius: 20px;
@@ -74,7 +76,7 @@ h1, h2 {
     margin-top: 3vh;
     font-family: var(--font-family-grandstander);
     font-size: 28px;
-    color:#ec1a39c4;
+    color: var(--redish);
     font-weight: 600;
     text-decoration: none;
 }
@@ -101,32 +103,40 @@ h1, h2 {
     display: flex;
     color: var(--blue);
     font-size: 50px;
-    font-family: "Great Vibes";
+    font-family: var(--font-family-great-vibes);
     margin-bottom: 5%;
 }
 
+@media screen and (max-width: 480px) {
+  .dziekujemy-text{
+    margin-top: -15%;
+  }
 
-@media screen and (min-width: 993px) and (max-width: 1200px) {
-    .logo-help {
-        margin-top: -5%;
-    }
+  .container {
+    width: 95%;
+  }
 
-    .logo-help img{
-        width: 300px;
-    }
-}
+  .header {
+    font-size: 28px;
+  }
 
-@media screen and (min-width: 992px) {
-  #icon:hover {
-    color:#2383C5;
+  .sub-highlight {
+    font-size: 18px;
+  }
+
+  .hashtags {
+    font-size: 16px;
+  }
+
+  .content {
+    font-size: 14px;
   }
 }
-
 
 @media screen and (max-width: 992px) {
     .kids {
-    margin-left: 8px;
-  }
+      margin-left: 8px;
+    }
 
     .content {
         display: flex;
@@ -163,28 +173,22 @@ h1, h2 {
     }
 }
 
-@media screen and (max-width: 480px) {
-  .dziekujemy-text{
-    margin-top: -15%;
-  }
-
-  #container {
-    width: 95%;
-  }
-
-  .header {
-    font-size: 28px;
-  }
-
-  .sub-highlight {
-    font-size: 18px;
-  }
-
-  .hashtags {
-    font-size: 16px;
-  }
-
-  .content {
-    font-size: 14px;
+@media screen and (min-width: 992px) {
+  #icon:hover {
+    color: var(--blue);
   }
 }
+
+
+@media screen and (min-width: 993px) and (max-width: 1200px) {
+    .logo-help {
+        margin-top: -5%;
+    }
+
+    .logo-help img{
+        width: 300px;
+    }
+}
+
+
+
