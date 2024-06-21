@@ -10,7 +10,7 @@ export default function GetToKnowUs() {
             <h2 className="sub-highlight">Fundacja <span className="highlight">Wyjątkowe Serca</span> powstała z potrzeby serca.</h2>
 
             <p className="content">
-                Fundację tworzą rodzice dzieci z wrodzonymi wadami serca (WWS) – stąd nasze indywidualne podejście do wszystkich podopiecznych oraz zaangażowanie w walkę o życie chorych dzieci,
+                Fundację tworzą rodzice dzieci z wrodzonymi wadami serca (WWS) - stąd nasze indywidualne podejście do wszystkich podopiecznych oraz zaangażowanie w walkę o życie chorych dzieci,
                 powrót do zdrowia, a także wsparcie rodziców w trudnych chwilach.
             </p>
 
@@ -28,7 +28,7 @@ export default function GetToKnowUs() {
                 Nasz Zespół (od lewej):<br />
                 Dr n. med. Michał Buczyński - Członek Rady Naukowej Fundacji,<br />
                 Dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,<br />
-                Radosław Zawadzi - Członek Rady Fundacji,<br />
+                Radosław Zawadzki - Członek Rady Fundacji,<br />
                 Patryk Perlejewski - Członek Rady Fundacji,<br />
                 lek. Karolina Szymczak - Członek Rady Naukowej Fundacji,<br />
                 Marta Zawadzka - Prezes Zarządu,<br />
