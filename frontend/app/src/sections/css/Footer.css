@@ -17,6 +17,7 @@
 }
 
 .address a {
+    display: flex;
     text-decoration: none;
     color: black;
     align-items: center;
@@ -24,7 +25,14 @@
 
 #addressIcon {
     font-size: 18px;
-    color: #EC1A3B;
+    color: var(--red);
+}
+
+.privacy-policy-link, .service-regualtions-link {
+    text-decoration: none;
+    font-family: var(--font-family-nunito-sans);
+    color: var(--grey2);
+    font-size: 14px;
 }
 
 @media screen and (max-width: 780px) {
@@ -41,6 +49,10 @@
     .bear {
         margin-top: 0;
     }
+
+    .address a {
+        justify-content: center;
+    }
 }
 
 @media screen and (max-width: 992px) {
@@ -52,7 +64,7 @@
 
 @media screen and (min-width: 992px) {
     #addressIcon:hover {
-        color:#2383C5;
+        color: var(--blue);
     }
 }
 

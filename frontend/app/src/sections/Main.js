@@ -48,7 +48,7 @@ export default function Main() {
 
                 if (leftSide && rightSide) {
                     if (footerRect && footerRect.top < windowHeight) {
-                        setTop(5)
+                        setTop(2)
                     } else {
                         setTop(30)
                     }

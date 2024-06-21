@@ -26,7 +26,7 @@ export default function Parents() {
             <Playlist
                 title="#WyjątkowaKRCH"
                 description="Cykl wywiadów i rozmów z lekarzami na temat wrodzonych wad serca u dzieci oraz sposobów ich leczenia."
-                link="https://www.youtube.com/@FundacjaWyjatkoweSerca"
+                link="hhttps://www.youtube.com/playlist?list=PLvzkx2eUS2vziMagk7jUs_S0v3BiTzvnI"
             />
             <Playlist
                 title="#WyjątkoweHistorie"
@@ -36,12 +36,12 @@ export default function Parents() {
             <Playlist
                 title="#SerduszkowyPoradnikRehabilitacyjny"
                 description="Wideo poradnik z instruktażem o bezpiecznej opiece nad dziećmi przed i po operacji kardiochirurgicznej oraz o codziennej pielęgnacji."
-                link="https://www.youtube.com/@FundacjaWyjatkoweSerca"
+                link="https://www.youtube.com/playlist?list=PLvzkx2eUS2vyfkvTrkZJvQQZRSBPFo-Rl"
             />
             <Playlist
                 title="#WyjątkoweRzeczy"
                 description="Wszystkie działania, którymi odczarowujemy szpitalną rzeczywistość. Prowadzimy warsztaty dla dzieci, zabawy, rozmowy z rodzicami, wprowadzamy na oddziały projekt #CZYTANIEnaZDROWIE itp."
-                link="https://www.youtube.com/@FundacjaWyjatkoweSerca"
+                link="https://www.youtube.com/playlist?list=PLvzkx2eUS2vyTPXJ8HtwS-FImv1OsK68Q"
             />
         </div>
     )
