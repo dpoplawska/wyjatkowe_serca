@@ -45,7 +45,7 @@ export default function Footer() {
                             <a href={serviceRegulations} target="_blank" rel="noopener noreferrer" className="service-regualtions-link">Regulamin serwisu</a>
                         </div>
                         <div className="nav col-md-6 justify-content-end d-flex">
-                            <span className="mb-3 mb-md-0 text-body-secondary">© 2024 Fundacja Wyjątkowe Serca. Wszystkie prawa zastrzeżone.</span>
+                            <span className="mb-3 mb-md-0 text-body-secondary all-rights-reserved">© 2024 Fundacja Wyjątkowe Serca. Wszystkie prawa zastrzeżone.</span>
                         </div>
                     </footer>
                 </div>

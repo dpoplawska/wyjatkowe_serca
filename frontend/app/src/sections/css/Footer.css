@@ -35,6 +35,13 @@
     font-size: 14px;
 }
 
+@media screen and (max-width: 480px) {
+    .all-rights-reserved {
+        margin-top: 5px;
+        font-size: 12px;
+    }
+}
+
 @media screen and (max-width: 780px) {
     .footer .col-12 {
         text-align: center;

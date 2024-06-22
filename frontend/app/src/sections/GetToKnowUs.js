@@ -30,7 +30,7 @@ export default function GetToKnowUs() {
                 Dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,<br />
                 Radosław Zawadzki - Członek Rady Fundacji,<br />
                 Patryk Perlejewski - Członek Rady Fundacji,<br />
-                lek. Karolina Szymczak - Członek Rady Naukowej Fundacji,<br />
+                lek. Karolina Szymczak - Członkini Rady Naukowej Fundacji,<br />
                 Marta Zawadzka - Prezes Zarządu,<br />
                 Małgorzata Pietranis - Członkini Rady Fundacji,<br />
                 Joanna Suchodolska - Członkini Rady Fundacji
