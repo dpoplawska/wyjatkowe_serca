@@ -8,6 +8,7 @@ import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
 export default function Footer() {
     const addressLink = "https://www.google.com/maps/place/al.+Jerozolimskie+123A,+02-017+Warszawa/@52.2249832,20.988533,17z/data=!3m1!4b1!4m6!3m5!1s0x471ecc912dcfbc11:0x914920fa7b955f73!8m2!3d52.2249832!4d20.9911079!16s%2Fg%2F11bw3wtd2n?entry=ttu";
+    const currentYear = new Date().getFullYear();
 
     return (
         <footer className="footer mt-auto py-0 mt-3 bg-light">
@@ -45,7 +46,7 @@ export default function Footer() {
                             <a href={serviceRegulations} target="_blank" rel="noopener noreferrer" className="service-regualtions-link">Regulamin serwisu</a>
                         </div>
                         <div className="nav col-md-6 justify-content-end d-flex">
-                            <span className="mb-3 mb-md-0 text-body-secondary all-rights-reserved">© 2024 Fundacja Wyjątkowe Serca. Wszystkie prawa zastrzeżone.</span>
+                            <span className="mb-3 mb-md-0 text-body-secondary all-rights-reserved">© {currentYear} Fundacja Wyjątkowe Serca. Wszystkie prawa zastrzeżone.</span>
                         </div>
                     </footer>
                 </div>
