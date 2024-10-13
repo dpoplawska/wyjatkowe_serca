@@ -5,6 +5,7 @@ import Menu from './sections/Menu';
 import Main from './sections/Main';
 import Footer from './sections/Footer';
 import ThankYou from './sections/ThankYou';
+import CharityFundraser from './sections/CharityFundraiser';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/dziekujemy" element={<ThankYou />} />
+          <Route path="/zbiorka/fundacja" element={<CharityFundraser />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

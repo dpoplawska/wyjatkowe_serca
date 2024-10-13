@@ -1,10 +1,11 @@
 import './css/Menu.css'
 import React, { useEffect, useState, useRef } from "react";
 import logo from "../media/logo_podstawowe.png";
-import { useClickAway } from "react-use";
+import { useClickAway, useLocation } from "react-use";
 import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";
 import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Menu() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -37,12 +38,17 @@ export default function Menu() {
 
     useClickAway(ref, () => setOpen(false));
 
-    const routes = [
+    let routes = [
         { name: 'CO ROBIMY', to: 'whatWeDo' },
         { name: 'POZNAJ NAS', to: 'getToKnowUs' },
         { name: 'DLA RODZICA', to: 'forParents' },
         { name: 'KONTAKT', to: 'footer' }
     ];
+
+    const location = useLocation();
+    if (location.pathname !== '/') {
+        routes = [];
+    }
 
     return (
         <div className="menu">
@@ -97,7 +103,8 @@ export default function Menu() {
                     <a href="/" title="Strona główna">
                         <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
                     </a>
-                    {routes.map((route) => (
+
+                    {routes.length !== 0 ? routes.map((route) => (
                         <li key={route.name}>
                             <ScrollLink
                                 to={route.to}
@@ -105,8 +112,15 @@ export default function Menu() {
                                 {route.name}
                             </ScrollLink>
                         </li>
-                    ))}
+                    )) :
+                        <Link to="/" className="containerMenu" style={{ textDecoration: "none" }}>
+                            <li>WRÓĆ NA STRONĘ GŁÓWNĄ</li>
+                        </Link>
+
+                    }
+
                 </ul>
+
             )}
         </div>
     );
