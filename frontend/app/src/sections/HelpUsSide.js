@@ -182,9 +182,9 @@ export default function HelpUsSide() {
                     <div className="progress">
                         <div className="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style={{ width: `${percentage}%` }} aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <p>Zebraliśmy już {currentValue} / 50 000 zł</p>
+                    <p>Zebraliśmy już {currentValue} zł z 50 000 zł</p>
 
-                    <a href="/zbiorka/fundacja" className="aboutFundraiser"><p className="containerMenu">Dowiedz się więcej o zbiórce</p></a>
+                    <a href="/zbiorka/fundacja" className="aboutFundraiser"><p className="content" style={{ color: "#EC1A3B" }}>Dowiedz się więcej o zbiórce</p></a>
                 </div>
             </div>
         </section >
