@@ -28,7 +28,19 @@
 .supportUs {
   font-size: 28px;
   font-family: "Quicksand";
-  color:#EC1A3B;
+  color:var(--red);
+}
+
+.aboutFundraiser {
+  text-decoration: none;
+}
+.aboutFundraiser:hover {
+  color: var(--red)
+}
+
+.progressBar {
+  width: 25%;
+  
 }
 
 @media screen and (min-width: 992px) {

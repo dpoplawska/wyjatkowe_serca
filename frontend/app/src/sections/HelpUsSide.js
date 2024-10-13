@@ -96,11 +96,41 @@ export default function HelpUsSide() {
         };
     }
 
+    const [currentValue, setCurrentValue] = useState(0)
+
+    const getVal = async () => {
+        try {
+            const response = fetch('https://wyjatkowe-serca-38835307240.europe-central2.run.app/payments/total-confirmed')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setCurrentValue(data.total)
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+
+        }
+    }
+
+    useEffect(() => {
+        getVal();
+    }, [])
+
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             handlePayment(event);
         }
     };
+
+    const percentage = (currentValue / 50000) * 100;
 
     return (
         <section className="help-us side">
@@ -148,6 +178,14 @@ export default function HelpUsSide() {
                         Wesprzyj🤍
                     </button>
                 )}
+                <div style={{ marginTop: "20px" }}>
+                    <div className="progress">
+                        <div className="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" style={{ width: `${percentage}%` }} aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p>Zebraliśmy już {currentValue} / 50 000 zł</p>
+
+                    <a href="/zbiorka/fundacja" className="aboutFundraiser"><p className="containerMenu">Dowiedz się więcej o zbiórce</p></a>
+                </div>
             </div>
         </section >
     )
