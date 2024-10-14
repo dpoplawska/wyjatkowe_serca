@@ -3,6 +3,7 @@ import "./css/Main.css";
 import HelpUsSide from "./HelpUsSide";
 import SocialsSide from "./SocialsSide";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
+import logo from "../media/logo_podstawowe.png";
 
 export default function CharityFundraser() {
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1024);
@@ -89,7 +90,7 @@ export default function CharityFundraser() {
                 <section className="content">
                     <p>Każdy dzień czekania to nieskończona huśtawka emocji.
                         Rodzice i dzieci oczekujące na transplantację serca,
-                        żyją w stanie niepewności i nadziei – nadziei na nową szansę na życie.
+                        żyją w stanie niepewności i nadziei - nadziei na nową szansę na życie.
                         Każdy kolejny dzień to pytania bez odpowiedzi: "Kiedy?", "Czy zdążymy?",
                         "Czy znajdzie się serce dla naszego dziecka?". Niepewność ściska za gardło,
                         a czas wydaje się przeciągać w nieskończoność.
@@ -99,10 +100,10 @@ export default function CharityFundraser() {
                     <p>
                         Operacja to dopiero początek długiej drogi.
                         Dzieci i nastolatki po transplantacji serca muszą stawić czoła wielu
-                        wyzwaniom – nie tylko psychicznym, ale również fizycznym.
+                        wyzwaniom - nie tylko psychicznym, ale również fizycznym.
                         Każdy krok w kierunku powrotu do pełnej sprawności jest ważny,
                         a rehabilitacja staje się kluczem do odzyskania zdrowia.
-                        Dlatego potrzebujemy Twojego wsparcia – aby zapewnić sprzęt rehabilitacyjny,
+                        Dlatego potrzebujemy Twojego wsparcia - aby zapewnić sprzęt rehabilitacyjny,
                         który pomoże dzieciom po transplantacji serca szybciej wrócić do
                         codziennych aktywności, radości życia, a także pełnej sprawności fizycznej.
                         Do życia, jakiego każde dziecko powinno doświadczać.
@@ -120,7 +121,7 @@ export default function CharityFundraser() {
                         Chcemy również, aby ta zbiórka przyczyniła się do szerzenia świadomości o
                         transplantologii dziecięcej i znaczeniu donacji. Nasza kampania społeczna
                         ma na celu uświadomienie społeczeństwu, jak wiele mogą zmienić decyzje o
-                        przekazaniu organów – mogą uratować życie i podarować drugą szansę dzieciom,
+                        przekazaniu organów - mogą uratować życie i podarować drugą szansę dzieciom,
                         które czekają na nowe serce.
 
                     </p>
@@ -131,6 +132,17 @@ export default function CharityFundraser() {
                         nadzieję na lepsze jutro. Wspólnie możemy zmienić ich świat!
                     </p>
                 </section>
+                <section className="thankyou">
+
+                    <div className="dziekujemy-text" style={{ marginBottom: "0px", marginTop: "2px" }}>
+                        Dziękujemy!
+                    </div>
+
+                    <div className="col-xs-6 col-lg-7 logo" style={{ justifyContent: "right", marginRight: "-30px" }}>
+                        <img src={logo} alt="Logo Fundacji - Miś" />
+                    </div>
+                </section>
+
                 <button onClick={topFunction} id="topButton" title="Do góry" style={{ bottom: buttonBottom + 'px' }} > <KeyboardArrowUp /></button>
             </div>
             <div className="col-xs-12 col-lg-2" id="right-side">

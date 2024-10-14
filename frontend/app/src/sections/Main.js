@@ -11,7 +11,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 export default function Main() {
     const [isMediumScreen, setIsMediumScreen] = useState(window.innerWidth > 992);
-    const [top, setTop] = useState(30)
+    const [top, setTop] = useState(15)
     const [buttonBottom, setButtonBottom] = useState(24);
 
     useEffect(() => {
@@ -27,40 +27,35 @@ export default function Main() {
     }, [window]);
 
     useEffect(() => {
-        document.addEventListener("scrollend", function () {
+        const adjustSidePositions = () => {
             const leftSide = document.getElementById('left-side');
             const rightSide = document.getElementById('right-side');
             const footer = document.querySelector('.footer');
+            const footerRect = footer && footer.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const defaultTop = 18;
 
-            function adjustSidePositions() {
-                const footerRect = footer && footer.getBoundingClientRect();
-                const windowHeight = window.innerHeight;
+            if (footerRect) {
+                const distanceToFooter = footerRect.top - windowHeight;
 
-                if (footerRect) {
-                    const distanceToFooter = footerRect.top - windowHeight;
-
-                    if (distanceToFooter < 0) {
-                        setButtonBottom(24 - distanceToFooter);
-                    } else {
-                        setButtonBottom(24);
-                    }
-                }
-
-                if (leftSide && rightSide) {
-                    if (footerRect && footerRect.top < windowHeight) {
-                        setTop(2)
-                    } else {
-                        setTop(30)
-                    }
+                if (distanceToFooter < 0) {
+                    setButtonBottom(24 - distanceToFooter);
+                    setTop(2);
+                } else {
+                    setButtonBottom(24);
+                    setTop(defaultTop);
                 }
             }
+        };
 
-            window.addEventListener('scroll', adjustSidePositions);
-            window.addEventListener('resize', adjustSidePositions);
+        window.addEventListener('scroll', adjustSidePositions);
+        window.addEventListener('resize', adjustSidePositions);
 
-            adjustSidePositions();
-        });
-    }, ["scrollend"])
+        return () => {
+            window.removeEventListener('scroll', adjustSidePositions);
+            window.removeEventListener('resize', adjustSidePositions);
+        };
+    }, []);
 
     function topFunction() {
         document.body.scrollTop = 0;
