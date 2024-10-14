@@ -5,7 +5,9 @@ import ValueButton from "./components/ValueButton";
 import { useLocation } from "react-router-dom";
 
 export default function HelpUsSide({ showFundraiserBar }) {
-    const [value, setValue] = useState("");
+    const location = useLocation();
+    const defaultValue = "50";
+    const [value, setValue] = useState(defaultValue);
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
     const [valueError, setValueError] = useState(false);
@@ -16,7 +18,11 @@ export default function HelpUsSide({ showFundraiserBar }) {
     const [anotherButtonClicked, setAnotherButtonClicked] = useState(false);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const valueRegex = /^[0-9]*$/;
-    const wrongRegex = /[\.,]/;
+    const [currentValue, setCurrentValue] = useState(-1);
+    const percentage = (currentValue / 5000) * 100;
+    const fundraiserGoal = "5 000";
+    const [showValueTextField, setShowValueTextField] = useState(false);
+    const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] = useState(true);
 
     const monthMap = {
         "01": "W styczniu",
@@ -62,6 +68,24 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     };
 
+    const handleSetValue = (value) => {
+        setValue(value);
+        setShowValueTextField(false);
+        setAnotherButtonClicked(false);
+        setResetButton(true);
+    };
+
+    const handleAnotherValue = () => {
+        setShowValueTextField(true);
+        setAnotherButtonClicked(true);
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === "Enter") {
+            handlePayment(event);
+        }
+    };
+
     const handlePayment = async (event) => {
         event.preventDefault();
         if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
@@ -103,7 +127,7 @@ export default function HelpUsSide({ showFundraiserBar }) {
             } catch (error) {
                 console.error("Error:", error);
             } finally {
-                setValue("");
+                setValue(defaultValue);
                 setEmail("");
                 setLoading(false);
             }
@@ -114,9 +138,8 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     };
 
-    const [currentValue, setCurrentValue] = useState(-1);
 
-    const getVal = async () => {
+    const getCurrentFundraisedValue = async () => {
         try {
             const response = fetch(
                 "https://wyjatkowe-serca-38835307240.europe-central2.run.app/payments/total-confirmed"
@@ -139,34 +162,9 @@ export default function HelpUsSide({ showFundraiserBar }) {
     };
 
     useEffect(() => {
-        getVal();
+        getCurrentFundraisedValue();
     }, []);
 
-    const handleKeyPress = (event) => {
-        if (event.key === "Enter") {
-            handlePayment(event);
-        }
-    };
-
-    const percentage = (currentValue / 5000) * 100;
-    const fundraiserGoal = "5 000";
-
-    const [showValueTextField, setShowValueTextField] = useState(false);
-
-    const handleSetValue = (value) => {
-        setValue(value);
-        setShowValueTextField(false);
-        setAnotherButtonClicked(false);
-        setResetButton(true);
-    };
-
-    const handleAnotherValue = () => {
-        setShowValueTextField(true);
-        setAnotherButtonClicked(true);
-    };
-
-    const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] = useState(true);
-    const location = useLocation();
     useEffect(() => {
         if (location.pathname !== '/') {
             setShowKnowMoreAboutFundraiser(false);
@@ -250,7 +248,11 @@ export default function HelpUsSide({ showFundraiserBar }) {
                     </div>
                 )}
                 {showKnowMoreAboutFundraiser &&
-                    <a href="/zbiorka/fundacja" className="aboutFundraiser"><p className="content" style={{ color: "#EC1A3B", display: "flex", justifyContent: "center" }}>Dowiedz się więcej o zbiórce</p></a>
+                    <a href="/zbiorka/fundacja" className="aboutFundraiser">
+                        <p className="content" id="knowMoreAboutFundraiser">
+                            Dowiedz się więcej o zbiórce
+                        </p>
+                    </a>
                 }
             </div>
         </section>

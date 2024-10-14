@@ -42,6 +42,16 @@
   width: 25%;
 }
 
+#knowMoreAboutFundraiser {
+  color: var(--red);
+  display: flex;
+  justify-content: center
+}
+
+#knowMoreAboutFundraiser:hover {
+  color: var(--blue);
+}
+
 @media screen and (min-width: 992px) {
   #icon:hover {
     color:#2383C5;
@@ -65,3 +75,9 @@
   }
 }
 
+
+@media screen and (max-width: 480px) {
+  #knowMoreAboutFundraiser {
+    font-size: 20px;
+  }
+}

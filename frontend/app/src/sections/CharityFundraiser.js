@@ -81,12 +81,13 @@ export default function CharityFundraser() {
                     <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} /></div>
                 ) : <HelpUsSide showFundraiserBar={true} />}
             </div>
-            <div className="col-xs-12 col-lg-7" id="fundraiser-content" style={{ margin: '50px' }}>
+            <div className="col-xs-12 col-lg-7" id="fundraiser-content">
                 <h1 className="header" style={{ display: "flex", justifyContent: "center" }}>Serce dla życia -</h1>
                 <h1 className="header" style={{ display: "flex", textAlign: "center", justifyContent: "center" }}>transplantacja dziecięcych marzeń</h1>
 
-                <iframe width="100%" height="500px" src="https://www.youtube.com/embed/d_c7X3xozLg?si=GefxVfH56xxjj_ww" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay=true; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+                <div style={{ padding: "10px", marginTop: "15px" }}>
+                    <iframe width="100%" height="500px" src="https://www.youtube.com/embed/d_c7X3xozLg?si=GefxVfH56xxjj_ww" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay=true; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
                 <section className="content">
                     <p>Każdy dzień czekania to nieskończona huśtawka emocji.
                         Rodzice i dzieci oczekujące na transplantację serca,
