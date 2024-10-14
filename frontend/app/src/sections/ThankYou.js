@@ -20,7 +20,7 @@ export default function ThankYou() {
     return (
         <section className="main">
             <aside className={`left-side ${isSmallScreen ? 'hide-on-small-screen' : ''}`}>
-                <HelpUsSide />
+                <HelpUsSide showFundraiserBar={false} />
             </aside>
             <section className="thankyou">
                 <div className="thanks">

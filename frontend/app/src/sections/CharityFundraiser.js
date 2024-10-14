@@ -77,8 +77,8 @@ export default function CharityFundraser() {
         <section className="main">
             <div className="col-xs-12 col-lg-2" id="left-side">
                 {isMediumScreen ? (
-                    <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide /></div>
-                ) : <HelpUsSide />}
+                    <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} /></div>
+                ) : <HelpUsSide showFundraiserBar={true} />}
             </div>
             <div className="col-xs-12 col-lg-7" id="fundraiser-content" style={{ margin: '50px' }}>
                 <h1 className="header" style={{ display: "flex", justifyContent: "center" }}>Serce dla życia -</h1>

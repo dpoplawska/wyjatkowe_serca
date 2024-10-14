@@ -72,8 +72,8 @@ export default function Main() {
             <div className="row">
                 <div className="col-xs-12 col-lg-2" id="left-side">
                     {isMediumScreen ? (
-                        <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide /></div>
-                    ) : <HelpUsSide />}
+                        <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={false} /></div>
+                    ) : <HelpUsSide showFundraiserBar={false} />}
                 </div>
                 <div className="col-xs-12 col-lg-8" id="main-content">
                     <HeroSection />

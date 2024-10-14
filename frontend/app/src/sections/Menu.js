@@ -50,6 +50,11 @@ export default function Menu() {
         routes = [];
     }
 
+    const handleMenuItemClick = () => {
+        setOpen(false);
+        setMenuOpen(false);
+    };
+
     return (
         <div className="menu">
             {isSmallScreen ? (
@@ -69,7 +74,7 @@ export default function Menu() {
                                     className="fixed left-0 shadow-4xl right-0 bottom-0 bg-white z-50 flex items-center justify-center"
                                 >
                                     <ul className={`grid gap-2 containerMenu ${isOpen ? 'active' : ''}`}>
-                                        {routes.map((route, idx) => {
+                                        {routes.length !== 0 ? routes.map((route, idx) => {
                                             return (
                                                 <motion.li
                                                     initial={{ scale: 0, opacity: 0 }}
@@ -85,13 +90,30 @@ export default function Menu() {
                                                 >
                                                     <ScrollLink
                                                         to={route.to}
-                                                        onClick={() => setOpen((prev) => !prev)}
+                                                        onClick={handleMenuItemClick}
                                                     >
                                                         <span className="flex gap-1 text-lg">{route.name}</span>
                                                     </ScrollLink>
                                                 </motion.li>
                                             );
-                                        })}
+                                        }) : (
+                                            <motion.li
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                transition={{
+                                                    type: "spring",
+                                                    stiffness: 260,
+                                                    damping: 20,
+                                                    delay: 0.1 + 1 / 10,
+                                                }}
+                                                key={0}
+                                                className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
+                                            >
+                                                <Link to="/" className="flex gap-1 text-lg" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
+                                                    <li>WRÓĆ NA STRONĘ GŁÓWNĄ</li>
+                                                </Link>
+                                            </motion.li>
+                                        )}
                                     </ul>
                                 </motion.div>
                             )}
@@ -108,19 +130,17 @@ export default function Menu() {
                         <li key={route.name}>
                             <ScrollLink
                                 to={route.to}
+                                onClick={handleMenuItemClick}
                             >
                                 {route.name}
                             </ScrollLink>
                         </li>
                     )) :
-                        <Link to="/" className="containerMenu" style={{ textDecoration: "none" }}>
+                        <Link to="/" className="containerMenu" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
                             <li>WRÓĆ NA STRONĘ GŁÓWNĄ</li>
                         </Link>
-
                     }
-
                 </ul>
-
             )}
         </div>
     );
