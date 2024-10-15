@@ -244,9 +244,9 @@ export default function HelpUsSide({ showFundraiserBar }) {
                     helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
                 />
             </div>
-            <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center" }}>
-                <Checkbox size="small" required sx={{ color: "#2383C5" }} onClick={handleAcceptTermsAndConditions} />
-                <span style={{ display: "flex", flexDirection: "column", marginLeft: "8px" }}>
+            <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} onClick={handleAcceptTermsAndConditions} />
+                <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
                     <span>Akceptuję
                         <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
                     <span>i
