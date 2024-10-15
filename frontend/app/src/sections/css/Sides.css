@@ -45,11 +45,16 @@
 #knowMoreAboutFundraiser {
   color: var(--red);
   display: flex;
-  justify-content: center
+  justify-content: center;
+  margin-top: 20px;
 }
 
 #knowMoreAboutFundraiser:hover {
   color: var(--blue);
+}
+
+#buttonSubmit:disabled {
+  background-color:#ec1a39a3;
 }
 
 @media screen and (min-width: 992px) {

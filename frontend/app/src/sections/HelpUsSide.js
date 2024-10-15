@@ -1,8 +1,11 @@
-import { CircularProgress, TextField } from "@mui/material"
+import { CircularProgress, FormControlLabel, TextField, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import "./css/Sides.css"
 import ValueButton from "./components/ValueButton";
 import { useLocation } from "react-router-dom";
+import { Checkbox } from "@mui/material";
+import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
+import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
 export default function HelpUsSide({ showFundraiserBar }) {
     const location = useLocation();
@@ -23,6 +26,8 @@ export default function HelpUsSide({ showFundraiserBar }) {
     const fundraiserGoal = "5 000";
     const [showValueTextField, setShowValueTextField] = useState(false);
     const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] = useState(true);
+    const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     const monthMap = {
         "01": "W styczniu",
@@ -68,6 +73,10 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     };
 
+    const handleAcceptTermsAndConditions = () => {
+        setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox)
+    }
+
     const handleSetValue = (value) => {
         setValue(value);
         setShowValueTextField(false);
@@ -86,13 +95,22 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     };
 
+    useEffect(() => {
+        if (email.length === 0 || emailError === true || acceptTermsAndConditionsCheckbox === false) {
+            setDisabled(true)
+        } else {
+            setDisabled(false)
+        }
+    }, [email, acceptTermsAndConditionsCheckbox])
+
     const handlePayment = async (event) => {
         event.preventDefault();
-        if (email.length > 0 && emailRegex.test(email) && value !== undefined) {
+        if (email.length > 0 && emailRegex.test(email) && value !== undefined && acceptTermsAndConditionsCheckbox) {
             setEmptyValue(false);
             setEmptyEmail(false);
             setLoading(true);
             setResetButton(true);
+            setAcceptTermsAndConditionsCheckbox(false)
 
             const paymentData = {
                 amount: value,
@@ -175,13 +193,13 @@ export default function HelpUsSide({ showFundraiserBar }) {
         <section className="help-us side">
             <div className="supportUs">Wesprzyj Nas</div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={200} isActive={value == "200"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={150} isActive={value == "150"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={100} isActive={value == "100"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={200} isActive={value === "200"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={150} isActive={value === "150"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={100} isActive={value === "100"} resetButton={resetButton} />
             </div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={50} isActive={value == "50"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={20} isActive={value == "20"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={50} isActive={value === "50"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={20} isActive={value === "20"} resetButton={resetButton} />
                 <ValueButton
                     handleAnotherValue={handleAnotherValue}
                     anotherButtonClicked={anotherButtonClicked}
@@ -218,34 +236,46 @@ export default function HelpUsSide({ showFundraiserBar }) {
                     helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
                 />
             </div>
+            <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center" }}>
+                <Checkbox size="small" required sx={{ color: "#2383C5" }} onClick={handleAcceptTermsAndConditions} />
+                <span style={{ display: "flex", flexDirection: "column", marginLeft: "8px" }}>
+                    <span>Akceptuję
+                        <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
+                    <span>i
+                        <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link"> politykę prywatności</a>. *</span>
+                </span>
+            </span>
+
             <div className="button-container">
                 {loading ? (
                     <button type="submit" onClick={handlePayment}>
                         <i className="fa fa-circle-o-notch fa-1x fa-spin" aria-hidden="true"></i>
                     </button>
                 ) : (
-                    <button type="submit" onClick={handlePayment} style={{ cursor: "pointer" }}>
+                    <button type="submit" id={"buttonSubmit"} onClick={handlePayment} disabled={disabled === true}>
                         Wesprzyj🤍
                     </button>
                 )}
-                {currentValue !== -1 && (
-                    <div style={{ marginTop: "20px" }}>
-                        <div className="progress">
-                            <div
-                                className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
-                                role="progressbar"
-                                style={{ width: `${percentage}%` }}
-                                aria-valuenow={percentage}
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                            />
-                        </div>
-                        <div style={{ display: "grid", margin: "5px" }}>
-                            <p style={{ marginBottom: "-3px" }}>{monthString} zebraliśmy </p>
-                            <p>{currentValue} zł z {fundraiserGoal} zł</p>
-                        </div>
+                {showFundraiserBar && (
+                    currentValue !== -1 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div className="progress">
+                                <div
+                                    className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
+                                    role="progressbar"
+                                    style={{ width: `${percentage}%` }}
+                                    aria-valuenow={percentage}
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                />
+                            </div>
+                            <div style={{ display: "grid", margin: "5px" }}>
+                                <p style={{ marginBottom: "-3px" }}>{monthString} zebraliśmy </p>
+                                <p>{currentValue} zł z {fundraiserGoal} zł</p>
+                            </div>
 
-                    </div>
+                        </div>
+                    )
                 )}
                 {showKnowMoreAboutFundraiser &&
                     <a href="/zbiorka/fundacja" className="aboutFundraiser">
