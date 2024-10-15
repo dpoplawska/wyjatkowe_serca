@@ -22,8 +22,8 @@ export default function HelpUsSide({ showFundraiserBar }) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const valueRegex = /^[0-9]*$/;
     const [currentValue, setCurrentValue] = useState(-1);
-    const percentage = (currentValue / 5000) * 100;
-    const fundraiserGoal = "5 000";
+    const percentage = (currentValue / 15000) * 100;
+    const fundraiserGoal = "15 000";
     const [showValueTextField, setShowValueTextField] = useState(false);
     const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] = useState(true);
     const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
