@@ -193,13 +193,13 @@ export default function HelpUsSide({ showFundraiserBar }) {
         <section className="help-us side">
             <div className="supportUs">Wesprzyj Nas</div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={200} isActive={value === "200"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={150} isActive={value === "150"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={100} isActive={value === "100"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={200} isActive={value == "200"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={150} isActive={value == "150"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={100} isActive={value == "100"} resetButton={resetButton} />
             </div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={50} isActive={value === "50"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={20} isActive={value === "20"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={50} isActive={value == "50"} resetButton={resetButton} />
+                <ValueButton setValue={handleSetValue} value={20} isActive={value == "20"} resetButton={resetButton} />
                 <ValueButton
                     handleAnotherValue={handleAnotherValue}
                     anotherButtonClicked={anotherButtonClicked}
