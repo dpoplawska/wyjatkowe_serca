@@ -95,14 +95,6 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     };
 
-    useEffect(() => {
-        if (email.length === 0 || emailError === true || acceptTermsAndConditionsCheckbox === false) {
-            setDisabled(true)
-        } else {
-            setDisabled(false)
-        }
-    }, [email, acceptTermsAndConditionsCheckbox])
-
     const handlePayment = async (event) => {
         event.preventDefault();
         if (email.length > 0 && emailRegex.test(email) && value !== undefined && acceptTermsAndConditionsCheckbox) {
@@ -189,23 +181,39 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     }, [])
 
+    useEffect(() => {
+        if (email.length === 0 || emailError === true || acceptTermsAndConditionsCheckbox === false) {
+            setDisabled(true)
+        } else {
+            setDisabled(false)
+        }
+    }, [email, acceptTermsAndConditionsCheckbox])
+
     return (
         <section className="help-us side">
             <div className="supportUs">Wesprzyj Nas</div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={200} isActive={value == "200"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={150} isActive={value == "150"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={100} isActive={value == "100"} resetButton={resetButton} />
+                {["200", "150", "100"].map((btnValue) => (
+                    <ValueButton
+                        key={btnValue}
+                        setValue={handleSetValue}
+                        value={btnValue}
+                        isActive={value === btnValue}
+                        resetButton={resetButton}
+                    />
+                ))}
             </div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                <ValueButton setValue={handleSetValue} value={50} isActive={value == "50"} resetButton={resetButton} />
-                <ValueButton setValue={handleSetValue} value={20} isActive={value == "20"} resetButton={resetButton} />
-                <ValueButton
-                    handleAnotherValue={handleAnotherValue}
-                    anotherButtonClicked={anotherButtonClicked}
-                    resetButton={resetButton}
-                    isAnotherButton={true}
-                />
+                {["50", "20"].map((btnValue) => (
+                    <ValueButton
+                        key={btnValue}
+                        setValue={handleSetValue}
+                        value={btnValue}
+                        isActive={value === btnValue}
+                        resetButton={resetButton}
+                    />
+                ))}
+                <ValueButton handleAnotherValue={handleAnotherValue} anotherButtonClicked={anotherButtonClicked} resetButton={resetButton} isAnotherButton />
             </div>
             {showValueTextField && (
                 <div className="textfield-container">

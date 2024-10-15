@@ -1,79 +1,79 @@
-.footer {
-    padding: 1rem 1rem;
-    order: 10;
-    margin-left: auto;
-    margin-right: auto;
-    position: sticky;
-}
-
-.footerNav {
-    margin-top: 10px;
-}
-
-.bear {
-    margin-top: 5%;
-    width: 250px;
-    margin-left: 10%;
-}
-
-.address a {
-    display: flex;
-    text-decoration: none;
-    color: black;
-    align-items: center;
-}
-
-#addressIcon {
-    font-size: 18px;
-    color: var(--red);
-}
-
-.privacy-policy-link, .service-regualtions-link {
-    text-decoration: none;
-    font-family: var(--font-family-nunito-sans);
-    color: var(--grey2);
-    font-size: 14px;
-}
-
-@media screen and (max-width: 480px) {
-    .all-rights-reserved {
-        margin-top: 5px;
-        font-size: 12px;
-    }
-}
-
-@media screen and (max-width: 780px) {
-    .footer .col-12 {
-        text-align: center;
-        margin-bottom: 1rem;
+    .footer {
+        padding: 1rem 1rem;
+        order: 10;
+        margin-left: auto;
+        margin-right: auto;
+        position: sticky;
     }
 
-    .footer img {
-        max-width: 100%;
-        height: auto;
+    .footerNav {
+        margin-top: 10px;
     }
 
     .bear {
-        margin-top: 0;
+        margin-top: 5%;
+        width: 250px;
+        margin-left: 10%;
     }
 
     .address a {
-        justify-content: center;
+        display: flex;
+        text-decoration: none;
+        color: black;
+        align-items: center;
     }
-}
 
-@media screen and (max-width: 992px) {
-    .bear {
-        width: 200px;
-        margin-left: 0;
+    #addressIcon {
+        font-size: 18px;
+        color: var(--red);
     }
-}
 
-@media screen and (min-width: 992px) {
-    #addressIcon:hover {
-        color: var(--blue);
+    .privacy-policy-link, .service-regualtions-link {
+        text-decoration: none;
+        font-family: var(--font-family-nunito-sans);
+        color: var(--grey2);
+        font-size: 14px;
     }
-}
+
+    @media screen and (max-width: 480px) {
+        .all-rights-reserved {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+    }
+
+    @media screen and (max-width: 780px) {
+        .footer .col-12 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .footer img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .bear {
+            margin-top: 0;
+        }
+
+        .address a {
+            justify-content: center;
+        }
+    }
+
+    @media screen and (max-width: 992px) {
+        .bear {
+            width: 200px;
+            margin-left: 0;
+        }
+    }
+
+    @media screen and (min-width: 992px) {
+        #addressIcon:hover {
+            color: var(--blue);
+        }
+    }
 
 
 

@@ -8,13 +8,33 @@ import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Menu() {
+
+    let routes = [
+        { name: 'CO ROBIMY', to: 'whatWeDo' },
+        { name: 'POZNAJ NAS', to: 'getToKnowUs' },
+        { name: 'DLA RODZICA', to: 'forParents' },
+        { name: 'KONTAKT', to: 'footer' }
+    ];
+
+    const goBackHome = "WRÓĆ NA STRONĘ GŁÓWNĄ";
+
     const [menuOpen, setMenuOpen] = useState(false);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
     const [isMediumScreen, setIsMediumScreen] = useState(window.innerWidth > 769);
+    const [isOpen, setOpen] = useState(false);
+    const ref = useRef(null);
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
+    const location = useLocation();
+    if (location.pathname !== '/') {
+        routes = [];
     }
+
+    const handleMenuItemClick = () => {
+        setOpen(false);
+        setMenuOpen(false);
+    };
+
+    useClickAway(ref, () => setOpen(false));
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 768px)');
@@ -32,28 +52,6 @@ export default function Menu() {
             mediaQuery.removeEventListener('change', handleScreenSizeChange);
         };
     }, []);
-
-    const [isOpen, setOpen] = useState(false);
-    const ref = useRef(null);
-
-    useClickAway(ref, () => setOpen(false));
-
-    let routes = [
-        { name: 'CO ROBIMY', to: 'whatWeDo' },
-        { name: 'POZNAJ NAS', to: 'getToKnowUs' },
-        { name: 'DLA RODZICA', to: 'forParents' },
-        { name: 'KONTAKT', to: 'footer' }
-    ];
-
-    const location = useLocation();
-    if (location.pathname !== '/') {
-        routes = [];
-    }
-
-    const handleMenuItemClick = () => {
-        setOpen(false);
-        setMenuOpen(false);
-    };
 
     return (
         <div className="menu">
@@ -110,7 +108,7 @@ export default function Menu() {
                                                 className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
                                             >
                                                 <Link to="/" className="flex gap-1 text-lg" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
-                                                    <li>WRÓĆ NA STRONĘ GŁÓWNĄ</li>
+                                                    <li>{goBackHome}</li>
                                                 </Link>
                                             </motion.li>
                                         )}
@@ -137,7 +135,7 @@ export default function Menu() {
                         </li>
                     )) :
                         <Link to="/" className="containerMenu" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
-                            <li>WRÓĆ NA STRONĘ GŁÓWNĄ</li>
+                            <li>{goBackHome}</li>
                         </Link>
                     }
                 </ul>
