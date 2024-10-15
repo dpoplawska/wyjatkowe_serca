@@ -221,7 +221,7 @@ export default function HelpUsSide({ showFundraiserBar }) {
                         aria-label="Pole tekstowe na kwotę wpłaty"
                         required
                         id="outlined"
-                        label="Kwota wpłaty"
+                        label="Kwota wpłaty (zł)"
                         value={value}
                         onChange={handleValueChange}
                         onKeyDown={handleKeyPress}

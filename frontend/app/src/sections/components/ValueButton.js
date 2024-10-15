@@ -41,7 +41,7 @@ const ValueButton = ({
             }}
             onClick={handleSetValue}
         >
-            {isAnotherButton ? "inna" : value}
+            {isAnotherButton ? "inna" : value + " zł"}
         </button>
     );
 };
