@@ -9,7 +9,7 @@ import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
 export default function HelpUsSide({ showFundraiserBar }) {
     const location = useLocation();
-    const defaultValue = "50";
+    const defaultValue = "20";
     const [value, setValue] = useState(defaultValue);
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
