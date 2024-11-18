@@ -102,7 +102,7 @@ export default function HelpUsSide({ showFundraiserBar }) {
             setEmptyEmail(false);
             setLoading(true);
             setResetButton(true);
-            setAcceptTermsAndConditionsCheckbox(false)
+            setAcceptTermsAndConditionsCheckbox(false);
 
             const paymentData = {
                 amount: value,
@@ -140,6 +140,7 @@ export default function HelpUsSide({ showFundraiserBar }) {
                 setValue(defaultValue);
                 setEmail("");
                 setLoading(false);
+                setAcceptTermsAndConditionsCheckbox(false);
             }
         } else {
             setResetButton(true);
@@ -245,7 +246,7 @@ export default function HelpUsSide({ showFundraiserBar }) {
                 />
             </div>
             <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} onClick={handleAcceptTermsAndConditions} />
+                <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} checked={acceptTermsAndConditionsCheckbox} onClick={handleAcceptTermsAndConditions} />
                 <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
                     <span>Akceptuję
                         <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
