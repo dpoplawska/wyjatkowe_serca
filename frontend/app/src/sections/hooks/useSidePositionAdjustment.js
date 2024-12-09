@@ -37,7 +37,7 @@ export default function useSidePositionAdjustment() {
             if (footerRect) {
                 const distanceToFooter = footerRect.top - windowHeight;
 
-                if (distanceToFooter < 0) {
+                if (distanceToFooter < 0 && !isSmallScreen) {
                     setButtonBottom(24 - distanceToFooter);
                     setTop(-10);
                 } else {
