@@ -13,7 +13,7 @@ export default function ThankYou() {
     return (
         <section className="main">
             <div className="col-xs-12 col-lg-2" id="left-side">
-                <HelpUsSide showFundraiserBar={true} />
+                <HelpUsSide showFundraiserBar={true} specialFundraiser={false} />
             </div>
             <div className="col-xs-12 col-lg-7" id="fundraiser-content">
                 <div className="thanks">

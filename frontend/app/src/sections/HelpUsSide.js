@@ -7,7 +7,7 @@ import { Checkbox } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
-export default function HelpUsSide({ showFundraiserBar }) {
+export default function HelpUsSide({ showFundraiserBar, specialFundraiser }) {
     const location = useLocation();
     const defaultValue = "20";
     const [value, setValue] = useState(defaultValue);
@@ -190,9 +190,16 @@ export default function HelpUsSide({ showFundraiserBar }) {
         }
     }, [email, acceptTermsAndConditionsCheckbox])
 
+    const [helpText, setHelpText] = useState("Wesprzyj Nas");
+    useEffect(() => {
+        if (specialFundraiser == true) {
+            setHelpText("Wesprzyj")
+        }
+    }, []);
+
     return (
         <section className="help-us side">
-            <div className="supportUs">Wesprzyj Nas</div>
+            <div className="supportUs">{helpText}</div>
             <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
                 {["200", "150", "100"].map((btnValue) => (
                     <ValueButton

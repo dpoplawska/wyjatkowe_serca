@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";
 import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
 import { Link, useNavigate } from 'react-router-dom';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 export default function Menu() {
 
@@ -13,7 +14,12 @@ export default function Menu() {
         { name: 'CO ROBIMY', to: 'whatWeDo' },
         { name: 'POZNAJ NAS', to: 'getToKnowUs' },
         { name: 'DLA RODZICA', to: 'forParents' },
-        { name: 'KONTAKT', to: 'footer' }
+        { name: 'KONTAKT', to: 'footer' },
+        { name: 'NASI PODOPIECZNI', to: null },
+    ];
+
+    const beneficiaries = [
+        { name: 'Hubert Szymborski', to: '/zbiorka/hubert_szymborski' },
     ];
 
     const goBackHome = "WRÓĆ NA STRONĘ GŁÓWNĄ";
@@ -22,16 +28,21 @@ export default function Menu() {
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
     const [isMediumScreen, setIsMediumScreen] = useState(window.innerWidth > 769);
     const [isOpen, setOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const ref = useRef(null);
 
     const location = useLocation();
     if (location.pathname !== '/') {
-        routes = [];
+        routes = [
+            { name: 'STRONA GŁÓWNA', to: '/' },
+            { name: 'NASI PODOPIECZNI', to: null },
+        ];
     }
 
     const handleMenuItemClick = () => {
         setOpen(false);
         setMenuOpen(false);
+        setDropdownOpen(false);
     };
 
     useClickAway(ref, () => setOpen(false));
@@ -52,6 +63,55 @@ export default function Menu() {
             mediaQuery.removeEventListener('change', handleScreenSizeChange);
         };
     }, []);
+
+    const ourBeneficieries = (route) => {
+        return (
+            <>
+                {route.name === 'NASI PODOPIECZNI' ? (
+                    <div className="dropdownContainer dropdown">
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            id="dropDownButton"
+                        >
+                            {route.name}<KeyboardArrowDownIcon />
+                        </button>
+                        {dropdownOpen && (
+                            <ul className="dropdownMenu">
+                                {beneficiaries.map((person) => (
+                                    <li key={person.name}>
+                                        <Link
+                                            to={person.to}
+                                            onClick={handleMenuItemClick}
+                                            className="beneficiary"
+                                        >
+                                            {person.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                ) : route.to.startsWith('/') ? (
+                    <Link
+                        to={route.to}
+                        className="flex gap-1 text-lg"
+                        style={{ textDecoration: "none" }}
+                        onClick={handleMenuItemClick}
+                    >
+                        <li className="flex gap-1 text-lg">{route.name}</li>
+                    </Link>
+                ) : (
+                    <ScrollLink
+                        to={route.to}
+                        onClick={handleMenuItemClick}
+                    >
+                        <span className="flex gap-1 text-lg">{route.name}</span>
+                    </ScrollLink>
+                )
+                }
+            </>
+        )
+    }
 
     return (
         <div className="menu">
@@ -86,12 +146,9 @@ export default function Menu() {
                                                     key={route.name}
                                                     className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
                                                 >
-                                                    <ScrollLink
-                                                        to={route.to}
-                                                        onClick={handleMenuItemClick}
-                                                    >
-                                                        <span className="flex gap-1 text-lg">{route.name}</span>
-                                                    </ScrollLink>
+
+                                                    {ourBeneficieries(route)}
+
                                                 </motion.li>
                                             );
                                         }) : (
@@ -124,20 +181,42 @@ export default function Menu() {
                         <img src={logo} alt="Logo" className="logo-small" width="100px" height="auto" />
                     </a>
 
-                    {routes.length !== 0 ? routes.map((route) => (
-                        <li key={route.name}>
-                            <ScrollLink
-                                to={route.to}
-                                onClick={handleMenuItemClick}
+                    {routes.length !== 0 ? routes.map((route, idx) => {
+                        return (
+                            <motion.li
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 260,
+                                    damping: 20,
+                                    delay: 0.1 + idx / 10,
+                                }}
+                                key={route.name}
+                                className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
                             >
-                                {route.name}
-                            </ScrollLink>
-                        </li>
-                    )) :
-                        <Link to="/" className="containerMenu" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
-                            <li>{goBackHome}</li>
-                        </Link>
-                    }
+                                {ourBeneficieries(route)}
+                            </motion.li>
+                        );
+                    }) : (
+                        <motion.li
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 20,
+                                delay: 0.1 + 1 / 10,
+                            }}
+                            key={0}
+                            className="w-full p-[0.08rem] rounded-xl bg-gradient-to-tr from-neutral-800 via-neutral-950 to-neutral-700"
+                        >
+                            <Link to="/" className="flex gap-1 text-lg" style={{ textDecoration: "none" }} onClick={handleMenuItemClick}>
+                                <li>{goBackHome}</li>
+                            </Link>
+                        </motion.li>
+                    )}
+
                 </ul>
             )}
         </div>

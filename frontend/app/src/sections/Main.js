@@ -23,8 +23,8 @@ export default function Main() {
             <div className="row">
                 <div className="col-xs-12 col-lg-2" id="left-side">
                     {isMediumScreen ? (
-                        <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={false} /></div>
-                    ) : <HelpUsSide showFundraiserBar={false} />}
+                        <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={false} specialFundraiser={false} /></div>
+                    ) : <HelpUsSide showFundraiserBar={false} specialFundraiser={false} />}
                 </div>
                 <div className="col-xs-12 col-lg-8" id="main-content">
                     <HeroSection />

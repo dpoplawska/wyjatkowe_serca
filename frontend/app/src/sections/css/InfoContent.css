@@ -7,7 +7,7 @@
   --font-family-grandstander: 'Grandstander';
   --font-family-nunito-sans: 'Nunito Sans';
   --font-family-kalam: 'Kalam';
-  --font-family-great-vibes: 'Great Vibes';
+  --font-family-amatic-sc: 'Amatic SC';
 }
 
 .container {
@@ -102,9 +102,10 @@ h1, h2 {
 .dziekujemy-text{
     display: flex;
     color: var(--blue);
-    font-size: 50px;
-    font-family: var(--font-family-great-vibes);
+    font-size: 70px;
     margin-bottom: 5%;
+    font-family: var(--font-family-amatic-sc)
+
 }
 
 @media screen and (max-width: 480px) {

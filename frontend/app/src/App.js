@@ -15,7 +15,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/dziekujemy" element={<ThankYou />} />
-          <Route path="/zbiorka/fundacja" element={<CharityFundraser />} />
+          <Route path="/zbiorka/fundacja" element={<CharityFundraser specialFundraiser={false} />} />
+          <Route path="/zbiorka/hubert_szymborski" element={<CharityFundraser specialFundraiser={true} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
