@@ -199,108 +199,126 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser }) {
 
     return (
         <section className="help-us side">
-            <div className="supportUs">{helpText}</div>
-            <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                {["200", "150", "100"].map((btnValue) => (
-                    <ValueButton
-                        key={btnValue}
-                        setValue={handleSetValue}
-                        value={btnValue}
-                        isActive={value === btnValue}
-                        resetButton={resetButton}
-                    />
-                ))}
-            </div>
-            <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                {["50", "20"].map((btnValue) => (
-                    <ValueButton
-                        key={btnValue}
-                        setValue={handleSetValue}
-                        value={btnValue}
-                        isActive={value === btnValue}
-                        resetButton={resetButton}
-                    />
-                ))}
-                <ValueButton handleAnotherValue={handleAnotherValue} anotherButtonClicked={anotherButtonClicked} resetButton={resetButton} isAnotherButton />
-            </div>
-            {showValueTextField && (
-                <div className="textfield-container">
-                    <TextField
-                        aria-label="Pole tekstowe na kwotę wpłaty"
-                        required
-                        id="outlined"
-                        label="Kwota wpłaty (zł)"
-                        value={value}
-                        onChange={handleValueChange}
-                        onKeyDown={handleKeyPress}
-                        error={emptyValue || valueError}
-                        helperText={valueError ? "Wartość musi być liczbą całkowitą" : ""}
-                    />
-                </div>
-            )}
-            <div className="textfield-container">
-                <TextField
-                    aria-label="Pole tekstowe na email"
-                    required
-                    id="outlined"
-                    label="Adres e-mail"
-                    value={email}
-                    onChange={handleEmailChange}
-                    onKeyDown={handleKeyPress}
-                    type="email"
-                    error={emailError || emptyEmail}
-                    helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
-                />
-            </div>
-            <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} checked={acceptTermsAndConditionsCheckbox} onClick={handleAcceptTermsAndConditions} />
-                <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
-                    <span>Akceptuję
-                        <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
-                    <span>i
-                        <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link"> politykę prywatności</a>. *</span>
-                </span>
-            </span>
+            {location.pathname.includes("/zbiorka/hubert_szymborski") ? (
+                <div className="col-xs-12 col-lg-4" id="fundraiser-content" >
 
-            <div className="button-container">
-                {loading ? (
-                    <button type="submit" onClick={handlePayment}>
-                        <i className="fa fa-circle-o-notch fa-1x fa-spin" aria-hidden="true"></i>
-                    </button>
-                ) : (
-                    <button type="submit" id={"buttonSubmit"} onClick={handlePayment} disabled={disabled === true}>
-                        Wesprzyj🤍
-                    </button>
-                )}
-                {showFundraiserBar && (
-                    currentValue !== -1 && (
-                        <div style={{ marginTop: "20px" }}>
-                            <div className="progress">
-                                <div
-                                    className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
-                                    role="progressbar"
-                                    style={{ width: `${percentage}%` }}
-                                    aria-valuenow={percentage}
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
+                    <p className="sub-highlight" >
+                        Wesprzyj Huberta
+                    </p>
+                    <p className="content" style={{ fontSize: "16px" }}>Numer rachunku: </p>
+                    <p className="content" style={{ fontSize: "14px", fontWeight: "bold" }}>IBAN PL40 1140 2004 0000 3502 8436 9739</p>
+                    <p className="content" style={{ fontSize: "16px" }}>Tytuł przelewu:</p>
+                    <p className="content" style={{ fontSize: "14px", fontWeight: "bold" }}>WS6 Hubert Szymborski</p>
+
+                </div>
+            ) :
+                (
+                    <>
+                        <div className="supportUs">Wesprzyj Nas</div>
+                        <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
+                            {["200", "150", "100"].map((btnValue) => (
+                                <ValueButton
+                                    key={btnValue}
+                                    setValue={handleSetValue}
+                                    value={btnValue}
+                                    isActive={value === btnValue}
+                                    resetButton={resetButton}
+                                />
+                            ))}
+                        </div>
+                        <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
+                            {["50", "20"].map((btnValue) => (
+                                <ValueButton
+                                    key={btnValue}
+                                    setValue={handleSetValue}
+                                    value={btnValue}
+                                    isActive={value === btnValue}
+                                    resetButton={resetButton}
+                                />
+                            ))}
+                            <ValueButton handleAnotherValue={handleAnotherValue} anotherButtonClicked={anotherButtonClicked} resetButton={resetButton} isAnotherButton />
+                        </div>
+                        {showValueTextField && (
+                            <div className="textfield-container">
+                                <TextField
+                                    aria-label="Pole tekstowe na kwotę wpłaty"
+                                    required
+                                    id="outlined"
+                                    label="Kwota wpłaty (zł)"
+                                    value={value}
+                                    onChange={handleValueChange}
+                                    onKeyDown={handleKeyPress}
+                                    error={emptyValue || valueError}
+                                    helperText={valueError ? "Wartość musi być liczbą całkowitą" : ""}
                                 />
                             </div>
-                            <div style={{ display: "grid", margin: "5px" }}>
-                                <p style={{ marginBottom: "-3px" }}>{monthString} zebraliśmy </p>
-                                <p>{currentValue} zł z {fundraiserGoal} zł</p>
-                            </div>
-
+                        )}
+                        <div className="textfield-container">
+                            <TextField
+                                aria-label="Pole tekstowe na email"
+                                required
+                                id="outlined"
+                                label="Adres e-mail"
+                                value={email}
+                                onChange={handleEmailChange}
+                                onKeyDown={handleKeyPress}
+                                type="email"
+                                error={emailError || emptyEmail}
+                                helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
+                            />
                         </div>
-                    )
-                )}
-                {showKnowMoreAboutFundraiser &&
-                    <a href="/zbiorka/fundacja" className="aboutFundraiser">
-                        <p className="content" id="knowMoreAboutFundraiser">
-                            Dowiedz się więcej o zbiórce
-                        </p>
-                    </a>
-                }
-            </div>
-        </section>
+                        <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} checked={acceptTermsAndConditionsCheckbox} onClick={handleAcceptTermsAndConditions} />
+                            <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
+                                <span>Akceptuję
+                                    <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
+                                <span>i
+                                    <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link"> politykę prywatności</a>. *</span>
+                            </span>
+                        </span>
+
+                        <div className="button-container">
+                            {loading ? (
+                                <button type="submit" onClick={handlePayment}>
+                                    <i className="fa fa-circle-o-notch fa-1x fa-spin" aria-hidden="true"></i>
+                                </button>
+                            ) : (
+                                <button type="submit" id={"buttonSubmit"} onClick={handlePayment} disabled={disabled === true}>
+                                    Wesprzyj🤍
+                                </button>
+                            )}
+                            {showFundraiserBar && (
+                                currentValue !== -1 && (
+                                    <div style={{ marginTop: "20px" }}>
+                                        <div className="progress">
+                                            <div
+                                                className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
+                                                role="progressbar"
+                                                style={{ width: `${percentage}%` }}
+                                                aria-valuenow={percentage}
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                            />
+                                        </div>
+                                        <div style={{ display: "grid", margin: "5px" }}>
+                                            <p style={{ marginBottom: "-3px" }}>{monthString} zebraliśmy </p>
+                                            <p>{currentValue} zł z {fundraiserGoal} zł</p>
+                                        </div>
+
+                                    </div>
+                                )
+                            )}
+                            {showKnowMoreAboutFundraiser &&
+                                <a href="/zbiorka/fundacja" className="aboutFundraiser">
+                                    <p className="content" id="knowMoreAboutFundraiser">
+                                        Dowiedz się więcej o zbiórce
+                                    </p>
+                                </a>
+                            }
+                        </div>
+                    </>)
+            }
+
+        </section >
     );
 }

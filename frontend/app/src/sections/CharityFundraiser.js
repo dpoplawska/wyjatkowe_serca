@@ -16,13 +16,17 @@ export default function CharityFundraser({ specialFundraiser }) {
         document.documentElement.scrollTop = 0;
     }
 
+
     return (
         <section className="main">
+            {/* {!specialFundraiser && ( */}
             <div className="col-xs-12 col-lg-2" id="left-side">
                 {isMediumScreen ? (
                     <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} specialFundraiser={specialFundraiser} /></div>
                 ) : <HelpUsSide showFundraiserBar={true} specialFundraiser={specialFundraiser} />}
             </div>
+            {/* )} */}
+
             <div className="col-xs-12 col-lg-7" id="fundraiser-content">
                 {specialFundraiser ? <SpecialFundraiserBody /> : <DefaultFundraiserBody />}
                 <section className="thankyou">

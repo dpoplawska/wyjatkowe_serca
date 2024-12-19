@@ -6,6 +6,13 @@ const SpecialFundraiserBody = () => {
         <>
             <h1 className="header" style={{ display: "flex", justifyContent: "center" }}>Hubert Szymborski</h1>
 
+            <div style={{ padding: "10px", marginTop: "5px", marginBottom: "20px" }} className="logo">
+                <div className="container" style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
+
+                    <img src={photo} alt="Zdięcie przedstawiające Huberta Szymborskiego" width={"500px"} style={{ borderRadius: "15%" }} />
+                </div>
+            </div>
+
             <section className="content" style={{ padding: "10px" }}>
                 <p>
                     Hubert to 17-letni chłopak, który chciał zostać strażakiem - pomagać ludziom, ratować życie, być bohaterem.
@@ -30,12 +37,7 @@ const SpecialFundraiserBody = () => {
                     Każda darowizna to krok bliżej do odzyskania zdrowia, siły i przyszłości pełnej marzeń.
                 </p>
             </section>
-            <div style={{ padding: "10px", marginTop: "5px", marginBottom: "20px" }} className="logo">
-                <div className="container" style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
 
-                    <img src={photo} alt="Zdięcie przedstawiające Huberta Szymborskiego" width={"500px"} style={{ borderRadius: "15%" }} />
-                </div>
-            </div>
         </>
     )
 }
