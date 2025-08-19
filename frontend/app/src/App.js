@@ -6,6 +6,7 @@ import Main from './sections/Main';
 import Footer from './sections/Footer';
 import ThankYou from './sections/ThankYou';
 import CharityFundraser from './sections/CharityFundraiser';
+import Shop from "./sections/Shop";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/zbiorka/fundacja" element={<CharityFundraser specialFundraiser={false} />} />
           <Route path="/zbiorka/hubert_szymborski" element={<CharityFundraser specialFundraiser={true} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/sklep" element={<Shop />} />
         </Routes>
       </div>
       <Footer />
