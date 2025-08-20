@@ -6,7 +6,7 @@ import Main from './sections/Main';
 import Footer from './sections/Footer';
 import ThankYou from './sections/ThankYou';
 import CharityFundraser from './sections/CharityFundraiser';
-import Shop from "./sections/Shop";
+import Shop from "./sections/Shop.tsx";
 
 function App() {
   return (

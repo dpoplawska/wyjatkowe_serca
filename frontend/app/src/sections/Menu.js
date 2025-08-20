@@ -53,7 +53,7 @@ export default function Menu() {
             { name: 'POZNAJ NAS', to: 'getToKnowUs' },
             { name: 'DLA RODZICA', to: 'forParents' },
             { name: 'KONTAKT', to: 'footer' },
-            { name: 'SKLEP', to: '/sklep' },
+            // { name: 'SKLEP', to: '/sklep' },
             { name: 'NASI PODOPIECZNI', to: null },
         ];
     } else {
