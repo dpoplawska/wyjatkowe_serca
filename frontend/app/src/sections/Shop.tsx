@@ -16,6 +16,9 @@ import product3 from "../media/nerka/3.png";
 import product4 from "../media/nerka/4.png";
 import product5 from "../media/nerka/5.png";
 import product6 from "../media/nerka/6.png";
+import { Checkbox } from "@mui/material";
+import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
+import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
 // Custom Leaflet icon configuration
 const customIcon = new L.Icon({
@@ -135,13 +138,17 @@ export default function Shop() {
   const [zipCode, setZipCode] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-
   const mapRef = useRef<L.Map | null>(null);
   const markerRefs = useRef<{ [key: string]: L.Marker }>({});
+  const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
 
   const productPrice = 239;
   const shippingCost = deliveryMethod === 'paczkomat' ? 18.99 : 20.99;
-  const totalCost = (productPrice * quantity) + shippingCost;
+    const totalCost = (productPrice * quantity) + shippingCost;
+    
+      const handleAcceptTermsAndConditions = () => {
+        setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox)
+    }
 
   useEffect(() => {
     const fetchPaczkomaty = async () => {
@@ -238,7 +245,8 @@ export default function Shop() {
   useEffect(() => {
     const requiredFieldsFilled =
       name &&
-      surname &&
+        surname &&
+        acceptTermsAndConditionsCheckbox &&
       (deliveryMethod === 'paczkomat' ? selectedPaczkomat : street && houseNumber && zipCode && city);
     setDisabled(!requiredFieldsFilled);
   }, [name, surname, selectedPaczkomat, deliveryMethod, street, houseNumber, zipCode, city]);
@@ -614,7 +622,16 @@ export default function Shop() {
                 </div>
               </>
             )}
-            <p>Całkowity koszt: {totalCost.toFixed(2)} zł</p>
+                      <p>Całkowity koszt: {totalCost.toFixed(2)} zł</p>
+                             <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                  <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} checked={acceptTermsAndConditionsCheckbox} onClick={handleAcceptTermsAndConditions} />
+                                                  <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
+                                                      <span>Akceptuję
+                                                          <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
+                                                      <span>i
+                                                          <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link"> politykę prywatności</a>. *</span>
+                                                  </span>
+                                              </span>
             <button type="submit" id="buttonSubmit" disabled={disabled}>
               Kupuję🤍
             </button>
