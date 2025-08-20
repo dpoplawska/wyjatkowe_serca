@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from typing import Optional
 
 
 class PaymentRequest(BaseModel):
@@ -17,3 +18,18 @@ class PaymentNotification(BaseModel):
     externalId: str
     status: str
     modifiedAt: str
+
+
+class PurchaseRequest(BaseModel):
+    amount: int = Field(..., gt=0, description="The total amount for the purchase")
+    email: EmailStr
+    name: str = Field(..., description="Customer's full name")
+    address: str = Field(..., description="Customer's shipping address")
+    paczkomat: bool = Field(..., description="Whether to use Paczkomat delivery")
+    paczkomat_id: Optional[str] = Field(None, description="Paczkomat ID if applicable")
+
+
+class PurchaseResponse(BaseModel):
+    redirectUrl: HttpUrl
+    purchaseId: str
+    status: str

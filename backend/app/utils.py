@@ -14,7 +14,7 @@ import requests
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from app.models import PaymentRequest, PaymentResponse
+from app.models import PaymentRequest, PaymentResponse, PurchaseRequest, PurchaseResponse
 
 def load_secrets() -> dict[str, str]:
     env = os.getenv('ENV')
@@ -54,12 +54,12 @@ def make_post_request(endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
 
-def create_payment(payment_request: PaymentRequest) -> PaymentResponse:
+def create_payment(payment_request: PaymentRequest, description: str = "dotacja") -> PaymentResponse:
     amount_str = str(payment_request.amount * 100)
     payment_data = {
         "amount": amount_str,
         "externalId": str(uuid.uuid4()),
-        "description": "dotacja", 
+        "description": description,
         "buyer": {
             "email": payment_request.email
         }
@@ -70,3 +70,12 @@ def create_payment(payment_request: PaymentRequest) -> PaymentResponse:
     except ValidationError as e:
         raise HTTPException(status_code=500, detail=e.errors())
     return payment_response
+
+def create_purchase(purchase_request: PurchaseRequest) -> PurchaseResponse:
+    payment_request = PaymentRequest(amount=purchase_request.amount, email=purchase_request.email)
+    payment_response = create_payment(payment_request, description="medibelt purchase")
+    return PurchaseResponse(
+        redirectUrl=payment_response.redirectUrl,
+        purchaseId=payment_response.paymentId,
+        status=payment_response.status
+    )
