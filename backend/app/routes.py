@@ -1,17 +1,17 @@
-from typing import Any, Dict
-
-from fastapi import APIRouter, HTTPException, Request
-
-
-from app.models import PaymentRequest, PaymentResponse, PaymentNotification
-from app.utils import create_payment, load_secrets
-from app.db import get_firestore_client
-
-from hashlib import sha256
-import hmac
 import base64
+import hmac
 import json
 import logging
+import os
+from hashlib import sha256
+
+from fastapi import APIRouter, HTTPException, Request, Header
+import pandas as pd
+
+from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse
+from app.utils import create_payment, load_secrets, create_purchase
+from app.db import get_firestore_client
+
 
 router = APIRouter()
 
@@ -39,7 +39,17 @@ def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:
 @router.get("/payments/total-confirmed")
 def total_confirmed_payments():
     db_client = get_firestore_client()
-    payments = db_client.collection("payments").where("status", "==", "CONFIRMED").stream()
+    payments = (
+        db_client
+        .collection("payments")
+        .where("status", "==", "CONFIRMED")
+        .stream()
+    )
+
+    # get only payments for current month
+    current_month_start = pd.Timestamp.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    payments = [payment for payment in payments if pd.Timestamp(payment.to_dict()["modifiedAt"]) >= current_month_start]
+
     total = sum([payment.to_dict()["amount"] for payment in payments])
     return {"total": total}
 
@@ -54,21 +64,71 @@ async def payment_status(request: Request):
         signature = request.headers.get("Signature")
         logging.info(f"Received payment notification: {body}")
 
-        # Verify signature
+        # verify signature
         calculated_signature = base64.b64encode(hmac.new(signature_key.encode(), body, sha256).digest()).decode()
         if signature != calculated_signature:
             raise HTTPException(status_code=400, detail="Invalid signature")
 
-        # Parse payment notification
+        # parse payment notification
         notification = PaymentNotification(**json.loads(body))
         logging.info(f"Payment notification parsed successfully: {notification.dict()}")
 
-        # Update payment status in Firebase
-        payment_ref = db_client.collection("payments").document(notification.paymentId)
-        payment_ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
-        logging.info("Payment status updated successfully")
+        # Update status in the appropriate collection (donations or purchases)
+        payment_doc = db_client.collection("payments").document(notification.paymentId).get()
+        if payment_doc.exists:
+            payment_ref = db_client.collection("payments").document(notification.paymentId)
+            payment_ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
+            logging.info("Donation status updated successfully")
+        else:
+            purchase_doc = db_client.collection("purchases").document(notification.paymentId).get()
+            if purchase_doc.exists:
+                purchase_ref = db_client.collection("purchases").document(notification.paymentId)
+                purchase_ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
+                logging.info("Purchase status updated successfully")
+            else:
+                logging.warning("No matching donation or purchase found for paymentId")
+                raise HTTPException(status_code=404, detail="No matching donation or purchase found")
+
+        return {"message": "Status updated successfully"}
 
         return {"message": "Payment status updated successfully"}
     except Exception as e:
         logging.exception("An error occurred while updating payment status")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/purchases", response_model=PurchaseResponse)
+def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseResponse:
+    try:
+        purchase_response = create_purchase(purchase_request)
+
+        try:
+            db_client = get_firestore_client()
+            purchase_ref = db_client.collection("purchases").document(purchase_response.purchaseId)
+            purchase_ref.set({
+                "amount": purchase_request.amount,
+                "email": purchase_request.email,
+                "name": purchase_request.name,
+                "address": purchase_request.address,
+                "paczkomat": purchase_request.paczkomat,
+                "paczkomat_id": purchase_request.paczkomat_id,
+                "status": purchase_response.status
+            })
+        except Exception as e:
+            pass
+
+        return purchase_response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/purchases")
+def get_all_purchases(x_password: str = Header(...)):
+    expected_password = os.getenv("ACCESS_PASSWORD")
+    if x_password != expected_password:
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    db_client = get_firestore_client()
+    purchases_stream = db_client.collection("purchases").stream()
+    purchases = [{"id": purchase.id, **purchase.to_dict()} for purchase in purchases_stream]
+    return purchases
