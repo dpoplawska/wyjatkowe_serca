@@ -35,19 +35,18 @@ export default function Shop() {
   const [quantity, setQuantity] = useState<number>(1);
     const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
-  const [surname, setSurname] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(true);
   const [selectedPaczkomat, setSelectedPaczkomat] = useState<Paczkomat | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<'paczkomat' | 'kurier'>('kurier');
-  const [street, setStreet] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
     const [houseNumber, setHouseNumber] = useState<string>("");
       const [flatNumber, setFlatNumber] = useState<string>("");
   const [zipCode, setZipCode] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
-const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQnpDYU1XU3JvTlBjRWFveFpXcW9Ua2FuZVB3X291LWxvIn0.eyJleHAiOjIwNzEwODAxNDMsImlhdCI6MTc1NTcyMDE0MywianRpIjoiMTJhM2Q2OWItNzExNy00NzRmLWIwMWYtNjhmNTNiYmI4Zjc2IiwiaXNzIjoiaHR0cHM6Ly9sb2dpbi5pbnBvc3QucGwvYXV0aC9yZWFsbXMvZXh0ZXJuYWwiLCJzdWIiOiJmOjEyNDc1MDUxLTFjMDMtNGU1OS1iYTBjLTJiNDU2OTVlZjUzNTpYTWN5cmZ6d0JRbmQ4TjRtdGZVT19OV2kxUFdfaTh1WFlybU1JLV9LLWFZIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2hpcHgiLCJzZXNzaW9uX3N0YXRlIjoiOWYyNDZmYTMtYzM3Yy00Y2JlLTk1ZDUtZDA4MjZhYzljYWZlIiwic2NvcGUiOiJvcGVuaWQgYXBpOmFwaXBvaW50cyBhcGk6c2hpcHgiLCJzaWQiOiI5ZjI0NmZhMy1jMzdjLTRjYmUtOTVkNS1kMDgyNmFjOWNhZmUiLCJhbGxvd2VkX3JlZmVycmVycyI6IiIsInV1aWQiOiI4MWQyNmUwZS1lZjU1LTRiMjMtYTQ4Ny0zNGRkZWFiNTY4ZDkiLCJlbWFpbCI6ImZ1bmRhY2phQHd5amF0a293ZXNlcmNhLnBsIn0.mgWComB_EbgBRUnt-e39DbYfsbtInCyxLTugrJIig38XNb-29cFZqt23_2CPis5YUKhAPKiLan5dPltxPrmrL88jISdLgWhw0X4DG9NdSB2CtSuzdo4z64y5uVIqskL4xFRioL1ipAvk_jCZVdSKRIqXKvhi9C12-QxORhc98W4NiHmeh6fTQtO4hC_UHHXI8MX4Q6gNsNODbNz_ziFfBZzLCmxPohVXk8B_v-v_3mgdSu75ZONj03XnoG691WUm9Kb7F2lzTF9E7pZODZfHgfUHX7eZuI4HH31kRHkOb8gJ1LktHyLMopgt3tWivnEUNhDyW1299nj7jbiqnEGwcw"
   const productPrice = 239;
   const shippingCost = deliveryMethod === 'paczkomat' ? 18.99 : 21;
   const totalCost = (productPrice * quantity) + shippingCost;
@@ -71,11 +70,12 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
     const requiredFieldsFilled =
       name &&
     //   surname &&
-        acceptTermsAndConditionsCheckbox
+          acceptTermsAndConditionsCheckbox
+      && email && phone && address
         // &&
     //   (deliveryMethod === 'paczkomat' ? selectedPaczkomat : street && houseNumber && zipCode && city);
     setDisabled(!requiredFieldsFilled);
-  }, [name, surname, selectedPaczkomat, deliveryMethod, street, houseNumber, zipCode, city, acceptTermsAndConditionsCheckbox]);
+  }, [name, phone, deliveryMethod, address, acceptTermsAndConditionsCheckbox]);
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.max(1, parseInt(e.target.value) || 1);
@@ -95,7 +95,8 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
                 amount: totalCost.toFixed(0),
               email: email,
               name: name,
-             address: street,
+              phone: phone,
+             address: address,
               paczkomat: false,
               paczkomat_id: null,
           };
@@ -279,6 +280,17 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
                 required
                 style={{ width: "100%", padding: "8px" }}
               />
+                      </div>
+                         <div>
+              <label htmlFor="email">Numer telefonu: </label>
+              <Input
+                type="text"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                style={{ width: "100%", padding: "8px" }}
+              />
             </div>
             <div>
               <label htmlFor="name">Imię i nazwisko:</label>
@@ -305,65 +317,19 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
             {deliveryMethod === 'kurier' && (
               <>
                 <div>
-                  <label htmlFor="street">Adres wysyłki: </label>
+                  <label htmlFor="address">Adres wysyłki: </label>
                   <Input
                     type="text"
-                    id="street"
-                                      value={street}
+                    id="address"
+                                      value={address}
                                       multiline
                     placeholder="Ulica, numer domu, mieszkania (jeżeli dotyczy), kod pocztowy, miasto"
                 
-                    onChange={(e) => setStreet(e.target.value)}
+                    onChange={(e) => setAddress(e.target.value)}
                     required
                     style={{ width: "100%", padding: "8px" }}
                   />
                 </div>
-                {/* <div>
-                  <label htmlFor="houseNumber">Nr domu: </label>
-                  <Input
-                    type="text"
-                    id="houseNumber"
-                    value={houseNumber}
-                    onChange={(e) => setHouseNumber(e.target.value)}
-                    required
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="flatNumber">Nr mieszkania: </label>
-                  <Input
-                    type="text"
-                    id="flatNumber"
-                    value={flatNumber}
-                    onChange={(e) => setFlatNumber(e.target.value)}
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
-                    <div>
-                <label htmlFor="zipCode">Kod pocztowy: </label>
-                <Input
-                    type="text"
-                    id="zipCode"
-                    value={zipCode}
-                    onChange={(e) => setZipCode(e.target.value)}
-                    required
-                    error={ zipCodeError }
-                    title="Podaj kod pocztowy w formacie 12-345"
-                    style={{ width: "100%", padding: "8px" }}
-                />
-                
-                </div>
-                <div>
-                  <label htmlFor="city">Miasto: </label>
-                  <Input
-                    type="text"
-                    id="city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div> */}
               </>
             )}
             <p>Całkowity koszt: {totalCost} zł</p>
@@ -395,9 +361,9 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
             </button>
           </form>
 
-          {formSubmitted && (
+          {/* {formSubmitted && (
             <p style={{ color: "green", marginTop: "15px" }}>
-              Thank you, {name} {surname}, for your order of {quantity} item(s)! Total: {totalCost.toFixed(2)} zł
+              Thank you, {name}, for your order of {quantity} item(s)! Total: {totalCost.toFixed(2)} zł
               {deliveryMethod === 'paczkomat' && selectedPaczkomat && (
                 <>
                   {" "}
@@ -411,7 +377,7 @@ const token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQ
                 </>
               )}
             </p>
-          )}
+          )} */}
         </div>
 
         <button
