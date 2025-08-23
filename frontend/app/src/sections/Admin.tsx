@@ -12,6 +12,7 @@ interface TableData {
   email: string;
   status: string;
   phone: string;
+  units: number;
 }
 
 type AdminProps = {
@@ -140,12 +141,13 @@ export default function Admin({password}: AdminProps) {
                     { key: 'name', label: 'Imię i nazwisko' },
                     { key: 'modifiedAt', label: 'Data modyfikacji' },
                     { key: 'address', label: 'Adres' },
+                    { key: 'units', label: 'Ilość' },
                     { key: 'amount', label: 'Kwota' },
                     { key: 'email', label: 'E-mail' },
                     { key: 'phone', label: 'Telefon' },
                     { key: 'paczkomat', label: 'Paczkomat' },
                     { key: 'paczkomat_id', label: 'Kod paczkomatu' },
-                    { key: 'status', label: 'Status' },
+                            { key: 'status', label: 'Status' },
                   ].map(({ key, label }) => (
                     <th
                       key={key}
@@ -168,6 +170,7 @@ export default function Admin({password}: AdminProps) {
                     <td className="border p-2">{row.name}</td>
                     <td className="border p-2">{row.modifiedAt.split('T').join(' ').slice(0, -3)}</td>
                     <td className="border p-2">{row.address}</td>
+                    <td className="border p-2">{row.units}</td>
                     <td className="border p-2">{row.amount} zł</td>
                     <td className="border p-2">{row.email}</td>
                     <td className="border p-2">{row.phone}</td>
