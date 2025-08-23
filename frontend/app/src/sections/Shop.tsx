@@ -202,7 +202,7 @@ export default function Shop() {
       >
         <div className="product-info" style={{ textAlign: "center", maxWidth: "500px" }}>
           <MedibeltInfo productPrice={productPrice} />
-          <div className="quantity-selector" style={{ margin: "20px 0" }}>
+          {/* <div className="quantity-selector" style={{ margin: "20px 0" }}>
             <label htmlFor="quantity">Ilość: </label>
             <input
               type="number"
@@ -214,7 +214,7 @@ export default function Shop() {
               style={{ width: "60px", marginLeft: "10px" }}
             />
             { } /  {limit}
-          </div>
+          </div> */}
           <div className="delivery-method" style={{ margin: "10px 0" }}>
             <label style={{ padding: "5px" }}>Metoda dostawy: </label>
             <div>
