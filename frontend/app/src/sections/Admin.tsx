@@ -104,11 +104,12 @@ export default function Admin({password}: AdminProps) {
 
   return (
     <>
-      {data.length === 0 ? (        <section className="main">
-        <div className="col-xs-12 col-lg-11" id="fundraiser-content">
-          <div className="admin-panel">
-          </div>
-          <h4>Brak danych do wyświetlenia lub błędne hasło.</h4>
+      {data.length === 0 ? (
+        <section className="main">
+          <div className="col-xs-12 col-lg-11" id="fundraiser-content">
+            <div className="admin-panel">
+              <h4>Brak danych do wyświetlenia lub błędne hasło.</h4>
+            </div>
         </div>
       </section>
       ) : (
