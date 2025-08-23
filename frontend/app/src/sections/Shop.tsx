@@ -320,20 +320,23 @@ export default function Shop() {
                     fullWidth
                   />
                 </div>
-                {deliveryMethod === 'paczkomat' && (
-                  <div style={{ width: "100%", maxWidth: "400px" }}>
-                    <TextField
-                      variant="standard"
-                      type="text"
-                      id="paczkomat-code"
-                      label="Kod paczkomatu"
-                      value={selectedPaczkomat}
-                      onChange={(e) => setSelectedPaczkomat(e.target.value)}
-                      required
-                      sx={textFieldStyles}
-                      fullWidth
-                    />
-                  </div>
+                  {deliveryMethod === 'paczkomat' && (
+                    <>
+                      <a href="https://inpost.pl/znajdz-paczkomat" target="_blank" rel="noopener noreferrer" style={{ color: "#2383C5", marginBottom: "-10px", textDecoration: "none" }}>Znajdź swój Paczkomat</a>
+                      <div style={{ width: "100%", maxWidth: "400px" }}>
+                        <TextField
+                          variant="standard"
+                          type="text"
+                          id="paczkomat-code"
+                          label="Numer paczkomatu"
+                          value={selectedPaczkomat}
+                          onChange={(e) => setSelectedPaczkomat(e.target.value)}
+                          required
+                          sx={textFieldStyles}
+                          fullWidth
+                        />
+                      </div>
+                      </>
                 )}
                 {deliveryMethod === 'kurier' && (
                   <>
@@ -393,14 +396,11 @@ export default function Shop() {
                     <span>
                       Akceptuję
                       <a href={serviceRegulations} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="service-regulations-link">
-                        {" "}regulamin serwisu{" "}
-                      </a>
-                    </span>
-                    <span>
-                      i
-                      <a href={privacyPolicy} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
+                          {" "}regulamin serwisu <span style={{ color: "#616161"}}>i</span>
+                          <a href={privacyPolicy} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
                         {" "}politykę prywatności
                       </a>. *
+                      </a>
                     </span>
                   </span>
                 </span>
