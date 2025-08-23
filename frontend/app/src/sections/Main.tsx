@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
 import './css/Main.css';
-import HelpUsSide from "./HelpUsSide";
-import SocialsSide from "./SocialsSide";
-import HeroSection from "./HeroSection";
-import WhatWeDo from "./WhatWeDo";
-import GetToKnowUs from "./GetToKnowUs";
-import Parents from "./Parents";
-import HelpUs from "./HelpUs";
+import HelpUsSide from "./HelpUsSide.tsx";
+import SocialsSide from "./SocialsSide.tsx";
+import HeroSection from "./HeroSection.tsx";
+import WhatWeDo from "./WhatWeDo.tsx";
+import GetToKnowUs from "./GetToKnowUs.tsx";
+import Parents from "./Parents.tsx";
+import HelpUs from "./HelpUs.tsx";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
+import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
 export default function Main() {
     const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();

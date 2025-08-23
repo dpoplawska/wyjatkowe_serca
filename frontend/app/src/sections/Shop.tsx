@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./css/Main.css";
-import HelpUsSide from "./HelpUsSide";
-import SocialsSide from "./SocialsSide";
+import HelpUsSide from "./HelpUsSide.tsx";
+import SocialsSide from "./SocialsSide.tsx";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
-import { Checkbox, InputAdornment, TextField } from "@mui/material";
+import { Checkbox, TextField } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
-import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
+import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
 interface SidePosition {
   isSmallScreen: boolean;
@@ -37,7 +37,7 @@ export default function Shop() {
   const shippingCost = deliveryMethod === 'paczkomat' ? paczkomatCost : kurierCost;
   const totalCost = (productPrice * quantity) + shippingCost;
   const [zipCodeError, setZipCodeError] = useState<boolean>(false);
-  const [limit, currentLimit] = useState<number>(0);
+  const [currentLimit, setCurrentLimit] = useState<number>(0);
 
   const handleAcceptTermsAndConditions = () => {
     setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox);
@@ -60,7 +60,7 @@ export default function Shop() {
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(e.target.value);
-    const value = isNaN(parsedValue) ? parsedValue : Math.min(parsedValue, limit);
+    const value = isNaN(parsedValue) ? parsedValue : Math.min(parsedValue, currentLimit);
     setQuantity(value);
   };
 
@@ -150,7 +150,7 @@ export default function Shop() {
                     return response.json();
                 })
                 .then((data) => {
-                    currentLimit(data.items_left);
+                    setCurrentLimit(data.items_left);
                 })
                 .catch((error) => {
                     console.error("There was a problem with the fetch operation:", error);
@@ -178,6 +178,7 @@ export default function Shop() {
   };
 
   return (
+    <>
     <section className="main">
       <div className="col-xs-12 col-lg-2" id="left-side">
         {isMediumScreen ? (
@@ -188,7 +189,20 @@ export default function Shop() {
           <HelpUsSide showFundraiserBar={true} specialFundraiser={false} />
         )}
       </div>
-
+        {currentLimit === 0 ? (
+           <div
+        className="col-xs-12 col-lg-7"
+        id="shop-content"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "30vh",
+          }}
+        >
+            <h2 className="highlight">Ratujki się skończyły!</h2>
+          </div>
+          ) : (
       <div
         className="col-xs-12 col-lg-7"
         id="shop-content"
@@ -197,208 +211,205 @@ export default function Shop() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
-          padding: "20px",
         }}
-      >
-        <div className="product-info" style={{ textAlign: "center", maxWidth: "500px" }}>
-          <MedibeltInfo productPrice={productPrice} />
-          <div className="quantity-selector" style={{ margin: "20px 0" }}>
-            <label htmlFor="quantity">Ilość: </label>
-            <input
-              type="number"
-              id="quantity"
-              value={quantity}
-              onChange={handleQuantityChange}
-              min="1"
-              max={limit}
-              style={{ width: "60px", marginLeft: "10px" }}
-            />
-            { } /  {limit}
-          </div>
-          <div className="delivery-method" style={{ margin: "10px 0" }}>
-            <label style={{ padding: "5px" }}>Metoda dostawy: </label>
-            <div>
-              <input
-                type="radio"
-                id="paczkomat"
-                value="paczkomat"
-                checked={deliveryMethod === 'paczkomat'}
-                onChange={() => setDeliveryMethod('paczkomat')}
-              />
-              <label htmlFor="paczkomat" style={{ marginLeft: "5px" }}>
-                Paczkomat - {paczkomatCost} zł
-              </label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="kurier"
-                value="kurier"
-                checked={deliveryMethod === 'kurier'}
-                onChange={() => setDeliveryMethod('kurier')}
-              />
-              <label htmlFor="kurier" style={{ marginLeft: "5px" }}>
-                Kurier - {kurierCost} zł
-              </label>
-            </div>
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-              width: "100%",
-              margin: "0 auto",
-              alignItems: "center",
-            }}
-          >
-          <div style={{ width: "100%", maxWidth: "400px" }}>
-              <TextField
-                variant="standard"
-                type="text"
-                id="name"
-                label="Imię i nazwisko"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                sx={textFieldStyles}
-                fullWidth
-              />
-            </div>
-            <div style={{ width: "100%", maxWidth: "400px" }}>
-              <TextField
-                id="email"
-                value={email}
-                onChange={handleEmailChange}
-                required
-                variant="standard"
-                label="Adres e-mail"
-                error={emailError || emptyEmail}
-                helperText={
-                  emptyEmail ? "Pole e-mail jest wymagane" :
-                  emailError ? "Proszę wprowadzić poprawny adres e-mail" : ""
-                }
-                sx={textFieldStyles}
-                fullWidth
-              />
-            </div>
-            <div style={{ width: "100%", maxWidth: "400px" }}>
-            <TextField
-              variant="standard"
-              type="text"
-              id="phone"
-              label="Numer telefonu"
-              value={phone}
-              onChange={(e) => {
-                const input = e.target.value.replace(/\D/g, '');
-                const limitedInput = input.slice(0, 9);
-                let formatted = '';
-                if (limitedInput.length > 0) {
-                  formatted = limitedInput.match(/.{1,3}/g).join(' ');
-                  if (limitedInput.length > 6) {
-                    formatted = limitedInput.match(/.{1,3}/g).join(' ');
-                  }
-                }
-                setPhone(formatted);
-              }}
-              required
-              sx={textFieldStyles}
-              fullWidth
-            />
-          </div>
-            {deliveryMethod === 'paczkomat' && (
-              <div style={{ width: "100%", maxWidth: "400px" }}>
-                <TextField
-                  variant="standard"
-                  type="text"
-                  id="paczkomat-code"
-                  label="Kod paczkomatu"
-                  value={selectedPaczkomat}
-                  onChange={(e) => setSelectedPaczkomat(e.target.value)}
-                  required
-                  sx={textFieldStyles}
-                  fullWidth
+        >
+            <div className="product-info" style={{ textAlign: "center", maxWidth: "500px" }}>
+              <MedibeltInfo productPrice={productPrice} />
+              <div className="quantity-selector" style={{ margin: "20px 0" }}>
+                <label htmlFor="quantity">Ilość: </label>
+                <input
+                  type="number"
+                  id="quantity"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  min="1"
+                  max={currentLimit}
+                  style={{ width: "60px", marginLeft: "10px" }}
                 />
+                { } /  {currentLimit}
               </div>
-            )}
-            {deliveryMethod === 'kurier' && (
-              <>
+              <div className="delivery-method" style={{ margin: "10px 0" }}>
+                <label style={{ padding: "5px" }}>Metoda dostawy: </label>
+                <div>
+                  <input
+                    type="radio"
+                    id="paczkomat"
+                    value="paczkomat"
+                    checked={deliveryMethod === 'paczkomat'}
+                    onChange={() => setDeliveryMethod('paczkomat')}
+                  />
+                  <label htmlFor="paczkomat" style={{ marginLeft: "5px" }}>
+                    Paczkomat - {paczkomatCost} zł
+                  </label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="kurier"
+                    value="kurier"
+                    checked={deliveryMethod === 'kurier'}
+                    onChange={() => setDeliveryMethod('kurier')}
+                  />
+                  <label htmlFor="kurier" style={{ marginLeft: "5px" }}>
+                    Kurier - {kurierCost} zł
+                  </label>
+                </div>
+              </div>
+              <form
+                onSubmit={handleSubmit}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "15px",
+                  width: "100%",
+                  margin: "0 auto",
+                  alignItems: "center",
+                }}
+              >
                 <div style={{ width: "100%", maxWidth: "400px" }}>
                   <TextField
                     variant="standard"
-                    id="address"
-                    value={address}
-                    multiline
-                    label="Adres"
-                    helperText="Ulica, nr domu, nr mieszkania (jeżeli dotyczy)"
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                    sx={textFieldStyles}
-                    fullWidth
-                  />
-                </div>
-                <div style={{ width: "100%", maxWidth: "400px" }}>
-                  <TextField
-                    id="zipCode"
-                    variant="standard"
-                    value={zipCode}
-                    label="Kod pocztowy"
-                    onChange={handleZipCodeChange}
-                    required
-                    helperText={zipCodeError ? "Proszę wprowadzić poprawny kod pocztowy w formacie 00-000" : ""}
-                    error={zipCodeError}
-                    sx={textFieldStyles}
-                    fullWidth
-                  />
-                </div>
-                <div style={{ width: "100%", maxWidth: "400px" }}>
-                  <TextField
                     type="text"
-                    id="city"
-                    variant="standard"
-                    value={city}
-                    multiline
-                    label="Miasto"
-                    onChange={(e) => setCity(e.target.value)}
+                    id="name"
+                    label="Imię i nazwisko"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                     sx={textFieldStyles}
                     fullWidth
                   />
                 </div>
-              </>
-            )}
-            <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Checkbox
-                size="small"
-                required
-                sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }}
-                checked={acceptTermsAndConditionsCheckbox}
-                onClick={handleAcceptTermsAndConditions}
-              />
-              <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
-                <span>
-                  Akceptuję
-                  <a href={serviceRegulations} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="service-regulations-link">
-                    {" "}regulamin serwisu{" "}
-                  </a>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <TextField
+                    id="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                    variant="standard"
+                    label="Adres e-mail"
+                    error={emailError || emptyEmail}
+                    helperText={
+                      emptyEmail ? "Pole e-mail jest wymagane" :
+                        emailError ? "Proszę wprowadzić poprawny adres e-mail" : ""
+                    }
+                    sx={textFieldStyles}
+                    fullWidth
+                  />
+                </div>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <TextField
+                    variant="standard"
+                    type="text"
+                    id="phone"
+                    label="Numer telefonu"
+                    value={phone}
+                    onChange={(e) => {
+                      const input = e.target.value.replace(/\D/g, '');
+                      const limitedInput = input.slice(0, 9);
+                      let formatted = '';
+                      if (limitedInput.length > 0) {
+                        formatted = limitedInput.match(/.{1,3}/g).join(' ');
+                        if (limitedInput.length > 6) {
+                          formatted = limitedInput.match(/.{1,3}/g).join(' ');
+                        }
+                      }
+                      setPhone(formatted);
+                    }}
+                    required
+                    sx={textFieldStyles}
+                    fullWidth
+                  />
+                </div>
+                {deliveryMethod === 'paczkomat' && (
+                  <div style={{ width: "100%", maxWidth: "400px" }}>
+                    <TextField
+                      variant="standard"
+                      type="text"
+                      id="paczkomat-code"
+                      label="Kod paczkomatu"
+                      value={selectedPaczkomat}
+                      onChange={(e) => setSelectedPaczkomat(e.target.value)}
+                      required
+                      sx={textFieldStyles}
+                      fullWidth
+                    />
+                  </div>
+                )}
+                {deliveryMethod === 'kurier' && (
+                  <>
+                    <div style={{ width: "100%", maxWidth: "400px" }}>
+                      <TextField
+                        variant="standard"
+                        id="address"
+                        value={address}
+                        multiline
+                        label="Adres"
+                        helperText="Ulica, nr domu, nr mieszkania (jeżeli dotyczy)"
+                        onChange={(e) => setAddress(e.target.value)}
+                        required
+                        sx={textFieldStyles}
+                        fullWidth
+                      />
+                    </div>
+                    <div style={{ width: "100%", maxWidth: "400px" }}>
+                      <TextField
+                        id="zipCode"
+                        variant="standard"
+                        value={zipCode}
+                        label="Kod pocztowy"
+                        onChange={handleZipCodeChange}
+                        required
+                        helperText={zipCodeError ? "Proszę wprowadzić poprawny kod pocztowy w formacie 00-000" : ""}
+                        error={zipCodeError}
+                        sx={textFieldStyles}
+                        fullWidth
+                      />
+                    </div>
+                    <div style={{ width: "100%", maxWidth: "400px" }}>
+                      <TextField
+                        type="text"
+                        id="city"
+                        variant="standard"
+                        value={city}
+                        multiline
+                        label="Miasto"
+                        onChange={(e) => setCity(e.target.value)}
+                        required
+                        sx={textFieldStyles}
+                        fullWidth
+                      />
+                    </div>
+                  </>
+                )}
+                <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Checkbox
+                    size="small"
+                    required
+                    sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }}
+                    checked={acceptTermsAndConditionsCheckbox}
+                    onClick={handleAcceptTermsAndConditions}
+                  />
+                  <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
+                    <span>
+                      Akceptuję
+                      <a href={serviceRegulations} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="service-regulations-link">
+                        {" "}regulamin serwisu{" "}
+                      </a>
+                    </span>
+                    <span>
+                      i
+                      <a href={privacyPolicy} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
+                        {" "}politykę prywatności
+                      </a>. *
+                    </span>
+                  </span>
                 </span>
-                <span>
-                  i
-                  <a href={privacyPolicy} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
-                    {" "}politykę prywatności
-                  </a>. *
-                </span>
-              </span>
-            </span>
-            <p>Całkowity koszt: <b>{totalCost} zł</b></p>
-            <button type="submit" id="buttonSubmit" disabled={disabled}>
-              Kupuję🤍
-            </button>
-          </form>
-        </div>
-
+                <p>Całkowity koszt: <b>{totalCost} zł</b></p>
+                <button type="submit" id="buttonSubmit" disabled={disabled}>
+                  Kupuję🤍
+                </button>
+              </form>
+            </div>
         <button
           onClick={topFunction}
           id="topButton"
@@ -408,6 +419,7 @@ export default function Shop() {
           <KeyboardArrowUp />
         </button>
       </div>
+          )}
 
       <div className="col-xs-12 col-lg-2" id="right-side">
         {isMediumScreen ? (
@@ -418,6 +430,7 @@ export default function Shop() {
           <SocialsSide />
         )}
       </div>
-    </section>
+          </section>
+      </>
   );
 }

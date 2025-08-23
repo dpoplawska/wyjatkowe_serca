@@ -15,7 +15,6 @@
     "cross-env": "^10.0.0",
     "framer-motion": "^12.23.12",
     "hamburger-react": "^2.5.2",
-    "inpost-geowidget-react": "^1.0.1",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.10",
@@ -28,6 +27,7 @@
     "react-scroll": "^1.9.3",
     "react-select": "^5.10.2",
     "react-use": "^17.6.0",
+    "use-click-away": "^0.0.1",
     "web-vitals": "^5.1.0"
   },
   "scripts": {

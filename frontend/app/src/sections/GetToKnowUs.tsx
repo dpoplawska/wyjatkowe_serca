@@ -1,7 +1,5 @@
-import React from "react"
 import "../sections/css/InfoContent.css"
 import zdjecie from "../media/zdjecie_zespolu_z_lekarzami.jpg"
-
 
 export default function GetToKnowUs() {
     return (

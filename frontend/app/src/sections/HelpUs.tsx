@@ -1,4 +1,3 @@
-import React from "react"
 import "../sections/css/InfoContent.css"
 import logo from "../media/logo_sam_mis.png"
 

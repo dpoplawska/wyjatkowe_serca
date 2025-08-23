@@ -1,16 +1,14 @@
-import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
-import Menu from './sections/Menu';
-import Main from './sections/Main';
-import Footer from './sections/Footer';
-import ThankYou from './sections/ThankYou';
-import CharityFundraser from './sections/CharityFundraiser';
+import Main from './sections/Main.tsx';
+import Footer from './sections/Footer.tsx';
+import ThankYou from './sections/ThankYou.tsx';
+import CharityFundraser from './sections/CharityFundraiser.tsx';
 import Shop from "./sections/Shop.tsx";
 import LoginPage from './sections/LoginPage.tsx';
-import Admin from './sections/Admin.tsx';
+import Menu from './sections/Menu.tsx';
 
-function App() {
+export default function App() {
   return (
     <Router>
       <div className="App">
@@ -29,5 +27,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;

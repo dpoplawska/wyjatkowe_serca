@@ -1,17 +1,20 @@
 import './css/Menu.css'
 import React, { useEffect, useState, useRef } from "react";
 import logo from "../media/logo_podstawowe.png";
-import { useClickAway, useLocation } from "react-use";
+import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";
 import { Link as ScrollLink } from 'react-scroll';
 import { Link } from 'react-router-dom';
+import {useClickAway} from 'use-click-away';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
+type Route = { name: string; to: string | null };
 
 export default function Menu() {
     const location = useLocation();
 
-    const beneficiaries = [
+    const beneficiaries: Route[] = [
         { name: 'Hubert Szymborski', to: '/zbiorka/hubert_szymborski' },
     ];
 
@@ -22,7 +25,6 @@ export default function Menu() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const ref = useRef(null);
 
-    // ✅ Screen resize handler
     useEffect(() => {
         const handleResize = () => {
             setIsSmallScreen(window.innerWidth < 768);
@@ -36,8 +38,7 @@ export default function Menu() {
 
     useClickAway(ref, () => setOpen(false));
 
-    // ✅ Decide which routes to show based on pathname
-    let routes = [];
+    let routes: Route[] = [];
     if (location.pathname === '/sklep') {
         routes = [
             { name: 'STRONA GŁÓWNA', to: '/' },
@@ -53,11 +54,10 @@ export default function Menu() {
             { name: 'POZNAJ NAS', to: 'getToKnowUs' },
             { name: 'DLA RODZICA', to: 'forParents' },
             { name: 'KONTAKT', to: 'footer' },
-            // { name: 'SKLEP', to: '/sklep' },
+            { name: 'KUP RATUJKĘ', to: '/sklep' },
             { name: 'NASI PODOPIECZNI', to: null },
         ];
     } else {
-        // ✅ fallback for any other page
         routes = [
             { name: 'STRONA GŁÓWNA', to: '/' },
         ];
@@ -68,8 +68,7 @@ export default function Menu() {
         setDropdownOpen(false);
     };
 
-    // ✅ Render helper (null safe)
-    const renderRoute = (route) => {
+    const renderRoute = (route: Route) => {
         if (route.name === 'NASI PODOPIECZNI') {
             return (
                 <div className="dropdownContainer dropdown">
@@ -122,7 +121,7 @@ export default function Menu() {
             );
         }
 
-        return null; // prevent crash if route.to is null
+        return null;
     }; console.log("DEBUG pathname:", location.pathname);
 
     return (

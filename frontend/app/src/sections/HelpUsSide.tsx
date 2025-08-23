@@ -1,7 +1,7 @@
-import { CircularProgress, FormControlLabel, TextField, Typography } from "@mui/material"
-import React, { useEffect, useState } from "react"
+import { TextField } from "@mui/material"
+import { useEffect, useState } from "react"
 import "./css/Sides.css"
-import ValueButton from "./components/ValueButton";
+import ValueButton from "./components/ValueButton.tsx";
 import { useLocation } from "react-router-dom";
 import { Checkbox } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf"

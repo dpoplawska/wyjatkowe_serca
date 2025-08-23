@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "./css/Main.css";
 import { TextField } from "@mui/material";
 import { Button } from "react-scroll";

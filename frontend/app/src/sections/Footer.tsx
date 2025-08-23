@@ -1,4 +1,3 @@
-import React from "react"
 import './css/Footer.css'
 import logo from "../media/logo_podstawowe.png"
 import PlaceIcon from '@mui/icons-material/Place';

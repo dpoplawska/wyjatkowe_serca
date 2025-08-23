@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from "react";
 import "./css/Main.css";
-import HelpUsSide from "./HelpUsSide";
-import SocialsSide from "./SocialsSide";
+import HelpUsSide from "./HelpUsSide.tsx";
+import SocialsSide from "./SocialsSide.tsx";
 import logo from "../media/logo_podstawowe.png";
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
-
 
 export default function ThankYou() {
-    const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
-
     return (
         <section className="main">
             <div className="col-xs-12 col-lg-2" id="left-side">

@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
 import "./css/Main.css";
-import HelpUsSide from "./HelpUsSide";
-import SocialsSide from "./SocialsSide";
+import HelpUsSide from "./HelpUsSide.tsx";
+import SocialsSide from "./SocialsSide.tsx";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
 import logo from "../media/logo_podstawowe.png";
-import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
-import DefaultFundraiserBody from "./components/DefaultFundraiserBody";
-import SpecialFundraiserBody from "./components/SpecialFundraiserBody";
+import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
+import DefaultFundraiserBody from "./components/DefaultFundraiserBody.tsx";
+import SpecialFundraiserBody from "./components/SpecialFundraiserBody.tsx";
 
 export default function CharityFundraser({ specialFundraiser }) {
     const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
@@ -15,7 +14,6 @@ export default function CharityFundraser({ specialFundraiser }) {
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
     }
-
 
     return (
         <section className="main">
