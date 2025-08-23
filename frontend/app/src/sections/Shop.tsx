@@ -9,19 +9,6 @@ import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
 
-// Define interfaces
-interface Paczkomat {
-  name: string;
-  address: {
-    line1: string;
-    line2: string;
-  };
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
-}
-
 interface SidePosition {
   isSmallScreen: boolean;
   isMediumScreen: boolean;
