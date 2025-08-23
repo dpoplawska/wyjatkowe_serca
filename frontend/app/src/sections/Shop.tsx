@@ -3,11 +3,10 @@ import "./css/Main.css";
 import HelpUsSide from "./HelpUsSide";
 import SocialsSide from "./SocialsSide";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
-import { Checkbox, Input } from "@mui/material";
+import { Checkbox, TextField } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
-import { InpostGeowidgetReact } from "inpost-geowidget-react";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment";
 
 // Define interfaces
@@ -33,146 +32,130 @@ interface SidePosition {
 export default function Shop() {
   const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment() as SidePosition;
   const [quantity, setQuantity] = useState<number>(1);
-    const [name, setName] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
-  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(true);
-  const [selectedPaczkomat, setSelectedPaczkomat] = useState<Paczkomat | null>(null);
+  const [selectedPaczkomat, setSelectedPaczkomat] = useState<string>("");
   const [deliveryMethod, setDeliveryMethod] = useState<'paczkomat' | 'kurier'>('kurier');
   const [address, setAddress] = useState<string>("");
-    const [houseNumber, setHouseNumber] = useState<string>("");
-      const [flatNumber, setFlatNumber] = useState<string>("");
   const [zipCode, setZipCode] = useState<string>("");
   const [city, setCity] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [emailError, setEmailError] = useState(false);
+  const [emptyEmail, setEmptyEmail] = useState(false);
   const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
   const productPrice = 239;
+  const paczkomatCost = 19;
+  const kurierCost = 21;
   const shippingCost = deliveryMethod === 'paczkomat' ? 18.99 : 21;
   const totalCost = (productPrice * quantity) + shippingCost;
-    const zipCodeRegex = /^[0-9]{2}-[0-9]{3}$/;
-    const [zipCodeError, setZipCodeError] = useState<boolean>(false);
+  const [zipCodeError, setZipCodeError] = useState<boolean>(false);
+
   const handleAcceptTermsAndConditions = () => {
     setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox);
-    };
-    
-    // const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
-    //     if (zipCodeRegex.test(e.target.value))  {
-    //         setZipCode(e.target.value)
-    //         setZipCodeError(false)
-    //     } else {
-    //         setZipCode("")
-    //         setZipCodeError(true)
-    //     }
-    //  }
+  };
 
-  useEffect(() => {
-    const requiredFieldsFilled =
-      name &&
-    //   surname &&
-          acceptTermsAndConditionsCheckbox
-      && email && phone && address
-        // &&
-    //   (deliveryMethod === 'paczkomat' ? selectedPaczkomat : street && houseNumber && zipCode && city);
-    setDisabled(!requiredFieldsFilled);
-  }, [name, phone, deliveryMethod, address, acceptTermsAndConditionsCheckbox]);
+  const handleZipCodeChange = (e) => {
+    let value = e.target.value.replace(/[^0-9-]/g, '');
+    if (value.length > 2 && value.indexOf('-') === -1) {
+      value = value.slice(0, 2) + '-' + value.slice(2);
+    }
+    value = value.slice(0, 6);
+    setZipCode(value);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmailError(false);
+    setEmptyEmail(false);
+    setEmail(event.target.value);
+  };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.max(1, parseInt(e.target.value) || 1);
     setQuantity(value);
   };
 
-     const handleSubmit = async (event) => {
-        event.preventDefault();
-        // if (email.length > 0 && emailRegex.test(email) && value !== undefined && acceptTermsAndConditionsCheckbox) {
-            // setEmptyValue(false);
-            // setEmptyEmail(false);
-            // setLoading(true);
-            // setResetButton(true);
-            // setAcceptTermsAndConditionsCheckbox(false);
+  useEffect(() => {
+    const requiredFieldsFilled =
+      name &&
+      acceptTermsAndConditionsCheckbox &&
+      email &&
+      phone &&
+      (deliveryMethod === 'paczkomat' ? selectedPaczkomat : deliveryMethod === 'kurier' ? (address && zipCode && city) : false);
+    setDisabled(!requiredFieldsFilled);
+  }, [name, phone, deliveryMethod, zipCode, city, address, acceptTermsAndConditionsCheckbox]);
 
-          const paymentData = {
-                amount: totalCost.toFixed(0),
-              email: email,
-              name: name,
-              phone: phone,
-             address: address,
-              paczkomat: false,
-              paczkomat_id: null,
-          };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const zipPattern = /^\d{2}-\d{3}$/;
+    if (!zipPattern.test(zipCode) && deliveryMethod === 'kurier') {
+      setZipCodeError(true);
+      alert('Nieprawidłowy kod pocztowy: ' + zipCode);
+      return;
+    } else {
+      setZipCodeError(false);
+    }
 
-         
-            try {
-                const response = await fetch(
-                    "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/purchases",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(paymentData),
-                    }
-                );
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(event.target.value)) {
+      setEmailError(false);
+      setEmptyEmail(false);
+    } else if (event.target.value.length < 1) {
+      setEmptyEmail(true);
+    } else {
+      setEmailError(true);
+    }
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-
-                const data = await response.json();
-
-                if (data.purchaseId) {
-                    setTimeout(() => {
-                        window.open(data.redirectUrl, "_blank");
-                    });
-                } else {
-                    throw new Error("Invalid response data");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            } finally {
-                // setName("");
-                // setSurname("");
-                // setQuantity(1);
-                // setSelectedPaczkomat(null);
-                // setStreet("");
-                // setHouseNumber("");
-                // setFlatNumber("");
-                // setZipCode("");
-                // setCity("");
-                // setErrorMessage("");
-                // setAcceptTermsAndConditionsCheckbox(false);
-            }
-        // } else {
-            // setResetButton(true);
-            // setEmptyValue(value === undefined);
-            // setEmptyEmail(!(email.length > 0));
-        // }
+    const paymentData = {
+      amount: totalCost.toFixed(0),
+      email: email,
+      name: name,
+      phone: phone,
+      address: `${address}, ${zipCode} ${city}`,
+      paczkomat: deliveryMethod === 'paczkomat',
+      paczkomat_id: deliveryMethod === 'paczkomat' ? selectedPaczkomat : null,
     };
 
+    try {
+      const response = await fetch(
+        "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/purchases",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+
+      if (data.purchaseId) {
+        setTimeout(() => {
+          window.open(data.redirectUrl, "_blank");
+        });
+      } else {
+        throw new Error("Invalid response data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const topFunction = () => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
   };
 
-  const handlePaczkomatSelect = (paczkomat: any) => {
-    if (paczkomat) {
-      setSelectedPaczkomat({
-        name: paczkomat.name,
-        address: {
-          line1: paczkomat.address_details.street,
-          line2: `${paczkomat.address_details.post_code} ${paczkomat.address_details.city}`,
-        },
-        location: {
-          latitude: paczkomat.location.latitude,
-          longitude: paczkomat.location.longitude,
-        },
-      });
-      setErrorMessage("");
-    } else {
-      setSelectedPaczkomat(null);
-      setErrorMessage("Proszę wybrać Paczkomat.");
-    }
+  const textFieldStyles = {
+    width: "100%",
+    "& .MuiInputBase-input": {
+      textAlign: "center",
+    },
   };
 
   return (
@@ -201,7 +184,6 @@ export default function Shop() {
       >
         <div className="product-info" style={{ textAlign: "center", maxWidth: "500px" }}>
           <MedibeltInfo productPrice={productPrice} />
-
           <div className="quantity-selector" style={{ margin: "20px 0" }}>
             <label htmlFor="quantity">Ilość: </label>
             <input
@@ -213,10 +195,9 @@ export default function Shop() {
               style={{ width: "60px", marginLeft: "10px" }}
             />
           </div>
-
-          <div className="delivery-method" style={{ margin: "20px 0" }}>
-            <label>Metoda dostawy: </label>
-            {/* <div>
+          <div className="delivery-method" style={{ margin: "10px 0" }}>
+            <label style={{ padding: "5px" }}>Metoda dostawy: </label>
+            <div>
               <input
                 type="radio"
                 id="paczkomat"
@@ -224,8 +205,10 @@ export default function Shop() {
                 checked={deliveryMethod === 'paczkomat'}
                 onChange={() => setDeliveryMethod('paczkomat')}
               />
-              <label htmlFor="paczkomat">Paczkomat - 19.99 zł</label>
-            </div> */}
+              <label htmlFor="paczkomat" style={{ marginLeft: "5px" }}>
+                Paczkomat - {paczkomatCost} zł
+              </label>
+            </div>
             <div>
               <input
                 type="radio"
@@ -234,105 +217,126 @@ export default function Shop() {
                 checked={deliveryMethod === 'kurier'}
                 onChange={() => setDeliveryMethod('kurier')}
               />
-              <label htmlFor="kurier">Kurier - {shippingCost} zł</label>
+              <label htmlFor="kurier" style={{ marginLeft: "5px" }}>
+                Kurier - {kurierCost} zł
+              </label>
             </div>
           </div>
-
-          {/* {deliveryMethod === 'paczkomat' && (
-            <div className="paczkomat-selector" style={{ margin: "20px 0", width: "100%" }}>
-              <label htmlFor="paczkomat">Wybierz Paczkomat: </label>
-              <InpostGeowidgetReact
-                token={token} 
-                language="pl"
-                onPointSelect={handlePaczkomatSelect}
-                style={{ height: "400px", width: "100%", marginTop: "10px" }}
-              />
-              {errorMessage && (
-                <p style={{ color: "red", margin: "10px 0" }}>{errorMessage}</p>
-              )}
-              {selectedPaczkomat && (
-                <p>
-                  Wybrany Paczkomat: {selectedPaczkomat.name}, {selectedPaczkomat.address.line1}, {selectedPaczkomat.address.line2}
-                </p>
-              )}
-            </div>
-          )} */}
-
           <form
             onSubmit={handleSubmit}
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "15px",
-              maxWidth: "300px",
               width: "100%",
               margin: "0 auto",
               alignItems: "center",
             }}
-                  >
-            <div>
-              <label htmlFor="email">Adres e-mail: </label>
-              <Input
-                type="text"
+          >
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+              <TextField
                 id="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
-                style={{ width: "100%", padding: "8px" }}
+                variant="standard"
+                label="Adres e-mail"
+                error={emailError || emptyEmail}
+                helperText={
+                  emptyEmail ? "Pole e-mail jest wymagane" :
+                  emailError ? "Proszę wprowadzić poprawny adres e-mail" : ""
+                }
+                sx={textFieldStyles}
+                fullWidth
               />
-                      </div>
-                         <div>
-              <label htmlFor="email">Numer telefonu: </label>
-              <Input
+            </div>
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+              <TextField
+                variant="standard"
                 type="text"
                 id="phone"
+                label="Numer telefonu"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                style={{ width: "100%", padding: "8px" }}
+                sx={textFieldStyles}
+                fullWidth
               />
             </div>
-            <div>
-              <label htmlFor="name">Imię i nazwisko:</label>
-              <Input
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+              <TextField
+                variant="standard"
                 type="text"
                 id="name"
+                label="Imię i nazwisko"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                style={{ width: "100%", padding: "8px" }}
+                sx={textFieldStyles}
+                fullWidth
               />
             </div>
-            {/* <div>
-              <label htmlFor="surname">Nazwisko: </label>
-              <Input
-                type="text"
-                id="surname"
-                value={surname}
-                onChange={(e) => setSurname(e.target.value)}
-                required
-                style={{ width: "100%", padding: "8px" }}
-              />
-            </div> */}
+            {deliveryMethod === 'paczkomat' && (
+              <div style={{ width: "100%", maxWidth: "400px" }}>
+                <TextField
+                  variant="standard"
+                  type="text"
+                  id="paczkomat-code"
+                  label="Kod paczkomatu"
+                  value={selectedPaczkomat}
+                  onChange={(e) => setSelectedPaczkomat(e.target.value)}
+                  required
+                  sx={textFieldStyles}
+                  fullWidth
+                />
+              </div>
+            )}
             {deliveryMethod === 'kurier' && (
               <>
-                <div>
-                  <label htmlFor="address">Adres wysyłki: </label>
-                  <Input
-                    type="text"
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <TextField
+                    variant="standard"
                     id="address"
-                                      value={address}
-                                      multiline
-                    placeholder="Ulica, numer domu, mieszkania (jeżeli dotyczy), kod pocztowy, miasto"
-                
+                    value={address}
+                    multiline
+                    label="Adres"
+                    helperText="Ulica, nr domu, nr mieszkania (jeżeli dotyczy)"
                     onChange={(e) => setAddress(e.target.value)}
                     required
-                    style={{ width: "100%", padding: "8px" }}
+                    sx={textFieldStyles}
+                    fullWidth
+                  />
+                </div>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <TextField
+                    id="zipCode"
+                    variant="standard"
+                    value={zipCode}
+                    label="Kod pocztowy"
+                    onChange={handleZipCodeChange}
+                    required
+                    helperText={zipCodeError ? "Proszę wprowadzić poprawny kod pocztowy w formacie 00-000" : ""}
+                    error={zipCodeError}
+                    sx={textFieldStyles}
+                    fullWidth
+                  />
+                </div>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                  <TextField
+                    type="text"
+                    id="city"
+                    variant="standard"
+                    value={city}
+                    multiline
+                    label="Miasto"
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                    sx={textFieldStyles}
+                    fullWidth
                   />
                 </div>
               </>
             )}
-            <p>Całkowity koszt: {totalCost} zł</p>
             <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Checkbox
                 size="small"
@@ -344,40 +348,23 @@ export default function Shop() {
               <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
                 <span>
                   Akceptuję
-                  <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link">
+                  <a href={serviceRegulations} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="service-regulations-link">
                     {" "}regulamin serwisu{" "}
                   </a>
                 </span>
                 <span>
                   i
-                  <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
+                  <a href={privacyPolicy} style={{ color: "#EC1A3B", textDecoration: "none" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link">
                     {" "}politykę prywatności
                   </a>. *
                 </span>
               </span>
             </span>
+            <p>Całkowity koszt: <b>{totalCost} zł</b></p>
             <button type="submit" id="buttonSubmit" disabled={disabled}>
               Kupuję🤍
             </button>
           </form>
-
-          {/* {formSubmitted && (
-            <p style={{ color: "green", marginTop: "15px" }}>
-              Thank you, {name}, for your order of {quantity} item(s)! Total: {totalCost.toFixed(2)} zł
-              {deliveryMethod === 'paczkomat' && selectedPaczkomat && (
-                <>
-                  {" "}
-                  Delivery to: {selectedPaczkomat.name}, {selectedPaczkomat.address.line1}, {selectedPaczkomat.address.line2}
-                </>
-              )}
-              {deliveryMethod === 'kurier' && (
-                <>
-                  {" "}
-                  Delivery by kurier to: {street} {houseNumber}, {zipCode} {city}
-                </>
-              )}
-            </p>
-          )} */}
         </div>
 
         <button
