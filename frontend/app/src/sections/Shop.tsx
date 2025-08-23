@@ -34,7 +34,7 @@ export default function Shop() {
   const productPrice = 239;
   const paczkomatCost = 19;
   const kurierCost = 21;
-  const shippingCost = deliveryMethod === 'paczkomat' ? 18.99 : 21;
+  const shippingCost = deliveryMethod === 'paczkomat' ? paczkomatCost : kurierCost;
   const totalCost = (productPrice * quantity) + shippingCost;
   const [zipCodeError, setZipCodeError] = useState<boolean>(false);
   const [limit, currentLimit] = useState<number>(0);
