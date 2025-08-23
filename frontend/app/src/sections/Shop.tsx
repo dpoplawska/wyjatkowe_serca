@@ -37,7 +37,7 @@ export default function Shop() {
   const shippingCost = deliveryMethod === 'paczkomat' ? paczkomatCost : kurierCost;
   const totalCost = (productPrice * quantity) + shippingCost;
   const [zipCodeError, setZipCodeError] = useState<boolean>(false);
-  const [currentLimit, setCurrentLimit] = useState<number>(0);
+  const [currentLimit, setCurrentLimit] = useState<number>(1);
 
   const handleAcceptTermsAndConditions = () => {
     setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox);
