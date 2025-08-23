@@ -3,7 +3,7 @@ import "./css/Main.css";
 import HelpUsSide from "./HelpUsSide";
 import SocialsSide from "./SocialsSide";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
-import { Checkbox, TextField } from "@mui/material";
+import { Checkbox, InputAdornment, TextField } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
@@ -97,10 +97,10 @@ export default function Shop() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailRegex.test(event.target.value)) {
+    if (emailRegex.test(email)) {
       setEmailError(false);
       setEmptyEmail(false);
-    } else if (event.target.value.length < 1) {
+    } else if (email.length < 1) {
       setEmptyEmail(true);
     } else {
       setEmailError(true);
@@ -233,6 +233,19 @@ export default function Shop() {
               alignItems: "center",
             }}
           >
+          <div style={{ width: "100%", maxWidth: "400px" }}>
+              <TextField
+                variant="standard"
+                type="text"
+                id="name"
+                label="Imię i nazwisko"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                sx={textFieldStyles}
+                fullWidth
+              />
+            </div>
             <div style={{ width: "100%", maxWidth: "400px" }}>
               <TextField
                 id="email"
@@ -251,31 +264,29 @@ export default function Shop() {
               />
             </div>
             <div style={{ width: "100%", maxWidth: "400px" }}>
-              <TextField
-                variant="standard"
-                type="text"
-                id="phone"
-                label="Numer telefonu"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                sx={textFieldStyles}
-                fullWidth
-              />
-            </div>
-            <div style={{ width: "100%", maxWidth: "400px" }}>
-              <TextField
-                variant="standard"
-                type="text"
-                id="name"
-                label="Imię i nazwisko"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                sx={textFieldStyles}
-                fullWidth
-              />
-            </div>
+            <TextField
+              variant="standard"
+              type="text"
+              id="phone"
+              label="Numer telefonu"
+              value={phone}
+              onChange={(e) => {
+                const input = e.target.value.replace(/\D/g, '');
+                const limitedInput = input.slice(0, 9);
+                let formatted = '';
+                if (limitedInput.length > 0) {
+                  formatted = limitedInput.match(/.{1,3}/g).join(' ');
+                  if (limitedInput.length > 6) {
+                    formatted = limitedInput.match(/.{1,3}/g).join(' ');
+                  }
+                }
+                setPhone(formatted);
+              }}
+              required
+              sx={textFieldStyles}
+              fullWidth
+            />
+          </div>
             {deliveryMethod === 'paczkomat' && (
               <div style={{ width: "100%", maxWidth: "400px" }}>
                 <TextField
