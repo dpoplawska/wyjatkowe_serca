@@ -50,6 +50,7 @@ export default function Shop() {
   const shippingCost = deliveryMethod === 'paczkomat' ? 18.99 : 21;
   const totalCost = (productPrice * quantity) + shippingCost;
   const [zipCodeError, setZipCodeError] = useState<boolean>(false);
+  const [limit, currentLimit] = useState<number>(0);
 
   const handleAcceptTermsAndConditions = () => {
     setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox);
@@ -71,7 +72,8 @@ export default function Shop() {
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(1, parseInt(e.target.value) || 1);
+    const parsedValue = parseInt(e.target.value);
+    const value = isNaN(parsedValue) ? parsedValue : Math.min(parsedValue, limit);
     setQuantity(value);
   };
 
@@ -81,9 +83,10 @@ export default function Shop() {
       acceptTermsAndConditionsCheckbox &&
       email &&
       phone &&
+      quantity &&
       (deliveryMethod === 'paczkomat' ? selectedPaczkomat : deliveryMethod === 'kurier' ? (address && zipCode && city) : false);
     setDisabled(!requiredFieldsFilled);
-  }, [name, phone, deliveryMethod, zipCode, city, address, acceptTermsAndConditionsCheckbox]);
+  }, [name, phone, deliveryMethod, zipCode, city, address, acceptTermsAndConditionsCheckbox, quantity, selectedPaczkomat, email]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -146,6 +149,34 @@ export default function Shop() {
     }
   };
 
+    const getCurrentLimit = async () => {
+        try {
+            const response = fetch(
+                "https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases/left"
+            )
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                  }
+                  console.log(response)
+                    return response.json();
+                })
+                .then((data) => {
+                    currentLimit(data.items_left);
+                })
+                .catch((error) => {
+                    console.error("There was a problem with the fetch operation:", error);
+                });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+      getCurrentLimit();
+  }, []);
+
+  
   const topFunction = () => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -192,8 +223,10 @@ export default function Shop() {
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
+              max={limit}
               style={{ width: "60px", marginLeft: "10px" }}
             />
+            { } /  {limit}
           </div>
           <div className="delivery-method" style={{ margin: "10px 0" }}>
             <label style={{ padding: "5px" }}>Metoda dostawy: </label>
