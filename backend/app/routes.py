@@ -97,9 +97,33 @@ async def payment_status(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# get items left
+@router.get("/purchases/left")
+def get_items_left() -> dict:
+    MAX_ITEMS = 45
+    try:
+        db_client = get_firestore_client()
+        purchases_stream = db_client.collection("purchases").stream()
+        purchases = [
+            purchase.to_dict()
+            for purchase in purchases_stream
+            if purchase.to_dict().get("status") == "CONFIRMED"
+        ]
+        total_units = sum(purchase.get("units", 1) for purchase in purchases)
+        items_left = MAX_ITEMS - total_units
+        return {"items_left": items_left}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/purchases", response_model=PurchaseResponse)
 def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseResponse:
     try:
+        # don't allow new purchases if items left is 0
+        items_left = get_items_left()["items_left"]
+        if items_left <= 0:
+            raise HTTPException(status_code=400, detail="No items left for purchase")
+
         purchase_response = create_purchase(purchase_request)
 
         try:
@@ -107,7 +131,9 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
             purchase_ref = db_client.collection("purchases").document(purchase_response.purchaseId)
             purchase_ref.set({
                 "amount": purchase_request.amount,
+                "units": purchase_request.units,
                 "email": purchase_request.email,
+                "phone": purchase_request.phone,
                 "name": purchase_request.name,
                 "address": purchase_request.address,
                 "paczkomat": purchase_request.paczkomat,
@@ -123,7 +149,7 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
 
 
 @router.get("/purchases")
-def get_all_purchases(x_password: str = Header(...)):
+def get_all_purchases(x_password: str = Header(...)) -> list[dict]:
     expected_password = os.getenv("ACCESS_PASSWORD")
     if x_password != expected_password:
         raise HTTPException(status_code=401, detail="Invalid password")

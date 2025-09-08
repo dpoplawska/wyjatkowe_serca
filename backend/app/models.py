@@ -22,7 +22,9 @@ class PaymentNotification(BaseModel):
 
 class PurchaseRequest(BaseModel):
     amount: int = Field(..., gt=0, description="The total amount for the purchase")
+    units: int = Field(..., gt=0, description="The number of units being purchased")
     email: EmailStr
+    phone: str = Field(..., description="Customer's phone number")
     name: str = Field(..., description="Customer's full name")
     address: str = Field(..., description="Customer's shipping address")
     paczkomat: bool = Field(..., description="Whether to use Paczkomat delivery")
