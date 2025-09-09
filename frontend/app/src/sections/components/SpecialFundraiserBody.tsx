@@ -17,7 +17,7 @@ switch (beneficiary) {
     case 'hubert_szymborski':
         data = <HubertSzymborski/>;
         break;
-    case 'danusia_grzyb':
+    case 'danuta_grzyb':
         data = <DanusiaGrzyb/>;
         break;
     case 'franciszek_grzyb':

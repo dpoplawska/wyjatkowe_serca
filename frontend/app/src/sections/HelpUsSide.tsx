@@ -205,46 +205,47 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
 
     const [transferTitle, setTransferTitle] = useState("");
 
+    console.log(location.pathname);
     useEffect(() => {
-        if (specialFundraiser == true) {
-            switch (beneficiary) {
-                case 'danusia_grzyb':
+        if (specialFundraiser === true) {
+            switch (location.pathname) {
+                case '/zbiorka/danuta_grzyb':
                     setHelpText("Wesprzyj Danusię");
                     setTransferTitle("WS1 - Danuta Grzyb");
                     break;
-                case 'franciszek_grzyb':
+                case '/zbiorka/franciszek_grzyb':
                     setHelpText("Wesprzyj Franka");
                     setTransferTitle("WS2 - Franciszek Grzyb");
                     break;
-                case 'cyprian_zawadzki':
+                case '/zbiorka/cyprian_zawadzki':
                     setHelpText("Wesprzyj Cypriana");
                     setTransferTitle("WS3 - Cyprian Zawadzki");
                     break;
-                case 'mikolaj_wegierski':
+                case '/zbiorka/mikolaj_wegierski':
                     setHelpText("Wesprzyj Mikołaja");
                     setTransferTitle("WS4 - Mikołaj Węgierski");
                     break;
-                case 'cecylia_suchocka':
+                case '/zbiorka/cecylia_suchocka':
                     setHelpText("Wesprzyj Cecylię");
                     setTransferTitle("WS5 - Cecylia Suchocka");
                     break;
-                case 'hubert_szymborski':
+                case '/zbiorka/hubert_szymborski':
                     setHelpText("Wesprzyj Huberta");
                     setTransferTitle("WS6 - Hubert Szymborski");
                     break;
-                case 'nikodem_kochel':
+                case '/zbiorka/nikodem_kochel':
                     setHelpText("Wesprzyj Nikodema");
                     setTransferTitle("WS7 - Nikodem Kochel");
                     break;
                 default:
                     setHelpText("Wesprzyj Nas");
-    }
+            }
         }
-    }, [beneficiary]);
+    }, [location.pathname]);
 
     return (
         <section className="help-us side">
-            {beneficiary != null ? (
+            {specialFundraiser === true ? (
                 <div className="col-xs-12 col-lg-5" id="fundraiser-content" >
 
                     <p className="sub-highlight" >
