@@ -17,7 +17,14 @@ export default function App() {
           <Route path="/" element={<Main />} />
           <Route path="/dziekujemy" element={<ThankYou />} />
           <Route path="/zbiorka/fundacja" element={<CharityFundraser specialFundraiser={false} />} />
-          <Route path="/zbiorka/hubert_szymborski" element={<CharityFundraser specialFundraiser={true} />} />
+          <Route path="/zbiorka/hubert_szymborski" element={<CharityFundraser specialFundraiser={true} beneficiary='hubert_szymborski' />} />
+          <Route path="/zbiorka/danusia_grzyb" element={<CharityFundraser specialFundraiser={true} beneficiary='danusia_grzyb' />} />
+          <Route path="/zbiorka/franciszek_grzyb" element={<CharityFundraser specialFundraiser={true} beneficiary='franciszek_grzyb' />} />
+          <Route path="/zbiorka/cyprian_zawadzki" element={<CharityFundraser specialFundraiser={true} beneficiary='cyprian_zawadzki' />} />
+          <Route path="/zbiorka/mikolaj_wegierski" element={<CharityFundraser specialFundraiser={true} beneficiary='mikolaj_wegierski'/>} />
+          <Route path="/zbiorka/cecylia_suchocka" element={<CharityFundraser specialFundraiser={true} beneficiary='cecylia_suchocka' />} />
+          <Route path="/zbiorka/nikodem_kochel" element={<CharityFundraser specialFundraiser={true} beneficiary='nikodem_kochel'/>} />
+
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/sklep" element={<Shop />} />
           <Route path="/sklep/admin" element={<LoginPage />} />

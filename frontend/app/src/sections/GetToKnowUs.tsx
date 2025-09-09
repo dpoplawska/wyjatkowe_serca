@@ -25,7 +25,7 @@ export default function GetToKnowUs() {
             <p className="photo-caption">
                 Nasz Zespół (od lewej):<br />
                 Dr n. med. Michał Buczyński - Członek Rady Naukowej Fundacji,<br />
-                Dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,<br />
+                Prof. dr hab. n. med. Przemysław Kosiński - Członek Rady Naukowej Fundacji,<br />
                 Radosław Zawadzki - Członek Rady Fundacji,<br />
                 Patryk Perlejewski - Członek Rady Fundacji,<br />
                 lek. Karolina Szymczak - Członkini Rady Naukowej Fundacji,<br />

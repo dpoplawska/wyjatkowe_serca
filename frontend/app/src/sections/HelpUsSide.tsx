@@ -7,7 +7,13 @@ import { Checkbox } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
-export default function HelpUsSide({ showFundraiserBar, specialFundraiser }) {
+type HelpUsSideProps = {
+    showFundraiserBar: boolean;
+    specialFundraiser: boolean;
+    beneficiary?: string;
+}
+
+export default function HelpUsSide({ showFundraiserBar, specialFundraiser, beneficiary }: HelpUsSideProps) {
     const location = useLocation();
     const defaultValue = "20";
     const [value, setValue] = useState(defaultValue);
@@ -197,18 +203,57 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser }) {
         }
     }, []);
 
+    const [transferTitle, setTransferTitle] = useState("");
+
+    useEffect(() => {
+        if (specialFundraiser == true) {
+            switch (beneficiary) {
+                case 'danusia_grzyb':
+                    setHelpText("Wesprzyj Danusię");
+                    setTransferTitle("WS1 - Danuta Grzyb");
+                    break;
+                case 'franciszek_grzyb':
+                    setHelpText("Wesprzyj Franka");
+                    setTransferTitle("WS2 - Franciszek Grzyb");
+                    break;
+                case 'cyprian_zawadzki':
+                    setHelpText("Wesprzyj Cypriana");
+                    setTransferTitle("WS3 - Cyprian Zawadzki");
+                    break;
+                case 'mikolaj_wegierski':
+                    setHelpText("Wesprzyj Mikołaja");
+                    setTransferTitle("WS4 - Mikołaj Węgierski");
+                    break;
+                case 'cecylia_suchocka':
+                    setHelpText("Wesprzyj Cecylię");
+                    setTransferTitle("WS5 - Cecylia Suchocka");
+                    break;
+                case 'hubert_szymborski':
+                    setHelpText("Wesprzyj Huberta");
+                    setTransferTitle("WS6 - Hubert Szymborski");
+                    break;
+                case 'nikodem_kochel':
+                    setHelpText("Wesprzyj Nikodema");
+                    setTransferTitle("WS7 - Nikodem Kochel");
+                    break;
+                default:
+                    setHelpText("Wesprzyj Nas");
+    }
+        }
+    }, [beneficiary]);
+
     return (
         <section className="help-us side">
-            {location.pathname.includes("/zbiorka/hubert_szymborski") ? (
-                <div className="col-xs-12 col-lg-4" id="fundraiser-content" >
+            {beneficiary != null ? (
+                <div className="col-xs-12 col-lg-5" id="fundraiser-content" >
 
                     <p className="sub-highlight" >
-                        Wesprzyj Huberta
+                       {helpText}
                     </p>
                     <p className="content" style={{ fontSize: "16px" }}>Numer rachunku: </p>
                     <p className="content" style={{ fontSize: "14px", fontWeight: "bold" }}>IBAN PL40 1140 2004 0000 3502 8436 9739</p>
                     <p className="content" style={{ fontSize: "16px" }}>Tytuł przelewu:</p>
-                    <p className="content" style={{ fontSize: "14px", fontWeight: "bold" }}>WS6 Hubert Szymborski</p>
+                    <p className="content" style={{ fontSize: "14px", fontWeight: "bold" }}>{transferTitle}</p>
 
                 </div>
             ) :

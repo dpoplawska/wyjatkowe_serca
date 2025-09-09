@@ -7,7 +7,7 @@ import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 import DefaultFundraiserBody from "./components/DefaultFundraiserBody.tsx";
 import SpecialFundraiserBody from "./components/SpecialFundraiserBody.tsx";
 
-export default function CharityFundraser({ specialFundraiser }) {
+export default function CharityFundraser({ specialFundraiser, beneficiary }: { specialFundraiser: boolean, beneficiary?: string }) {
     const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
 
     function topFunction() {
@@ -17,16 +17,13 @@ export default function CharityFundraser({ specialFundraiser }) {
 
     return (
         <section className="main">
-            {/* {!specialFundraiser && ( */}
             <div className="col-xs-12 col-lg-2" id="left-side">
                 {isMediumScreen ? (
-                    <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} specialFundraiser={specialFundraiser} /></div>
+                    <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} specialFundraiser={specialFundraiser} beneficiary={beneficiary} /></div>
                 ) : <HelpUsSide showFundraiserBar={true} specialFundraiser={specialFundraiser} />}
             </div>
-            {/* )} */}
-
             <div className="col-xs-12 col-lg-7" id="fundraiser-content">
-                {specialFundraiser ? <SpecialFundraiserBody /> : <DefaultFundraiserBody />}
+                {specialFundraiser ? <SpecialFundraiserBody beneficiary={beneficiary}/> : <DefaultFundraiserBody />}
                 <section className="thankyou">
 
                     <div className="dziekujemy-text" style={{ marginBottom: "30px", marginTop: "10px" }}>

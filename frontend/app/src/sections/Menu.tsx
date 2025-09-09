@@ -15,7 +15,13 @@ export default function Menu() {
     const location = useLocation();
 
     const beneficiaries: Route[] = [
+        { name: 'Danusia Grzyb', to: '/zbiorka/danusia_grzyb' },
+        { name: 'Franciszek Grzyb', to: '/zbiorka/franciszek_grzyb' },
+        { name: 'Cyprian Zawadzki', to: '/zbiorka/cyprian_zawadzki' },
+        { name: 'Mikołaj Węgierski', to: '/zbiorka/mikolaj_wegierski' },
+        { name: 'Cecylia Suchocka', to: '/zbiorka/cecylia_suchocka' },
         { name: 'Hubert Szymborski', to: '/zbiorka/hubert_szymborski' },
+        { name: 'Nikodem Kochel', to: '/zbiorka/nikodem_kochel' },
     ];
 
     const goBackHome = "WRÓĆ NA STRONĘ GŁÓWNĄ";
