@@ -1,5 +1,5 @@
 import './css/Menu.css'
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import logo from "../media/logo_podstawowe.png";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,28 +7,15 @@ import { Squash as Hamburger } from "hamburger-react";
 import { Link as ScrollLink } from 'react-scroll';
 import { Link } from 'react-router-dom';
 import {useClickAway} from 'use-click-away';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 type Route = { name: string; to: string | null };
 
 export default function Menu() {
     const location = useLocation();
-
-    const beneficiaries: Route[] = [
-        { name: 'Danusia Grzyb', to: '/zbiorka/danuta_grzyb' },
-        { name: 'Franciszek Grzyb', to: '/zbiorka/franciszek_grzyb' },
-        { name: 'Cyprian Zawadzki', to: '/zbiorka/cyprian_zawadzki' },
-        { name: 'Mikołaj Węgierski', to: '/zbiorka/mikolaj_wegierski' },
-        { name: 'Cecylia Suchocka', to: '/zbiorka/cecylia_suchocka' },
-        { name: 'Hubert Szymborski', to: '/zbiorka/hubert_szymborski' },
-        { name: 'Nikodem Kochel', to: '/zbiorka/nikodem_kochel' },
-    ];
-
     const goBackHome = "WRÓĆ NA STRONĘ GŁÓWNĄ";
 
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
     const [isOpen, setOpen] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const ref = useRef(null);
 
     useEffect(() => {
@@ -41,6 +28,10 @@ export default function Menu() {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
 
     useClickAway(ref, () => setOpen(false));
 
@@ -61,7 +52,7 @@ export default function Menu() {
             { name: 'DLA RODZICA', to: 'forParents' },
             { name: 'KONTAKT', to: 'footer' },
             { name: 'KUP RATUJKĘ', to: '/sklep' },
-            { name: 'NASI PODOPIECZNI', to: null },
+            { name: 'NASI PODOPIECZNI', to: "/podopieczni" },
         ];
     } else {
         routes = [
@@ -71,38 +62,9 @@ export default function Menu() {
 
     const handleMenuItemClick = () => {
         setOpen(false);
-        setDropdownOpen(false);
     };
 
     const renderRoute = (route: Route) => {
-        if (route.name === 'NASI PODOPIECZNI') {
-            return (
-                <div className="dropdownContainer dropdown">
-                    <button
-                        onClick={() => setDropdownOpen(!dropdownOpen)}
-                        id="dropDownButton"
-                    >
-                        {route.name}<KeyboardArrowDownIcon />
-                    </button>
-                    {dropdownOpen && (
-                        <ul className="dropdownMenu">
-                            {beneficiaries.map((person) => (
-                                <li key={person.name}>
-                                    <Link
-                                        to={person.to}
-                                        onClick={handleMenuItemClick}
-                                        className="beneficiary"
-                                    >
-                                        {person.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            );
-        }
-
         if (route.to && route.to.startsWith('/')) {
             return (
                 <Link

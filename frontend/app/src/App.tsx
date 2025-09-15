@@ -7,6 +7,7 @@ import CharityFundraser from './sections/CharityFundraiser.tsx';
 import Shop from "./sections/Shop.tsx";
 import LoginPage from './sections/LoginPage.tsx';
 import Menu from './sections/Menu.tsx';
+import BeneficiariesPage from './sections/BeneficiariesPage.tsx';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/zbiorka/cecylia_suchocka" element={<CharityFundraser specialFundraiser={true} beneficiary='cecylia_suchocka' />} />
           <Route path="/zbiorka/nikodem_kochel" element={<CharityFundraser specialFundraiser={true} beneficiary='nikodem_kochel'/>} />
 
+          <Route path="/podopieczni" element={<BeneficiariesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/sklep" element={<Shop />} />
           <Route path="/sklep/admin" element={<LoginPage />} />

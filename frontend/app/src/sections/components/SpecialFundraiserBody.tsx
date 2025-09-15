@@ -1,49 +1,63 @@
-import HubertSzymborski from "./beneficiaries/HubertSzymborski.tsx";
-import DanusiaGrzyb from "./beneficiaries/DanusiaGrzyb.tsx";
-import FranciszekGrzyb from "./beneficiaries/FranciszekGrzyb.tsx";
-import CyprianZawadzki from "./beneficiaries/CyprianZawadzki.tsx";
-import CecyliaSuchocka from "./beneficiaries/CecyliaSuchocka.tsx";
-import MikolajWegierski from "./beneficiaries/MikolajWegierski.tsx";
-import NikodemKochel from "./beneficiaries/NikodemKochel.tsx";
+import { useNavigate } from "react-router-dom";
+import { beneficiaries } from "./beneficiaries/BeneficiariesData.tsx";
+import React from "react";
 
 type BeneficiaryProps = {
-    beneficiary: string | undefined;
-}
+	beneficiary: string | undefined;
+};
 
-const SpecialFundraiserBody = ({beneficiary}: BeneficiaryProps) => {
+const SpecialFundraiserBody = ({ beneficiary }: BeneficiaryProps) => {
+    const navigate = useNavigate();
+	const selectedBeneficiary = beneficiaries.find((b) => b.id === beneficiary);
 
-let data;
-switch (beneficiary) {
-    case 'hubert_szymborski':
-        data = <HubertSzymborski/>;
-        break;
-    case 'danuta_grzyb':
-        data = <DanusiaGrzyb/>;
-        break;
-    case 'franciszek_grzyb':
-        data = <FranciszekGrzyb/>;
-        break;
-    case 'cyprian_zawadzki':
-        data = <CyprianZawadzki/>;
-        break;
-    case 'mikolaj_wegierski':
-        data = <MikolajWegierski/>;
-        break;
-    case 'cecylia_suchocka':
-        data = <CecyliaSuchocka/>;
-        break;
-    case 'nikodem_kochel':
-        data = <NikodemKochel />;
-        break;
-    default:
-        data = <div>Nieznany beneficjent</div>;
-}
+	if (!selectedBeneficiary) {
+		return <div>Brak takiego podopiecznego</div>;
+	}
 
-    return (
-        <>
-            {data}
-        </>
-    )
-}
+    const handleButton = () => {
+        navigate("/podopieczni")
+    }
+
+	return (
+		<>
+			<h1
+				className="header"
+				style={{ display: "flex", justifyContent: "center" }}
+			>
+				{selectedBeneficiary.name}
+			</h1>
+			<div className="sub-highlight">{selectedBeneficiary.disorder}</div>
+
+			<div
+				style={{ padding: "10px", marginTop: "5px", marginBottom: "20px" }}
+				className="logo"
+			>
+				<div
+					className="container"
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignContent: "center",
+					}}
+				>
+					<img
+						src={selectedBeneficiary.sectionsImageUrl}
+						alt={`Zdjęcie przedstawiające ${selectedBeneficiary.name}`}
+						width="500px"
+						style={{ borderRadius: "15%" }}
+					/>
+				</div>
+			</div>
+			<section className="content" style={{ padding: "10px" }}>
+				<div
+					dangerouslySetInnerHTML={{ __html: selectedBeneficiary.description }}
+				/>
+			</section>
+			<div style={{ display: "flex", justifyContent: "right" }}>
+				<button onClick={handleButton} style={{ fontSize: "16px" }}>Wszyscy podopieczni</button>
+			</div>
+		</>
+	);
+};
 
 export default SpecialFundraiserBody;
