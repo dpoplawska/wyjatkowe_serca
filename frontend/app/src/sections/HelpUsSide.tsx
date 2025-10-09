@@ -237,6 +237,10 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
                     setHelpText("Wesprzyj Nikodema");
                     setTransferTitle("WS7 - Nikodem Kochel");
                     break;
+                case '/zbiorka/agnieszka_ptaszek':
+                    setHelpText("Wesprzyj Agnieszkę");
+                    setTransferTitle("WS8 - Agnieszka Ptaszek");
+                    break;
                 default:
                     setHelpText("Wesprzyj Nas");
             }

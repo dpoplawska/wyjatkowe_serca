@@ -5,13 +5,16 @@ import ws2 from "../../../media/beneficiaries/WS2-FranciszekGrzyb.JPG";
 import ws6 from "../../../media/beneficiaries/WS6-HubertSzymborski.png";
 import ws4 from "../../../media/beneficiaries/WS4-MikolajWegierski.JPG";
 import ws7 from "../../../media/beneficiaries/WS7-NikodemKochel.jpeg";
+import ws8_1 from "../../../media/beneficiaries/WS8-2-AgnieszkaPtaszek.JPG";
+import ws8_2 from "../../../media/beneficiaries/WS8-1-AgnieszkaPtaszek.JPG";
+import ws8_3 from "../../../media/beneficiaries/WS8-3-AgnieszkaPtaszek.JPG";
 
 export const beneficiaries = [
-  {
-    id: "danuta_grzyb",
+	{
+		id: "danuta_grzyb",
 		name: "Danuta Grzyb",
 		disorder: "Kardiomiopatia, blok przedsionkowo-komorowy III*st",
-		sectionsImageUrl: ws1,
+		sectionsImageUrl: [ws1],
 		moreInfoLink: "/zbiorka/danuta_grzyb",
 		transferTitle: "WS1 - Danuta Grzyb",
 		description: `<p>
@@ -38,11 +41,11 @@ export const beneficiaries = [
 					zdobywając czas do następnej transplantacji.
 				</p>`,
 	},
-  {
-    id: "franciszek_grzyb",
+	{
+		id: "franciszek_grzyb",
 		name: "Franciszek Grzyb",
 		disorder: "blok przedsionkowo-komorowy III*st",
-		sectionsImageUrl: ws2,
+		sectionsImageUrl: [ws2],
 		moreInfoLink: "/zbiorka/franciszek_grzyb",
 		transferTitle: "WS2 - Franciszek Grzyb",
 		description: `<p>
@@ -57,11 +60,11 @@ export const beneficiaries = [
 					powłoki brzuszne, jest radosnym i pogodnym dzieckiem.
 				</p>`,
 	},
-  {
-    id: "cyprian_zawadzki",
+	{
+		id: "cyprian_zawadzki",
 		name: "Cyprian Zawadzki",
 		disorder: "Dwuujściowa prawa komora typu tetralogia Fallota (Dorv typ ToF)",
-		sectionsImageUrl: ws3,
+		sectionsImageUrl: [ws3],
 		moreInfoLink: "/zbiorka/cyprian_zawadzki",
 		transferTitle: "WS3 - Cyprian Zawadzki",
 		description: `<p>
@@ -131,11 +134,11 @@ export const beneficiaries = [
 					chwilami, bo nigdy nie wiemy co przyniesie jutro.
 				</p>`,
 	},
-  {
-    id: "mikolaj_wegierski",
+	{
+		id: "mikolaj_wegierski",
 		name: "Mikołaj Węgierski",
 		disorder: "Kardiomiopatia",
-		sectionsImageUrl: ws4,
+		sectionsImageUrl: [ws4],
 		moreInfoLink: "/zbiorka/mikolaj_wegierski",
 		transferTitle: "WS4 - Mikołaj Węgierski",
 		description: `<p>
@@ -173,11 +176,11 @@ export const beneficiaries = [
 				<p>Z całego serca dziękujemy za każdą pomoc!</p>
 				<p>Rodzice</p>`,
 	},
-  {
-    id: "cecylia_suchocka",
+	{
+		id: "cecylia_suchocka",
 		name: "Cecylia Suchocka",
 		disorder: "Kardiomiopatia",
-		sectionsImageUrl: ws5,
+		sectionsImageUrl: [ws5],
 		moreInfoLink: "/zbiorka/cecylia_suchocka",
 		transferTitle: "WS5 - Cecylia Suchocka",
 		description: `<p>
@@ -197,11 +200,11 @@ export const beneficiaries = [
 					oraz beztroskimi chwilami dzieciństwa.
 				</p>`,
 	},
-  {
-    id: "hubert_szymborski",
+	{
+		id: "hubert_szymborski",
 		name: "Hubert Szymborski",
 		disorder: "Lymphomatoid granulomatosis",
-		sectionsImageUrl: ws6,
+		sectionsImageUrl: [ws6],
 		moreInfoLink: "/zbiorka/hubert_szymborski",
 		transferTitle: "WS6 - Hubert Szymborski",
 		description: `<p>
@@ -227,11 +230,11 @@ export const beneficiaries = [
                     Każda darowizna to krok bliżej do odzyskania zdrowia, siły i przyszłości pełnej marzeń.
                 </p>`,
 	},
-  {
-    id: "nikodem_kochel",
+	{
+		id: "nikodem_kochel",
 		name: "Nikodem Kochel",
 		disorder: "Zespół Fallota",
-		sectionsImageUrl: ws7,
+		sectionsImageUrl: [ws7],
 		moreInfoLink: "/zbiorka/nikodem_kochel",
 		transferTitle: "WS7 - Nikodem Kochel",
 		description: `<p>Nasz mały wojownik - Nikoś</p>
@@ -276,5 +279,59 @@ export const beneficiaries = [
 					drodze!
 				</p>
 				<p>Mama i Tata Nikosia</p>`,
+	},
+	{
+		id: "agnieszka_ptaszek",
+		name: "Agnieszka Ptaszek",
+		disorder: "TGA, Dorv, oczekuje na transplantację serca i płuc",
+		sectionsImageUrl: [ws8_1, ws8_2, ws8_3],
+		moreInfoLink: "/zbiorka/agnieszka_ptaszek",
+		transferTitle: "WS8 - Agnieszka Ptaszek",
+		description: `
+		<p>💖 Agnieszka - nasza mała wojowniczka po 9 operacjach serca! Teraz czeka na przeszczep serca i płuc 💔</p>
+				<p>
+					Kiedy dowiedzieliśmy się, że nasza córeczka urodzi się z ciężką wadą serca, świat nam się zawalił.
+Jeszcze w ciąży usłyszeliśmy słowa, których żaden rodzic nie chce nigdy usłyszeć: „Państwa dziecko ma zwężenie łuku aorty i duży ubytek międzykomorowy”.
+Wiedzieliśmy, że tuż po urodzeniu nasza córeczka będzie musiała walczyć o życie.
+				</p>
+				<p>
+					Agnieszka przyszła na świat 1 sierpnia 2022 roku w Centrum Zdrowia Matki Polki w Łodzi.
+Nie mogłam jej przytulić. Nie mogłam jej nawet pocałować. Zabrano ją od razu na intensywną terapię.
+Mogłam tylko patrzeć - i modlić się, żeby przeżyła.
+W 12. dobie życia przeszła pierwszą operację na otwartym sercu.
+Jej stan był krytyczny. Przez ponad miesiąc lekarze walczyli o jej życie.
+Później przyszły kolejne dramaty: niedodma lewego płuca, porażenie przepony, obustronne porażenie nerwów krtani…
+Agnieszka straciła głos - nie mogła nawet zapłakać.
+				</p>
+
+				<p>
+					W kolejnych miesiącach przeszła kolejne operacje, trwające po wiele godzin, a w 2023 roku lekarze odkryli u niej niewykrytą wcześniej wadę – TGA (przełożenie wielkich pni tętniczych).
+Znowu walka o życie.
+Po jednej z operacji konieczna była reanimacja i wszczepienie rozrusznika serca, który do dziś pomaga jej małemu serduszku bić…
+W 2024 roku Agnieszka znów trafiła na stół operacyjny. Zabieg trwał ponad 12 godzin.
+				</p>
+				<p>
+					Po nim – niewydolność wielonarządowa, kolejne reanimacje, powikłania neurologiczne.
+Przez jakiś czas nasza córeczka nie widziała, nie słyszała, nie reagowała.
+Lekarze mówili, że możemy ją stracić…
+Ale Agnieszka wróciła do nas cudem – do życia, do uśmiechu, do miłości. ❤️
+Dziś Agnieszka ma 3 latka. Za sobą ma już 9 operacji na otwartym sercu.
+Pomimo ogromnych starań lekarzy, jej serduszko wciąż nie jest w stanie pracować samodzielnie.
+Jedyną szansą na życie jest przeszczep serca i płuc.
+				</p>
+				<p>
+					Codzienność Agnieszki to nieustanna walka: leki, rehabilitacje, badania, kontrole, pobyty w szpitalach.
+To wszystko wiąże się z ogromnymi kosztami, które znacznie przekraczają nasze możliwości.
+				</p>
+				<p>
+					Agnieszka ma starszą siostrę, którą kocha ponad wszystko. Marzy o tym, żeby pójść z nią do przedszkola, biegać, śmiać się, przytulać nas każdego dnia…
+Marzy o normalnym dzieciństwie i o życiu.
+				</p>
+				<p>Prosimy Was z całego serca – pomóżcie naszej córeczce!
+Każda złotówka, każde udostępnienie, każda modlitwa to dla nas nadzieja.
+Nie potrafimy sobie wyobrazić świata bez jej uśmiechu.</p>
+<p>❤️ Dziękujemy, że jesteście z nami w tej walce.
+Rodzice Agnieszki ❤️
+</p>`,
 	},
 ];

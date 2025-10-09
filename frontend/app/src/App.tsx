@@ -25,6 +25,7 @@ export default function App() {
           <Route path="/zbiorka/mikolaj_wegierski" element={<CharityFundraser specialFundraiser={true} beneficiary='mikolaj_wegierski'/>} />
           <Route path="/zbiorka/cecylia_suchocka" element={<CharityFundraser specialFundraiser={true} beneficiary='cecylia_suchocka' />} />
           <Route path="/zbiorka/nikodem_kochel" element={<CharityFundraser specialFundraiser={true} beneficiary='nikodem_kochel'/>} />
+          <Route path="/zbiorka/agnieszka_ptaszek" element={<CharityFundraser specialFundraiser={true} beneficiary='agnieszka_ptaszek'/>} />
 
           <Route path="/podopieczni" element={<BeneficiariesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

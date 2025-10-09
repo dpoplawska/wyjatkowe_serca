@@ -16,16 +16,16 @@ const BeneficiaryCard = ({
 	const navigate = useNavigate();
 
 	const handleButton = () => {
-		console.log("Button clicked!");
 		navigate(beneficiary.moreInfoLink);
 	};
+
 	return (
 		<>
 			<div className="col-md-6" style={{ marginBottom: "20px"}}>
 				<div className="card mb-4 shadow-sm h-100">
 					<img
 						className="card-img-top"
-						src={beneficiary.sectionsImageUrl}
+						src={beneficiary.sectionsImageUrl[0]}
 						alt="Description"
 						style={{ height: 225, width: "100%", objectFit: "contain" }}
 					/>
