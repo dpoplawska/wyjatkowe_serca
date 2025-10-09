@@ -305,16 +305,18 @@ Agnieszka straciła głos - nie mogła nawet zapłakać.
 				</p>
 
 				<p>
-					W kolejnych miesiącach przeszła kolejne operacje, trwające po wiele godzin, a w 2023 roku lekarze odkryli u niej niewykrytą wcześniej wadę – TGA (przełożenie wielkich pni tętniczych).
+					W kolejnych miesiącach przeszła kolejne operacje, trwające po wiele godzin, a w 2023 roku lekarze odkryli u niej niewykrytą wcześniej wadę - TGA (przełożenie wielkich pni tętniczych).
 Znowu walka o życie.
 Po jednej z operacji konieczna była reanimacja i wszczepienie rozrusznika serca, który do dziś pomaga jej małemu serduszku bić…
 W 2024 roku Agnieszka znów trafiła na stół operacyjny. Zabieg trwał ponad 12 godzin.
 				</p>
 				<p>
-					Po nim – niewydolność wielonarządowa, kolejne reanimacje, powikłania neurologiczne.
+					Po nim - niewydolność wielonarządowa, kolejne reanimacje, powikłania neurologiczne.
 Przez jakiś czas nasza córeczka nie widziała, nie słyszała, nie reagowała.
 Lekarze mówili, że możemy ją stracić…
-Ale Agnieszka wróciła do nas cudem – do życia, do uśmiechu, do miłości. ❤️
+Ale Agnieszka wróciła do nas cudem - do życia, do uśmiechu, do miłości. ❤️
+</p>
+<p>
 Dziś Agnieszka ma 3 latka. Za sobą ma już 9 operacji na otwartym sercu.
 Pomimo ogromnych starań lekarzy, jej serduszko wciąż nie jest w stanie pracować samodzielnie.
 Jedyną szansą na życie jest przeszczep serca i płuc.
