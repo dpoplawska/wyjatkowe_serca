@@ -309,9 +309,8 @@
 .crisisSubHeader {
   font-size: 24px;
   font-family: var(--font-family-nunito-sans);
-  color: var(--red);
+  color: var(--grey1);
   text-align: center;
-  font-style: italic;
   line-height: 1.4;
   margin-bottom: 24px;
 }
