@@ -9,6 +9,7 @@ import LoginPage from './sections/LoginPage.tsx';
 import Menu from './sections/Menu.tsx';
 import BeneficiariesPage from './sections/BeneficiariesPage.tsx';
 import ConnectedInCrisisPage from './sections/ConnectedInCrisisPage.tsx';
+import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/sklep" element={<Shop />} />
           <Route path="/sklep/admin" element={<LoginPage />} />
+          <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
         </Routes>
       </div>
       <Footer />
