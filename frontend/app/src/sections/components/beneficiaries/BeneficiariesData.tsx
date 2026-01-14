@@ -17,6 +17,7 @@ export const beneficiaries = [
 		sectionsImageUrl: [ws1],
 		moreInfoLink: "/zbiorka/danuta_grzyb",
 		transferTitle: "WS1 - Danuta Grzyb",
+		afterHeartTransplant: true,
 		description: `<p>
 					Danusia urodziła się w 30 tygodniu ciąży, w lipcu 2020r, jako skrajny
 					wcześniak. Przyszła na świat przez cesarskie cięcie i natychmiast
@@ -141,6 +142,7 @@ export const beneficiaries = [
 		sectionsImageUrl: [ws4],
 		moreInfoLink: "/zbiorka/mikolaj_wegierski",
 		transferTitle: "WS4 - Mikołaj Węgierski",
+		afterHeartTransplant: true,
 		description: `<p>
 					Mikuś to pełen życia, uśmiechnięty 2-letni chłopiec, który każdego
 					dnia pokazuje, jak ogromną ma wolę walki. Za sobą ma już więcej niż
@@ -183,6 +185,7 @@ export const beneficiaries = [
 		sectionsImageUrl: [ws5],
 		moreInfoLink: "/zbiorka/cecylia_suchocka",
 		transferTitle: "WS5 - Cecylia Suchocka",
+		afterHeartTransplant: true,
 		description: `<p>
 					Kiedy Cecylka miała zaledwie 7 miesięcy, wydarzyło się coś, co na
 					zawsze odmieniło nasze życie - jej maleńkie serduszko nagle się

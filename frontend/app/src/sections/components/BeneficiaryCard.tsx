@@ -7,7 +7,9 @@ type BeneficiaryCardProps = {
     sectionsImageUrl: any;
     moreInfoLink: string;
     transferTitle: string;
-    description: string;};
+		description: string;
+		afterHeartTransplant?: boolean;
+	};
 };
 
 const BeneficiaryCard = ({
@@ -30,7 +32,9 @@ const BeneficiaryCard = ({
 						style={{ height: 225, width: "100%", objectFit: "contain" }}
 					/>
           <div className="card-body">
-            <p className="highlight" style={{fontSize:"20px"}}>{beneficiary.name}</p>
+						<p className="highlight" style={{ fontSize: "20px" }}>{beneficiary.name}</p>
+						{beneficiary.afterHeartTransplant &&
+							<p className="card-text" style={{color:"#2383C5"}}>po transplantacji serca</p>}
 						<p className="card-text">{beneficiary.disorder}</p>
 						<div className="d-flex align-items-center justify-content-center">
 							<div className="btn-group">
