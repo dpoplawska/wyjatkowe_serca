@@ -3,6 +3,8 @@ import logo from "../media/logo_podstawowe.png";
 import PlaceIcon from "@mui/icons-material/Place";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
+import statut from "../media/Statut.pdf";
+
 
 export default function Footer() {
 	const addressLink =
@@ -49,6 +51,7 @@ export default function Footer() {
 								href={privacyPolicy}
 								target="_blank"
 								rel="noopener noreferrer"
+								id="privacy-policy-link"
 								className="privacy-policy-link"
 							>
 								Polityka prywatności
@@ -58,14 +61,21 @@ export default function Footer() {
 								href={serviceRegulations}
 								target="_blank"
 								rel="noopener noreferrer"
+								id="service-regulations-link"
 								className="service-regualtions-link"
 							>
 								Regulamin serwisu
 							</a>
 							<a
-								href="/raporty-finansowe"
-								className="service-regualtions-link"
+								href={statut}
+								target="_blank"
+								rel="noopener noreferrer"
+								id="statut-link"
+								className="privacy-policy-link"
 							>
+								Statut
+							</a>
+							<a href="/raporty-finansowe" className="service-regualtions-link">
 								Sprawozdania finansowe
 							</a>
 						</div>
