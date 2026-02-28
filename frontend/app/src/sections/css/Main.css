@@ -26,6 +26,11 @@
   align-items: center;
 }
 
+#left-side .position-fixed,
+#right-side .position-fixed {
+  transition: top 0.2s ease;
+}
+
 #main-content, .thankyou {
   display: flex;
   margin: auto;

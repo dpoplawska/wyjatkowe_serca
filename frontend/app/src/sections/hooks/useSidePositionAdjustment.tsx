@@ -34,16 +34,23 @@ export default function useSidePositionAdjustment() {
             const footerRect = footer && footer.getBoundingClientRect();
             const windowHeight = window.innerHeight;
 
-            if (footerRect) {
-                const distanceToFooter = footerRect.top - windowHeight;
+            if (!footerRect) return;
 
-                if (distanceToFooter < 0 && !isSmallScreen) {
-                    setButtonBottom(24 - distanceToFooter);
-                    setTop(-10);
-                } else {
-                    setButtonBottom(24);
-                    setTop(defaultTop);
-                }
+            const distanceToFooter = footerRect.top - windowHeight;
+            setButtonBottom(distanceToFooter < 0 ? 24 - distanceToFooter : 24);
+
+            if (isSmallScreen) return;
+
+            const panel = document.querySelector('#left-side .position-fixed') as HTMLElement;
+            const panelHeight = panel ? panel.offsetHeight : 0;
+            const defaultTopPx = (defaultTop / 100) * windowHeight;
+            const panelBottomPx = defaultTopPx + panelHeight;
+
+            if (panelBottomPx > footerRect.top) {
+                const newTopPx = footerRect.top - panelHeight;
+                setTop((newTopPx / windowHeight) * 100);
+            } else {
+                setTop(defaultTop);
             }
         };
 
@@ -54,7 +61,7 @@ export default function useSidePositionAdjustment() {
             window.removeEventListener('scroll', adjustSidePositions);
             window.removeEventListener('resize', adjustSidePositions);
         };
-    }, []);
+    }, [isSmallScreen]);
 
     return { isSmallScreen, isMediumScreen, top, buttonBottom };
 }

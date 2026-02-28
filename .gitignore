@@ -1,3 +1,4 @@
 secrets.json
 secrets_dev.json
 Pipfile
+*/.ipynb_checkpoints

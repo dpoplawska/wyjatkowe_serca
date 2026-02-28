@@ -19,26 +19,23 @@ export default function Main() {
 
     return (
         <section className="main">
-            <div className="row">
-                <div className="col-xs-12 col-lg-2" id="left-side">
-                    {isMediumScreen ? (
-                        <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={false} specialFundraiser={false} /></div>
-                    ) : <HelpUsSide showFundraiserBar={false} specialFundraiser={false} />}
-                </div>
-                <div className="col-xs-12 col-lg-8" id="main-content">
-                    <HeroSection />
-                    <WhatWeDo />
-                    <GetToKnowUs />
-                    <Parents />
-                    <HelpUs />
-                    <button onClick={topFunction} id="topButton" title="Do góry" style={{ bottom: buttonBottom + 'px' }} > <KeyboardArrowUpIcon /></button>
-
-                </div>
-                <div className="col-xs-12 col-lg-2" id="right-side">
-                    {isMediumScreen ? (
-                        <div className="position-fixed" style={{ top: top + '%' }}><SocialsSide /></div>
-                    ) : <SocialsSide />}
-                </div>
+            <div className="col-xs-12 col-lg-2" id="left-side">
+                {isMediumScreen ? (
+                    <div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={false} specialFundraiser={false} /></div>
+                ) : <HelpUsSide showFundraiserBar={false} specialFundraiser={false} />}
+            </div>
+            <div className="col-xs-12 col-lg-8" id="main-content">
+                <HeroSection />
+                <WhatWeDo />
+                <GetToKnowUs />
+                <Parents />
+                <HelpUs />
+                <button onClick={topFunction} id="topButton" title="Do góry" style={{ bottom: buttonBottom + 'px' }} > <KeyboardArrowUpIcon /></button>
+            </div>
+            <div className="col-xs-12 col-lg-2" id="right-side">
+                {isMediumScreen ? (
+                    <div className="position-fixed" style={{ top: top + '%' }}><SocialsSide /></div>
+                ) : <SocialsSide />}
             </div>
         </section >
     );

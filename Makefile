@@ -7,6 +7,12 @@ run:
 run_dev:
 	ENV=dev pipenv run uvicorn app.main:app --reload
 
+run_frontend:
+	cd frontend/app && npm start
+
+dev:
+	docker-compose -f docker-compose.dev.yml up
+
 deploy-backend:
 	gcloud run deploy wyjatkowe-serca --allow-unauthenticated --region europe-central2 --source ./backend/
 

@@ -61,6 +61,10 @@
   #icon:hover {
     color:#2383C5;
   }
+
+  .help-us.side {
+    width: 220px;
+  }
 }
 
 @media screen and (max-width: 992px) {

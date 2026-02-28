@@ -5,8 +5,10 @@ import BeneficiaryCard from "./components/BeneficiaryCard.tsx";
 import { beneficiaries } from "./components/beneficiaries/BeneficiariesData.tsx";
 import { useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
+import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
 export default function BeneficiariesPage() {
+	const { isMediumScreen, top } = useSidePositionAdjustment();
 	const [searchName, setSearchName] = useState("");
 	const [filterDisorder, setFilterDisorder] = useState("");
 	const [onlyAfterHeartTransplant, setOnlyAfterHeartTransplant] =
@@ -32,7 +34,9 @@ export default function BeneficiariesPage() {
 	return (
 		<section className="main">
 			<div className="col-xs-12 col-lg-2" id="left-side">
-				<HelpUsSide showFundraiserBar={true} specialFundraiser={false} />
+				{isMediumScreen ? (
+					<div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} specialFundraiser={false} /></div>
+				) : <HelpUsSide showFundraiserBar={true} specialFundraiser={false} />}
 			</div>
 
 			<div className="col-xs-12 col-lg-7" id="fundraiser-content">
@@ -109,7 +113,9 @@ export default function BeneficiariesPage() {
 			</div>
 
 			<div className="col-xs-12 col-lg-2" id="right-side">
-				<SocialsSide />
+				{isMediumScreen ? (
+					<div className="position-fixed" style={{ top: top + '%' }}><SocialsSide /></div>
+				) : <SocialsSide />}
 			</div>
 		</section>
 	);

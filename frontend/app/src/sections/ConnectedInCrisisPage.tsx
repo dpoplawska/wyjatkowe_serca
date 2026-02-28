@@ -80,7 +80,9 @@ const ConnectedInCrisisPage = () => {
 		<>
 			<section className="main">
 				<div className="col-xs-12 col-lg-2" id="left-side">
-					<HelpUsSide showFundraiserBar={true} specialFundraiser={false} />
+					{isMediumScreen ? (
+						<div className="position-fixed" style={{ top: top + '%' }}><HelpUsSide showFundraiserBar={true} specialFundraiser={false} /></div>
+					) : <HelpUsSide showFundraiserBar={true} specialFundraiser={false} />}
 				</div>
 				<div className="col-xs-12 col-lg-7" id="fundraiser-content">
 					<div className="content">
@@ -386,7 +388,9 @@ const ConnectedInCrisisPage = () => {
 					)}
 				</div>
 				<div className="col-xs-12 col-lg-2" id="right-side">
-					<SocialsSide />
+					{isMediumScreen ? (
+						<div className="position-fixed" style={{ top: top + '%' }}><SocialsSide /></div>
+					) : <SocialsSide />}
 				</div>
 			</section>
 		</>
