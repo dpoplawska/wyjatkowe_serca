@@ -5,15 +5,29 @@ import logging
 import os
 from hashlib import sha256
 
-from fastapi import APIRouter, HTTPException, Request, Header
+from fastapi import APIRouter, HTTPException, Request, Header, Depends
 import pandas as pd
+from firebase_admin import auth as firebase_auth
 
-from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse
+from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData
 from app.utils import create_payment, load_secrets, create_purchase
-from app.db import get_firestore_client
+from app.db import get_firestore_client, initialize_firestore
 
 
 router = APIRouter()
+
+
+def verify_token(authorization: str = Header(...)) -> str:
+    """Verify Firebase ID token from Authorization header and return the user UID."""
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header format")
+    token = authorization.removeprefix("Bearer ")
+    try:
+        initialize_firestore()
+        decoded = firebase_auth.verify_id_token(token)
+        return decoded["uid"]
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 @router.post("/payments", response_model=PaymentResponse)
 def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:
@@ -146,6 +160,22 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
         return purchase_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/patient-profile")
+def get_patient_profile(uid: str = Depends(verify_token)) -> dict:
+    db_client = get_firestore_client()
+    doc = db_client.collection("patientProfiles").document(uid).get()
+    if not doc.exists:
+        return {}
+    return doc.to_dict()
+
+
+@router.put("/patient-profile")
+def upsert_patient_profile(profile: PatientProfileData, uid: str = Depends(verify_token)) -> dict:
+    db_client = get_firestore_client()
+    db_client.collection("patientProfiles").document(uid).set(profile.model_dump())
+    return {"message": "Profil zapisany pomyślnie"}
 
 
 @router.get("/purchases")

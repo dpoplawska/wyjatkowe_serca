@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Main from './sections/Main.tsx';
 import Footer from './sections/Footer.tsx';
@@ -10,12 +10,18 @@ import Menu from './sections/Menu.tsx';
 import BeneficiariesPage from './sections/BeneficiariesPage.tsx';
 import ConnectedInCrisisPage from './sections/ConnectedInCrisisPage.tsx';
 import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
+import { AuthProvider } from './app/AuthContext.tsx';
+import AppLogin from './app/AppLogin.tsx';
+import PatientProfile from './app/PatientProfile.tsx';
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
+  const isAppSection = location.pathname.startsWith('/app');
+
   return (
-    <Router>
+    <>
       <div className="App">
-        <Menu />
+        {!isAppSection && <Menu />}
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/dziekujemy" element={<ThankYou />} />
@@ -30,13 +36,25 @@ export default function App() {
           <Route path="/zbiorka/agnieszka_ptaszek" element={<CharityFundraser specialFundraiser={true} beneficiary='agnieszka_ptaszek'/>} />
           <Route path="polaczeni_w_kryzysie" element={<ConnectedInCrisisPage/>}/>
           <Route path="/podopieczni" element={<BeneficiariesPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/sklep" element={<Shop />} />
           <Route path="/sklep/admin" element={<LoginPage />} />
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
+          <Route path="/app" element={<AppLogin />} />
+          <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      <Footer />
-    </Router>
+      {!isAppSection && <Footer />}
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }

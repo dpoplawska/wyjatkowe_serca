@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
-from typing import Optional
+from typing import Optional, List
 
 
 class PaymentRequest(BaseModel):
@@ -35,3 +35,28 @@ class PurchaseResponse(BaseModel):
     redirectUrl: HttpUrl
     purchaseId: str
     status: str
+
+
+class Operacja(BaseModel):
+    typ: str = ""
+    data: str = ""
+    czas_it: str = ""
+
+
+class PatientProfileData(BaseModel):
+    imie_nazwisko: str = ""
+    grupa_krwi: str = ""
+    wada_serca: str = ""
+    zaburzenia_rytmu: bool = False
+    zaburzenia_rytmu_typ: str = ""
+    zaburzenia_rytmu_opis: str = ""
+    rozrusznik_serca: bool = False
+    rozrusznik_serca_typ: str = ""
+    przebyte_operacje: List[Operacja] = []
+    powiklania: bool = False
+    powiklania_opis: str = ""
+    dodatkowe_choroby: bool = False
+    dodatkowe_choroby_opis: str = ""
+    zespoly_genetyczne: bool = False
+    zespoly_genetyczne_typ: str = ""
+    zespoly_genetyczne_opis: str = ""
