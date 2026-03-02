@@ -4,7 +4,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import statut from "../media/Statut.pdf";
-
+import konkurs from "../media/OGLOSZENIE_O_KONKURSIE.pdf";
 
 export default function Footer() {
 	const addressLink =
@@ -77,6 +77,13 @@ export default function Footer() {
 							</a>
 							<a href="/raporty-finansowe" className="service-regualtions-link">
 								Sprawozdania finansowe
+							</a>
+										<a 		href={konkurs}
+								target="_blank"
+								rel="noopener noreferrer"
+								id="konkurs-link"
+								className="privacy-policy-link">
+								Konkurs
 							</a>
 						</div>
 						<div className="nav col-md-6 justify-content-end d-flex">
