@@ -46,7 +46,7 @@ class Operacja(BaseModel):
 class PatientProfileData(BaseModel):
     imie_nazwisko: str = ""
     grupa_krwi: str = ""
-    wada_serca: str = ""
+    wada_serca: List[str] = []
     zaburzenia_rytmu: bool = False
     zaburzenia_rytmu_typ: str = ""
     zaburzenia_rytmu_opis: str = ""

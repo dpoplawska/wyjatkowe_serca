@@ -13,6 +13,10 @@ import {
   Divider,
   Alert,
   Snackbar,
+  OutlinedInput,
+  Chip,
+  Box,
+  Checkbox,
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -26,61 +30,61 @@ const API = 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
 const GRUPY_KRWI = ['A Rh+', 'A Rh-', 'B Rh+', 'B Rh-', 'AB Rh+', 'AB Rh-', '0 Rh+', '0 Rh-'];
 
 const WADY_SERCA = [
+  'Anomalia Blanda-White\'a-Garlanda (ALCAPA)',
+  'Anomalia Ebsteina',
+  'Całkowity nieprawidłowy spływ żył płucnych (TAPVR)',
+  'Hipoplazja lewego serca (HLHS)',
+  'Koarktacja aorty',
+  'Niedomykalność zastawki aortalnej',
+  'Niedomykalność zastawki mitralnej',
+  'Niedomykalność zastawki płucnej',
+  'Odejście obu naczyń od prawej komory (DORV)',
+  'Przetrwały przewód tętniczy (PDA)',
+  'Serce jednokomorowe',
   'Tetralogia Fallota',
+  'Transpozycja wielkich naczyń (TGA)',
   'Ubytek przegrody międzykomorowej (VSD)',
   'Ubytek przegrody międzyprzedsionkowej (ASD)',
-  'Przetrwały przewód tętniczy (PDA)',
-  'Zwężenie zastawki aortalnej',
-  'Niedomykalność zastawki aortalnej',
-  'Zwężenie zastawki płucnej',
-  'Niedomykalność zastawki płucnej',
-  'Zwężenie zastawki mitralnej',
-  'Niedomykalność zastawki mitralnej',
-  'Koarktacja aorty',
-  'Transpozycja wielkich naczyń (TGA)',
-  'Hipoplazja lewego serca (HLHS)',
-  'Anomalia Ebsteina',
   'Wspólny kanał przedsionkowo-komorowy (CAVC)',
-  'Zarośnięcie zastawki trójdzielnej',
-  'Odejście obu naczyń od prawej komory (DORV)',
-  'Serce jednokomorowe',
   'Wspólny pień tętniczy',
-  'Całkowity nieprawidłowy spływ żył płucnych (TAPVR)',
-  'Anomalia Blanda-White\'a-Garlanda (ALCAPA)',
+  'Zarośnięcie zastawki trójdzielnej',
+  'Zwężenie zastawki aortalnej',
+  'Zwężenie zastawki mitralnej',
+  'Zwężenie zastawki płucnej',
   'Inne',
 ];
 
 const ZABURZENIA_RYTMU_TYPY = [
-  'Migotanie przedsionków',
-  'Trzepotanie przedsionków',
-  'Częstoskurcz nadkomorowy (SVT)',
-  'Zespół Wolffa-Parkinsona-White\'a (WPW)',
   'Blok przedsionkowo-komorowy I°',
   'Blok przedsionkowo-komorowy II°',
   'Blok przedsionkowo-komorowy III° (całkowity)',
-  'Częstoskurcz komorowy',
   'Bradykardia zatokowa',
+  'Częstoskurcz komorowy',
+  'Częstoskurcz nadkomorowy (SVT)',
+  'Migotanie przedsionków',
+  'Trzepotanie przedsionków',
+  'Zespół Wolffa-Parkinsona-White\'a (WPW)',
   'Inne',
 ];
 
 const ROZRUSZNIKI = [
-  'Stymulator jednojamowy (VVI)',
-  'Stymulator dwujamowy (DDD)',
-  'Stymulator resynchronizujący (CRT-P)',
   'Kardiowerter-defibrylator (ICD)',
   'Kardiowerter-defibrylator resynchronizujący (CRT-D)',
+  'Stymulator dwujamowy (DDD)',
   'Stymulator epikardialny',
+  'Stymulator jednojamowy (VVI)',
+  'Stymulator resynchronizujący (CRT-P)',
   'Inne',
 ];
 
 const ZESPOLY_GENETYCZNE_TYPY = [
-  'Zespół Downa (trisomia 21)',
-  'Zespół Turnera (45,X)',
   'Zespół DiGeorge\'a (22q11.2)',
-  'Zespół Williamsa',
-  'Zespół Noonan',
-  'Zespół Marfana',
+  'Zespół Downa (trisomia 21)',
   'Zespół Ehlersa-Danlosa',
+  'Zespół Marfana',
+  'Zespół Noonan',
+  'Zespół Turnera (45,X)',
+  'Zespół Williamsa',
   'Inne',
 ];
 
@@ -95,7 +99,7 @@ interface Operacja {
 interface ProfileData {
   imie_nazwisko: string;
   grupa_krwi: string;
-  wada_serca: string;
+  wada_serca: string[];
   zaburzenia_rytmu: boolean;
   zaburzenia_rytmu_typ: string;
   zaburzenia_rytmu_opis: string;
@@ -114,7 +118,7 @@ interface ProfileData {
 const emptyProfile: ProfileData = {
   imie_nazwisko: '',
   grupa_krwi: '',
-  wada_serca: '',
+  wada_serca: [],
   zaburzenia_rytmu: false,
   zaburzenia_rytmu_typ: '',
   zaburzenia_rytmu_opis: '',
@@ -156,6 +160,9 @@ export default function PatientProfile() {
         if (res.ok) {
           const data = await res.json();
           if (data && Object.keys(data).length > 0) {
+            if (typeof data.wada_serca === 'string') {
+              data.wada_serca = data.wada_serca ? [data.wada_serca] : [];
+            }
             setProfile({ ...emptyProfile, ...data });
           }
         }
@@ -252,13 +259,28 @@ export default function PatientProfile() {
               </FormControl>
 
               <FormControl fullWidth>
-                <InputLabel>Wada serca</InputLabel>
+                <InputLabel>Wady serca</InputLabel>
                 <Select
+                  multiple
                   value={profile.wada_serca}
-                  label="Wada serca"
-                  onChange={(e) => set('wada_serca', e.target.value)}
+                  label="Wady serca"
+                  onChange={(e) => set('wada_serca', e.target.value as string[])}
+                  input={<OutlinedInput label="Wady serca" />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((val) => <Chip key={val} label={val} size="small" />)}
+                    </Box>
+                  )}
                 >
-                  {WADY_SERCA.map((w) => <MenuItem key={w} value={w}>{w}</MenuItem>)}
+                  {WADY_SERCA.map((w) => (
+                    <MenuItem key={w} value={w}>
+                      <Checkbox
+                        checked={profile.wada_serca.includes(w)}
+                        sx={{ py: 0, color: '#EC1A3B', '&.Mui-checked': { color: '#EC1A3B' } }}
+                      />
+                      {w}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Section>

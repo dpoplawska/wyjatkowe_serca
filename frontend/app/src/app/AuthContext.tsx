@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithRedirect, signInWithPopup, getRedirectResult, signOut } from 'firebase/auth';
 import { auth, googleProvider } from './firebase.ts';
 
 interface AuthContextType {
@@ -30,7 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    await signInWithRedirect(auth, googleProvider);
+    if (window.location.hostname === 'localhost') {
+      await signInWithPopup(auth, googleProvider);
+    } else {
+      await signInWithRedirect(auth, googleProvider);
+    }
   };
 
   const logout = async () => {
