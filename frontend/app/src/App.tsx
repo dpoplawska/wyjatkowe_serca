@@ -13,6 +13,7 @@ import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
 import { AuthProvider } from './app/AuthContext.tsx';
 import AppLogin from './app/AppLogin.tsx';
 import PatientProfile from './app/PatientProfile.tsx';
+import Medications from './app/Medications.tsx';
 
 function AppContent() {
   const location = useLocation();
@@ -41,6 +42,7 @@ function AppContent() {
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
           <Route path="/app" element={<AppLogin />} />
           <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
+          <Route path="/app/leki" element={<Medications />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

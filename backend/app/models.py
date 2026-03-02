@@ -60,3 +60,18 @@ class PatientProfileData(BaseModel):
     zespoly_genetyczne: bool = False
     zespoly_genetyczne_typ: str = ""
     zespoly_genetyczne_opis: str = ""
+
+
+class Lek(BaseModel):
+    id: str = ""
+    nazwa: str = ""
+    data_pierwszej_dawki: str = ""
+    godzina_pierwszej_dawki: str = ""
+    czestotliwosc: str = ""
+    czas_trwania_typ: str = ""
+    czas_trwania_wartosc: int = 0
+    sledzenie: bool = False
+
+
+class MedicationsData(BaseModel):
+    leki: List[Lek] = []

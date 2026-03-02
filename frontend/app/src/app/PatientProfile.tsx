@@ -21,7 +21,7 @@ import {
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useAuth } from './AuthContext.tsx';
-import logo from '../media/logo_podstawowe.png';
+import AppHeader from './AppHeader.tsx';
 
 const API = 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
 
@@ -217,17 +217,7 @@ export default function PatientProfile() {
 
   return (
     <div style={s.page}>
-      {/* Header */}
-      <header style={s.header}>
-        <div style={s.headerLeft}>
-          <img src={logo} alt="Wyjątkowe Serca" style={s.headerLogo} />
-          <span style={s.headerTitle}>Wyjątkowe Serca</span>
-        </div>
-        <div style={s.headerRight}>
-          <span style={s.headerEmail}>{user.email}</span>
-          <button onClick={logout} style={s.logoutBtn}>Wyloguj</button>
-        </div>
-      </header>
+      <AppHeader user={user} logout={logout} />
 
       {/* Content */}
       <main style={s.main}>
@@ -551,53 +541,6 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     fontFamily: 'Quicksand, sans-serif',
     color: '#616161',
-  },
-  header: {
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    padding: '12px 24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'sticky' as const,
-    top: 0,
-    zIndex: 100,
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  headerLogo: {
-    height: '36px',
-    width: 'auto',
-  },
-  headerTitle: {
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 700,
-    fontSize: '17px',
-    color: '#EC1A3B',
-  },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  headerEmail: {
-    fontFamily: 'Quicksand, sans-serif',
-    fontSize: '13px',
-    color: '#616161',
-  },
-  logoutBtn: {
-    background: 'none',
-    border: '1.5px solid #EC1A3B',
-    borderRadius: '6px',
-    color: '#EC1A3B',
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 600,
-    fontSize: '13px',
-    padding: '6px 14px',
-    cursor: 'pointer',
   },
   main: {
     maxWidth: '760px',

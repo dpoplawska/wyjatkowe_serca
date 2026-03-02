@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Request, Header, Depends
 import pandas as pd
 from firebase_admin import auth as firebase_auth
 
-from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData
+from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData, MedicationsData
 from app.utils import create_payment, load_secrets, create_purchase
 from app.db import get_firestore_client, initialize_firestore
 
@@ -176,6 +176,20 @@ def upsert_patient_profile(profile: PatientProfileData, uid: str = Depends(verif
     db_client = get_firestore_client()
     db_client.collection("patientProfiles").document(uid).set(profile.model_dump())
     return {"message": "Profil zapisany pomyślnie"}
+
+
+@router.get("/medications")
+def get_medications(uid: str = Depends(verify_token)) -> dict:
+    db_client = get_firestore_client()
+    doc = db_client.collection("medications").document(uid).get()
+    return doc.to_dict() if doc.exists else {}
+
+
+@router.put("/medications")
+def upsert_medications(data: MedicationsData, uid: str = Depends(verify_token)) -> dict:
+    db_client = get_firestore_client()
+    db_client.collection("medications").document(uid).set(data.model_dump())
+    return {"message": "Leki zapisane pomyślnie"}
 
 
 @router.get("/purchases")
