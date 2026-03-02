@@ -17,7 +17,7 @@ interface SidePosition {
 }
 
 export default function Shop() {
-  const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment() as SidePosition;
+  const { isMediumScreen, top, buttonBottom } = useSidePositionAdjustment() as SidePosition;
   const [quantity, setQuantity] = useState<number>(1);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -139,7 +139,7 @@ export default function Shop() {
 
     const getCurrentLimit = async () => {
         try {
-            const response = fetch(
+            fetch(
                 "https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases/left"
             )
                 .then((response) => {

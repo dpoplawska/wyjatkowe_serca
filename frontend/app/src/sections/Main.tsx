@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
 export default function Main() {
-    const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
+    const { isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
 
     function topFunction() {
         document.body.scrollTop = 0;

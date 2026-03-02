@@ -1,12 +1,10 @@
 import {
   Typography,
-  Grid2,
   Button,
   Card,
   CardContent,
   CardActions,
   Container,
-  Box,
 } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DownloadIcon from "@mui/icons-material/Download";

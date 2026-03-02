@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./css/Main.css";
 
 interface TableData {
@@ -73,9 +73,9 @@ export default function Admin({password}: AdminProps) {
   ? data.filter((row) => row.status === filterStatus)
   : data;
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     try {
-            const response = fetch("https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases", {
+            fetch("https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases", {
             headers: {
                 'x-password': password
             }
@@ -96,11 +96,11 @@ export default function Admin({password}: AdminProps) {
       } catch (error) {
           console.error("Error:", error);
       }
-  };
+  }, [password]);
 
   useEffect(() => {
       getData();
-  }, [password]);
+  }, [getData]);
 
   return (
     <>

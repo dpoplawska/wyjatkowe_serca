@@ -158,7 +158,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
 
     const getCurrentFundraisedValue = async () => {
         try {
-            const response = fetch(
+            fetch(
                 "https://wyjatkowe-serca-38835307240.europe-central2.run.app/payments/total-confirmed"
             )
                 .then((response) => {
@@ -186,7 +186,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
         if (location.pathname !== '/') {
             setShowKnowMoreAboutFundraiser(false);
         }
-    }, [])
+    }, [location.pathname])
 
     useEffect(() => {
         if (email.length === 0 || emailError === true || acceptTermsAndConditionsCheckbox === false) {
@@ -194,14 +194,14 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
         } else {
             setDisabled(false)
         }
-    }, [email, acceptTermsAndConditionsCheckbox])
+    }, [email, emailError, acceptTermsAndConditionsCheckbox])
 
     const [helpText, setHelpText] = useState("Wesprzyj Nas");
     useEffect(() => {
-        if (specialFundraiser == true) {
+        if (specialFundraiser === true) {
             setHelpText("Wesprzyj")
         }
-    }, []);
+    }, [specialFundraiser]);
 
     const [transferTitle, setTransferTitle] = useState("");
 
@@ -245,7 +245,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
                     setHelpText("Wesprzyj Nas");
             }
         }
-    }, [location.pathname]);
+    }, [location.pathname, specialFundraiser]);
 
     return (
         <section className="help-us side">

@@ -1,7 +1,6 @@
 import React from "react"
 import "../sections/css/InfoContent.css"
 import YouTube from "@mui/icons-material/YouTube"
-import { Typography } from "@mui/material";
 
 const Playlist = ({ title, description, link }) => (
     <div>

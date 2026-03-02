@@ -16,16 +16,16 @@ import "../sections/css/Main.css";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 import Carousel from "react-bootstrap/esm/Carousel";
 
+const images = [pic1, pic2, pic10, pic4, pic8, pic5, pic9, pic6, pic7];
+
 const ConnectedInCrisisPage = () => {
-	const images = [pic1, pic2, pic10, pic4, pic8, pic5, pic9, pic6, pic7];
-	const standaloneImages = [pic3, pic11];
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
 		null
 	);
 	const [selectedStandaloneImage, setSelectedStandaloneImage] = useState<
 		string | null
 	>(null);
-	const { isSmallScreen, isMediumScreen, top, buttonBottom } =
+	const { isSmallScreen, isMediumScreen, top } =
 		useSidePositionAdjustment();
 
 	const handlePrevImage = () => {
@@ -44,9 +44,13 @@ const ConnectedInCrisisPage = () => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (selectedImageIndex !== null) {
 				if (event.key === "ArrowLeft") {
-					handlePrevImage();
+					setSelectedImageIndex((prev) =>
+						prev !== null ? (prev - 1 + images.length) % images.length : 0
+					);
 				} else if (event.key === "ArrowRight") {
-					handleNextImage();
+					setSelectedImageIndex((prev) =>
+						prev !== null ? (prev + 1) % images.length : 0
+					);
 				} else if (event.key === "Escape") {
 					setSelectedImageIndex(null);
 					setSelectedStandaloneImage(null);

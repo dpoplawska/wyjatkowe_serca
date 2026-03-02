@@ -8,7 +8,7 @@ import DefaultFundraiserBody from "./components/DefaultFundraiserBody.tsx";
 import SpecialFundraiserBody from "./components/SpecialFundraiserBody.tsx";
 
 export default function CharityFundraser({ specialFundraiser, beneficiary }: { specialFundraiser: boolean, beneficiary?: string }) {
-    const { isSmallScreen, isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
+    const { isMediumScreen, top, buttonBottom } = useSidePositionAdjustment();
 
     function topFunction() {
         document.body.scrollTop = 0;
