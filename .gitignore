@@ -1,5 +1,9 @@
+*/.ipynb_checkpoints
+.claude
+.firebase/
+Pipfile
+REVIEW.md
+backend/Untitled.ipynb
+prompts
 secrets.json
 secrets_dev.json
-Pipfile
-.claude
-*/.ipynb_checkpoints
