@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./css/Main.css";
 
+import { API } from '../app/config.ts';
+
 interface TableData {
   id: string;
   paczkomat: boolean;
@@ -75,7 +77,7 @@ export default function Admin({password}: AdminProps) {
 
   const getData = useCallback(async () => {
     try {
-            fetch("https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases", {
+            fetch(`${API}/purchases`, {
             headers: {
                 'x-password': password
             }

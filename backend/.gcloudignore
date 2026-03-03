@@ -1,5 +1,5 @@
-__pycache__
-*.pyc
-.env
 secrets_dev.json
 service-account.json
+Pipfile
+Untitled.ipynb
+**/__pycache__

@@ -16,6 +16,8 @@ from pydantic import ValidationError
 
 from app.models import PaymentRequest, PaymentResponse, PurchaseRequest, PurchaseResponse
 
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def load_secrets() -> dict[str, str]:
     env = os.getenv('ENV')
     if env == 'dev':
@@ -24,7 +26,7 @@ def load_secrets() -> dict[str, str]:
         filename = 'secrets.json'
     else:
         raise RuntimeError("The ENV environment variable must be set to either 'dev' or 'prod'.")
-    with open(filename, 'r') as file:
+    with open(os.path.join(_BASE_DIR, filename), 'r') as file:
         secrets = json.load(file)
     return secrets
 

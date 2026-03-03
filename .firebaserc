@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "wyjatkowe-serca"
-  }
+  },
+  "targets": {
+    "wyjatkowe-serca": {
+      "hosting": {
+        "app": [
+          "wyjatkowe-serca-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

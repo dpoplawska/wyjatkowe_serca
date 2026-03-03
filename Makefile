@@ -26,7 +26,7 @@ deploy-backend:
 	gcloud run deploy wyjatkowe-serca --allow-unauthenticated --region europe-central2 --source ./backend/
 
 deploy-frontend:
-	gcloud run deploy wyjatkowe-serca-frontend --allow-unauthenticated --region europe-central2 --source ./frontend/
+	cd frontend/app && npm run build && cd ../.. && firebase deploy --only hosting:wyjatkowe-serca-app --project=wyjatkowe-serca
 
 deploy:
 	$(MAKE) deploy-backend && $(MAKE) deploy-frontend

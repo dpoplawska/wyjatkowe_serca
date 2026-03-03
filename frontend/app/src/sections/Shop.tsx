@@ -9,6 +9,8 @@ import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
+import { API } from '../app/config.ts';
+
 interface SidePosition {
   isSmallScreen: boolean;
   isMediumScreen: boolean;
@@ -109,7 +111,7 @@ export default function Shop() {
 
     try {
       const response = await fetch(
-        "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/purchases",
+        `${API}/purchases`,
         {
           method: "POST",
           headers: {
@@ -140,7 +142,7 @@ export default function Shop() {
     const getCurrentLimit = async () => {
         try {
             fetch(
-                "https://wyjatkowe-serca-38835307240.europe-central2.run.app/purchases/left"
+                `${API}/purchases/left`
             )
                 .then((response) => {
                     if (!response.ok) {

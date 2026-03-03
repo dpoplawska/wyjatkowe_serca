@@ -23,8 +23,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useAuth } from './AuthContext.tsx';
 import AppHeader from './AppHeader.tsx';
 import { shared } from './appStyles.ts';
-
-const API = process.env.REACT_APP_API_URL ?? 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
+import { API } from './config.ts';
 
 // ── Dropdown options ──────────────────────────────────────────────────────────
 

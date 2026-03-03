@@ -7,6 +7,8 @@ import { Checkbox } from "@mui/material";
 import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
 import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
 
+import { API } from '../app/config.ts';
+
 type HelpUsSideProps = {
     showFundraiserBar: boolean;
     specialFundraiser: boolean;
@@ -117,7 +119,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
 
             try {
                 const response = await fetch(
-                    "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app/payments",
+                    `${API}/payments`,
                     {
                         method: "POST",
                         headers: {
@@ -159,7 +161,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
     const getCurrentFundraisedValue = async () => {
         try {
             fetch(
-                "https://wyjatkowe-serca-38835307240.europe-central2.run.app/payments/total-confirmed"
+                `${API}/payments/total-confirmed`
             )
                 .then((response) => {
                     if (!response.ok) {

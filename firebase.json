@@ -1,6 +1,10 @@
 {
   "hosting": {
-    "public": "auth-hosting",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "site": "wyjatkowe-serca-app",
+    "public": "frontend/app/build",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ]
   }
 }
