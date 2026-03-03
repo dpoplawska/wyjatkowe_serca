@@ -18,12 +18,18 @@ export default function AppHeader({ user, logout }: AppHeaderProps) {
 
   return (
     <header style={s.header}>
-      <div style={s.headerLeft}>
-        <img src={logo} alt="Wyjątkowe Serca" style={s.headerLogo} />
-        <span style={s.headerTitle}>Wyjątkowe Serca</span>
+      <div style={s.topRow}>
+        <div style={s.headerLeft}>
+          <img src={logo} alt="Wyjątkowe Serca" style={s.headerLogo} />
+          <span style={s.headerTitle}>Wyjątkowe Serca</span>
+        </div>
+        <div style={s.headerRight}>
+          <span style={s.headerEmail}>{user.email}</span>
+          <button onClick={logout} style={s.logoutBtn}>Wyloguj</button>
+        </div>
       </div>
 
-      <nav style={s.tabs}>
+      <nav style={s.tabRow}>
         {TABS.map((tab) => {
           const active = location.pathname === tab.path;
           return (
@@ -37,11 +43,6 @@ export default function AppHeader({ user, logout }: AppHeaderProps) {
           );
         })}
       </nav>
-
-      <div style={s.headerRight}>
-        <span style={s.headerEmail}>{user.email}</span>
-        <button onClick={logout} style={s.logoutBtn}>Wyloguj</button>
-      </div>
     </header>
   );
 }
@@ -50,43 +51,73 @@ const s: Record<string, React.CSSProperties> = {
   header: {
     backgroundColor: '#fff',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    padding: '0 24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     position: 'sticky' as const,
     top: 0,
     zIndex: 100,
-    height: '60px',
+    fontFamily: 'Quicksand, sans-serif',
+  },
+  topRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 24px',
+    height: '52px',
   },
   headerLeft: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    flexShrink: 0,
+    minWidth: 0,
   },
   headerLogo: {
     height: '32px',
     width: 'auto',
+    flexShrink: 0,
   },
   headerTitle: {
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 700,
     fontSize: '17px',
     color: '#EC1A3B',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
   },
-  tabs: {
+  headerRight: {
     display: 'flex',
-    alignItems: 'stretch',
-    gap: '4px',
-    height: '100%',
+    alignItems: 'center',
+    gap: '12px',
+    flexShrink: 0,
+    marginLeft: '16px',
+  },
+  headerEmail: {
+    fontSize: '13px',
+    color: '#616161',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+    maxWidth: '200px',
+  },
+  logoutBtn: {
+    background: 'none',
+    border: '1.5px solid #EC1A3B',
+    borderRadius: '6px',
+    color: '#EC1A3B',
+    fontWeight: 600,
+    fontSize: '13px',
+    padding: '6px 14px',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  tabRow: {
+    display: 'flex',
+    borderTop: '1px solid #f0f0f0',
+    padding: '0 24px',
   },
   tab: {
     background: 'none',
     border: 'none',
     borderBottom: '3px solid transparent',
-    padding: '0 16px',
-    fontFamily: 'Quicksand, sans-serif',
+    padding: '10px 16px',
     fontWeight: 600,
     fontSize: '14px',
     color: '#616161',
@@ -97,27 +128,5 @@ const s: Record<string, React.CSSProperties> = {
   tabActive: {
     color: '#EC1A3B',
     borderBottom: '3px solid #EC1A3B',
-  },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    flexShrink: 0,
-  },
-  headerEmail: {
-    fontFamily: 'Quicksand, sans-serif',
-    fontSize: '13px',
-    color: '#616161',
-  },
-  logoutBtn: {
-    background: 'none',
-    border: '1.5px solid #EC1A3B',
-    borderRadius: '6px',
-    color: '#EC1A3B',
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 600,
-    fontSize: '13px',
-    padding: '6px 14px',
-    cursor: 'pointer',
   },
 };

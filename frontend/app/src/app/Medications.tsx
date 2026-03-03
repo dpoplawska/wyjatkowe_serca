@@ -14,12 +14,17 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useAuth } from './AuthContext.tsx';
 import AppHeader from './AppHeader.tsx';
+import { shared } from './appStyles.ts';
 
-const API = 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
+const API = process.env.REACT_APP_API_URL ?? 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
 
 // ── Frequency options ─────────────────────────────────────────────────────────
 
@@ -54,6 +59,8 @@ interface Lek {
   czas_trwania_typ: string;
   czas_trwania_wartosc: number;
   sledzenie: boolean;
+  ostatnia_dawka: string;
+  historia_dawek: string[];
 }
 
 const emptyLek = (): Lek => ({
@@ -65,15 +72,38 @@ const emptyLek = (): Lek => ({
   czas_trwania_typ: '',
   czas_trwania_wartosc: 0,
   sledzenie: false,
+  ostatnia_dawka: '',
+  historia_dawek: [],
 });
+
+// ── Completion check ──────────────────────────────────────────────────────────
+
+function isDone(lek: Lek): boolean {
+  if (lek.czas_trwania_typ === 'dawki' && lek.czas_trwania_wartosc > 0) {
+    return lek.historia_dawek.length >= lek.czas_trwania_wartosc;
+  }
+  if (lek.czas_trwania_typ === 'dni' && lek.czas_trwania_wartosc > 0 && lek.data_pierwszej_dawki) {
+    const end = new Date(lek.data_pierwszej_dawki);
+    end.setDate(end.getDate() + lek.czas_trwania_wartosc);
+    return Date.now() >= end.getTime();
+  }
+  return false;
+}
 
 // ── Next dose calculation ─────────────────────────────────────────────────────
 
 function getNextDoseTime(lek: Lek): Date | null {
-  if (!lek.sledzenie || !lek.data_pierwszej_dawki || !lek.godzina_pierwszej_dawki) return null;
+  if (!lek.sledzenie || !lek.godzina_pierwszej_dawki) return null;
+  const intervalMs = (FREQUENCY_HOURS[lek.czestotliwosc] ?? 24) * 3_600_000;
+
+  if (lek.ostatnia_dawka) {
+    const last = new Date(lek.ostatnia_dawka);
+    return new Date(last.getTime() + intervalMs);
+  }
+
+  if (!lek.data_pierwszej_dawki) return null;
   const first = new Date(`${lek.data_pierwszej_dawki}T${lek.godzina_pierwszej_dawki}`);
   if (isNaN(first.getTime())) return null;
-  const intervalMs = (FREQUENCY_HOURS[lek.czestotliwosc] ?? 24) * 3_600_000;
   const now = Date.now();
   if (first.getTime() > now) return first;
   const n = Math.floor((now - first.getTime()) / intervalMs);
@@ -97,6 +127,12 @@ function formatNextDose(next: Date): string {
   return `${day}.${month} o ${time}`;
 }
 
+function formatHistoryEntry(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Medications() {
@@ -104,6 +140,7 @@ export default function Medications() {
   const [leki, setLeki] = useState<Lek[]>([]);
   const [fetching, setFetching] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [shortlistOpen, setShortlistOpen] = useState(true);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -147,7 +184,7 @@ export default function Medications() {
 
   const removeLek = (index: number) => setLeki((prev) => prev.filter((_, i) => i !== index));
 
-  const handleSave = async () => {
+  const saveLeki = async (updatedLeki: Lek[], successMessage: string) => {
     setSaving(true);
     try {
       const token = await getToken();
@@ -157,15 +194,45 @@ export default function Medications() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ leki }),
+        body: JSON.stringify({ leki: updatedLeki }),
       });
       if (!res.ok) throw new Error();
-      setSnackbar({ open: true, message: 'Leki zostały zapisane.', severity: 'success' });
+      setSnackbar({ open: true, message: successMessage, severity: 'success' });
     } catch {
       setSnackbar({ open: true, message: 'Błąd podczas zapisywania. Spróbuj ponownie.', severity: 'error' });
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSave = () => saveLeki(leki, 'Leki zostały zapisane.');
+
+  const handleMarkGiven = (index: number) => {
+    const now = new Date().toISOString();
+    const updated = leki.map((lek, i) => {
+      if (i !== index) return lek;
+      return {
+        ...lek,
+        ostatnia_dawka: now,
+        historia_dawek: [now, ...lek.historia_dawek],
+      };
+    });
+    setLeki(updated);
+    saveLeki(updated, 'Podanie leku zapisane.');
+  };
+
+  const handleUndoGiven = (index: number) => {
+    const updated = leki.map((lek, i) => {
+      if (i !== index) return lek;
+      const newHistory = lek.historia_dawek.slice(1);
+      return {
+        ...lek,
+        ostatnia_dawka: newHistory[0] ?? '',
+        historia_dawek: newHistory,
+      };
+    });
+    setLeki(updated);
+    saveLeki(updated, 'Cofnięto ostatnie podanie.');
   };
 
   return (
@@ -179,6 +246,43 @@ export default function Medications() {
           <div style={s.centerLoader}><CircularProgress style={{ color: '#EC1A3B' }} /></div>
         ) : (
           <>
+            {leki.some((l) => l.sledzenie) && (
+              <div style={s.shortlistCard}>
+                <button style={s.shortlistToggle} onClick={() => setShortlistOpen((v) => !v)}>
+                  <span>Harmonogram dawek</span>
+                  <span style={s.shortlistChevron}>{shortlistOpen ? '▲' : '▼'}</span>
+                </button>
+                {shortlistOpen && (
+                  <div style={s.shortlistBody}>
+                    {[
+                      ...leki.filter((l) => l.sledzenie && !isDone(l)),
+                      ...leki.filter((l) => l.sledzenie && isDone(l)),
+                    ].map((lek, i) => {
+                      const globalIndex = leki.indexOf(lek);
+                      const nextDose = getNextDoseTime(lek);
+                      const done = isDone(lek);
+                      return (
+                        <div key={lek.id} style={{ ...s.shortlistRow, ...(i > 0 ? s.shortlistRowBorder : {}), ...(done ? s.shortlistRowDone : {}) }}>
+                          <div style={s.shortlistName}>{lek.nazwa || <em style={{ color: '#aaa' }}>bez nazwy</em>}</div>
+                          {done ? (
+                            <div style={s.shortlistDoneLabel}>zakończony</div>
+                          ) : (
+                            <>
+                              <div style={s.shortlistNext}>{nextDose ? <>następna:{'\n'}{formatNextDose(nextDose)}</> : '—'}</div>
+                              <button onClick={() => handleMarkGiven(globalIndex)} style={s.shortlistPodanoBtn}>
+                                <CheckCircleOutlineIcon style={{ fontSize: '16px' }} />
+                                Podano
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
             {leki.map((lek, i) => (
               <LekCard
                 key={lek.id}
@@ -186,6 +290,8 @@ export default function Medications() {
                 index={i}
                 onChange={(field, value) => updateLek(i, field, value)}
                 onRemove={() => removeLek(i)}
+                onMarkGiven={() => handleMarkGiven(i)}
+                onUndoGiven={() => handleUndoGiven(i)}
               />
             ))}
 
@@ -217,6 +323,32 @@ export default function Medications() {
   );
 }
 
+// ── TimePickerField ───────────────────────────────────────────────────────────
+
+function TimePickerField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const dayjsValue = value ? dayjs(`2000-01-01T${value}`) : null;
+
+  const handleChange = (newValue: Dayjs | null) => {
+    if (newValue && newValue.isValid()) {
+      onChange(newValue.format('HH:mm'));
+    } else {
+      onChange('');
+    }
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <TimePicker
+        label="Godzina pierwszej dawki"
+        value={dayjsValue}
+        onChange={handleChange}
+        ampm={false}
+        slotProps={{ textField: { fullWidth: true } }}
+      />
+    </LocalizationProvider>
+  );
+}
+
 // ── LekCard ───────────────────────────────────────────────────────────────────
 
 function LekCard({
@@ -224,25 +356,36 @@ function LekCard({
   index,
   onChange,
   onRemove,
+  onMarkGiven,
+  onUndoGiven,
 }: {
   lek: Lek;
   index: number;
   onChange: <K extends keyof Lek>(field: K, value: Lek[K]) => void;
   onRemove: () => void;
+  onMarkGiven: () => void;
+  onUndoGiven: () => void;
 }) {
+  const [showFullHistory, setShowFullHistory] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const nextDose = getNextDoseTime(lek);
+  const historyToShow = showFullHistory ? lek.historia_dawek : lek.historia_dawek.slice(0, 3);
 
   return (
     <div style={s.card}>
       <div style={s.cardHeader}>
-        <span style={s.cardNum}>Lek {index + 1}</span>
+        <button style={s.cardToggle} onClick={() => setCollapsed((v) => !v)}>
+          <span style={s.cardNum}>{lek.nazwa || `Lek ${index + 1}`}</span>
+          <span style={s.cardChevron}>{collapsed ? '▼' : '▲'}</span>
+        </button>
         <IconButton size="small" onClick={onRemove} title="Usuń lek" style={{ color: '#EC1A3B' }}>
           <DeleteOutlineIcon />
         </IconButton>
       </div>
-      <Divider style={{ marginBottom: '16px' }} />
 
-      <div style={s.cardFields}>
+      {!collapsed && <Divider style={{ marginBottom: '16px' }} />}
+
+      {!collapsed && <div style={s.cardFields}>
         {/* Nazwa leku */}
         <TextField
           label="Nazwa leku"
@@ -317,23 +460,60 @@ function LekCard({
 
         {lek.sledzenie && (
           <>
-            <TextField
-              label="Godzina pierwszej dawki"
-              type="time"
+            <TimePickerField
               value={lek.godzina_pierwszej_dawki}
-              onChange={(e) => onChange('godzina_pierwszej_dawki', e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+              onChange={(v) => onChange('godzina_pierwszej_dawki', v)}
             />
 
-            {nextDose && (
-              <div style={s.nextDose}>
-                Następna dawka: <strong>{formatNextDose(nextDose)}</strong>
+            {isDone(lek) ? (
+              <>
+                <div style={s.doneBox}>
+                  Kurs leku zakończony — wszystkie dawki zostały przyjęte.
+                </div>
+                <button onClick={onUndoGiven} style={s.cofnijBtn}>
+                  Cofnij ostatnie podanie
+                </button>
+              </>
+            ) : (
+              <>
+                {nextDose && (
+                  <div style={s.nextDose}>
+                    Następna dawka: <strong>{formatNextDose(nextDose)}</strong>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button onClick={onMarkGiven} style={s.podanoBtn}>
+                    <CheckCircleOutlineIcon style={{ fontSize: '18px' }} />
+                    Podano
+                  </button>
+                  {lek.historia_dawek.length > 0 && (
+                    <button onClick={onUndoGiven} style={s.cofnijBtn}>
+                      Cofnij ostatnie podanie
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+
+            {lek.historia_dawek.length > 0 && (
+              <div style={s.historyBox}>
+                <div style={s.historyLabel}>Historia podań:</div>
+                <ul style={s.historyList}>
+                  {historyToShow.map((iso, i) => (
+                    <li key={i} style={s.historyItem}>{formatHistoryEntry(iso)}</li>
+                  ))}
+                </ul>
+                {lek.historia_dawek.length > 3 && (
+                  <button onClick={() => setShowFullHistory((v) => !v)} style={s.historyToggle}>
+                    {showFullHistory ? 'Zwiń' : 'Pokaż całą historię'}
+                  </button>
+                )}
               </div>
             )}
           </>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
@@ -341,35 +521,81 @@ function LekCard({
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const s: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    backgroundColor: '#f8f8f8',
-    fontFamily: 'Quicksand, sans-serif',
+  ...shared,
+  shortlistCard: {
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    marginBottom: '24px',
+    overflow: 'hidden',
   },
-  loadingPage: {
-    minHeight: '100vh',
+  shortlistToggle: {
+    width: '100%',
     display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    fontFamily: 'Quicksand, sans-serif',
+    background: 'none',
+    border: 'none',
+    padding: '16px 20px',
+    fontWeight: 700,
+    fontSize: '15px',
+    color: '#2E2E2E',
+    cursor: 'pointer',
+  },
+  shortlistChevron: {
+    fontSize: '11px',
     color: '#616161',
   },
-  main: {
-    maxWidth: '760px',
-    margin: '0 auto',
-    padding: '32px 24px 64px',
+  shortlistBody: {
+    borderTop: '1px solid #f0f0f0',
   },
-  pageTitle: {
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 700,
-    fontSize: '24px',
-    color: '#2E2E2E',
-    marginBottom: '24px',
-  },
-  centerLoader: {
+  shortlistRow: {
     display: 'flex',
-    justifyContent: 'center',
-    padding: '64px 0',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 20px',
+  },
+  shortlistRowBorder: {
+    borderTop: '1px solid #f7f7f7',
+  },
+  shortlistName: {
+    flex: 1,
+    fontWeight: 600,
+    fontSize: '14px',
+    color: '#2E2E2E',
+  },
+  shortlistNext: {
+    fontSize: '13px',
+    color: '#616161',
+    minWidth: '110px',
+    textAlign: 'right' as const,
+    whiteSpace: 'pre-line' as const,
+  },
+  shortlistRowDone: {
+    opacity: 0.5,
+  },
+  shortlistDoneLabel: {
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#2E7D32',
+    backgroundColor: '#e8f5e9',
+    borderRadius: '6px',
+    padding: '4px 10px',
+    whiteSpace: 'nowrap' as const,
+  },
+  shortlistPodanoBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: 'none',
+    border: '1.5px solid #2383C5',
+    borderRadius: '6px',
+    color: '#2383C5',
+    fontWeight: 600,
+    fontSize: '13px',
+    padding: '5px 10px',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
   },
   card: {
     backgroundColor: '#fff',
@@ -384,11 +610,23 @@ const s: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     marginBottom: '12px',
   },
+  cardToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+  },
   cardNum: {
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 700,
     fontSize: '15px',
     color: '#EC1A3B',
+  },
+  cardChevron: {
+    fontSize: '11px',
+    color: '#616161',
   },
   cardFields: {
     display: 'flex',
@@ -400,13 +638,72 @@ const s: Record<string, React.CSSProperties> = {
     gap: '12px',
     alignItems: 'flex-start',
   },
+  doneBox: {
+    fontSize: '14px',
+    color: '#2E7D32',
+    backgroundColor: '#e8f5e9',
+    borderRadius: '8px',
+    padding: '10px 14px',
+  },
   nextDose: {
-    fontFamily: 'Quicksand, sans-serif',
     fontSize: '14px',
     color: '#2E2E2E',
     backgroundColor: '#fde8ec',
     borderRadius: '8px',
     padding: '10px 14px',
+  },
+  podanoBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: 'none',
+    border: '1.5px solid #2383C5',
+    borderRadius: '8px',
+    color: '#2383C5',
+    fontWeight: 600,
+    fontSize: '14px',
+    padding: '8px 16px',
+    cursor: 'pointer',
+    alignSelf: 'flex-start' as const,
+  },
+  cofnijBtn: {
+    background: 'none',
+    border: '1.5px solid #616161',
+    borderRadius: '8px',
+    color: '#616161',
+    fontWeight: 600,
+    fontSize: '14px',
+    padding: '8px 14px',
+    cursor: 'pointer',
+  },
+  historyBox: {
+    borderTop: '1px solid #f0f0f0',
+    paddingTop: '12px',
+  },
+  historyLabel: {
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#616161',
+    marginBottom: '6px',
+  },
+  historyList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  historyItem: {
+    fontSize: '13px',
+    color: '#616161',
+    padding: '3px 0',
+  },
+  historyToggle: {
+    background: 'none',
+    border: 'none',
+    color: '#2383C5',
+    fontSize: '13px',
+    cursor: 'pointer',
+    padding: '4px 0',
+    textDecoration: 'underline',
   },
   addBtn: {
     display: 'inline-flex',
@@ -416,7 +713,6 @@ const s: Record<string, React.CSSProperties> = {
     border: '1.5px dashed #EC1A3B',
     borderRadius: '8px',
     color: '#EC1A3B',
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 600,
     fontSize: '14px',
     padding: '10px 18px',
@@ -426,22 +722,5 @@ const s: Record<string, React.CSSProperties> = {
   saveRow: {
     display: 'flex',
     justifyContent: 'flex-end',
-  },
-  saveBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    backgroundColor: '#EC1A3B',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 700,
-    fontSize: '16px',
-    padding: '14px 36px',
-    cursor: 'pointer',
-  },
-  saveBtnDisabled: {
-    opacity: 0.7,
-    cursor: 'not-allowed',
   },
 };

@@ -8,6 +8,11 @@ services:
       - "8000:8080"
     environment:
       - ENV=dev
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account.json
+    volumes:
+      - ./backend:/app
+      - ./backend/service-account.json:/app/service-account.json:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
   frontend:
     image: node:22-alpine
@@ -20,4 +25,5 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_NO_WARNINGS=1
+      - REACT_APP_API_URL=http://localhost:8000
     command: sh -c "npm install --no-fund --no-audit && npx update-browserslist-db@latest --yes && npm start"

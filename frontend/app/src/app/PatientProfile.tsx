@@ -22,8 +22,9 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useAuth } from './AuthContext.tsx';
 import AppHeader from './AppHeader.tsx';
+import { shared } from './appStyles.ts';
 
-const API = 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
+const API = process.env.REACT_APP_API_URL ?? 'https://wyjatkowe-serca-38835307240.europe-central2.run.app';
 
 // ── Dropdown options ──────────────────────────────────────────────────────────
 
@@ -529,36 +530,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const s: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    backgroundColor: '#f8f8f8',
-    fontFamily: 'Quicksand, sans-serif',
-  },
-  loadingPage: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontFamily: 'Quicksand, sans-serif',
-    color: '#616161',
-  },
-  main: {
-    maxWidth: '760px',
-    margin: '0 auto',
-    padding: '32px 24px 64px',
-  },
-  pageTitle: {
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 700,
-    fontSize: '24px',
-    color: '#2E2E2E',
-    marginBottom: '24px',
-  },
-  centerLoader: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '64px 0',
-  },
+  ...shared,
   section: {
     backgroundColor: '#fff',
     borderRadius: '12px',
@@ -567,7 +539,6 @@ const s: Record<string, React.CSSProperties> = {
     marginBottom: '20px',
   },
   sectionTitle: {
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 700,
     fontSize: '16px',
     color: '#EC1A3B',
@@ -594,7 +565,6 @@ const s: Record<string, React.CSSProperties> = {
     marginBottom: '12px',
   },
   operacjaNum: {
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 600,
     fontSize: '14px',
     color: '#2E2E2E',
@@ -612,7 +582,6 @@ const s: Record<string, React.CSSProperties> = {
     border: '1.5px dashed #EC1A3B',
     borderRadius: '8px',
     color: '#EC1A3B',
-    fontFamily: 'Quicksand, sans-serif',
     fontWeight: 600,
     fontSize: '14px',
     padding: '10px 18px',
@@ -623,22 +592,5 @@ const s: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'flex-end',
     marginTop: '8px',
-  },
-  saveBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    backgroundColor: '#EC1A3B',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontFamily: 'Quicksand, sans-serif',
-    fontWeight: 700,
-    fontSize: '16px',
-    padding: '14px 36px',
-    cursor: 'pointer',
-  },
-  saveBtnDisabled: {
-    opacity: 0.7,
-    cursor: 'not-allowed',
   },
 };

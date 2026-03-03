@@ -1,4 +1,5 @@
 */.ipynb_checkpoints
+**/__pycache__
 .claude
 .firebase/
 Pipfile
@@ -7,3 +8,4 @@ backend/Untitled.ipynb
 prompts
 secrets.json
 secrets_dev.json
+backend/service-account.json

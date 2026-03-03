@@ -71,6 +71,8 @@ class Lek(BaseModel):
     czas_trwania_typ: str = ""
     czas_trwania_wartosc: int = 0
     sledzenie: bool = False
+    ostatnia_dawka: str = ""
+    historia_dawek: List[str] = []
 
 
 class MedicationsData(BaseModel):
