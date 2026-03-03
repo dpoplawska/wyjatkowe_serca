@@ -12,7 +12,7 @@
   color: #61dafb;
 }
 
-button {
+button:not(.MuiButtonBase-root) {
   background-color: #EC1A3B;
   color: #fff;
   width: 200px;
@@ -23,16 +23,35 @@ button {
   font-family: Quicksand;
   font-size: 23px;
   font-weight: 800;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.08s ease;
+}
+
+button:not(.MuiButtonBase-root):active {
+  transform: scale(0.95);
+}
+
+@keyframes btn-ripple {
+  from { transform: scale(0); opacity: 0.7; }
+  to   { transform: scale(4); opacity: 0; }
+}
+
+.btn-ripple-dot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: btn-ripple 0.55s ease-out forwards;
 }
 
 @media screen and (min-width: 992px) {
-  button:hover {
+  button:not(.MuiButtonBase-root):hover {
     background-color: #2383C5
   }
 }
 
 @media screen and (max-width: 1024px) {
-  button {
+  button:not(.MuiButtonBase-root) {
     font-size: 20px;
     width: 170px;
     height: 50px;

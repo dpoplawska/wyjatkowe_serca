@@ -494,7 +494,7 @@ export default function PatientProfile() {
             {/* Save button */}
             <div style={s.saveRow}>
               <button onClick={handleSave} disabled={saving} style={{ ...s.saveBtn, ...(saving ? s.saveBtnDisabled : {}) }}>
-                {saving ? <><CircularProgress size={18} style={{ color: '#fff', marginRight: '8px' }} />Zapisywanie...</> : 'Zapisz profil'}
+                {'Zapisz profil'}
               </button>
             </div>
           </>

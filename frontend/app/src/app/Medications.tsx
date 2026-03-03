@@ -13,13 +13,14 @@ import {
   Divider,
   Alert,
   Snackbar,
+  useMediaQuery,
 } from '@mui/material';
-import { LocalizationProvider, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import MedicationIcon from '@mui/icons-material/Medication';
 import { useAuth } from './AuthContext.tsx';
 import AppHeader from './AppHeader.tsx';
 import { shared } from './appStyles.ts';
@@ -128,6 +129,7 @@ function formatHistoryEntry(iso: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Medications() {
+  const isMobile = useMediaQuery('(max-width: 600px)');
   const { user, loading, logout, getToken } = useAuth();
   const [leki, setLeki] = useState<Lek[]>([]);
   const [fetching, setFetching] = useState(true);
@@ -263,16 +265,16 @@ export default function Medications() {
                       const nextDose = getNextDoseTime(lek);
                       const done = isDone(lek);
                       return (
-                        <div key={lek.id} style={{ ...s.shortlistRow, ...(i > 0 ? s.shortlistRowBorder : {}), ...(done ? s.shortlistRowDone : {}) }}>
+                        <div key={lek.id} style={{ ...s.shortlistRow, ...(i > 0 ? s.shortlistRowBorder : {}), ...(done ? s.shortlistRowDone : {}), ...(isMobile ? { flexDirection: 'column', alignItems: 'stretch' } : {}) }}>
                           <div style={s.shortlistName}>{lek.nazwa || <em style={{ color: '#aaa' }}>bez nazwy</em>}</div>
                           {done ? (
                             <div style={s.shortlistDoneLabel}>zakończony</div>
                           ) : (
                             <>
-                              <div style={s.shortlistNext}>{nextDose ? <>następna:{'\n'}{formatNextDose(nextDose)}</> : '—'}</div>
-                              <button onClick={() => handleMarkGiven(globalIndex)} style={s.shortlistPodanoBtn}>
-                                <CheckCircleOutlineIcon style={{ fontSize: '16px' }} />
-                                Podano
+                              <div style={{ ...s.shortlistNext, ...(isMobile ? { textAlign: 'left' } : {}) }}>{nextDose ? <>następna:{isMobile ? ' ' : '\n'}{formatNextDose(nextDose)}</> : '—'}</div>
+                              <button onClick={() => handleMarkGiven(globalIndex)} style={{ ...s.shortlistPodanoBtn, ...(isMobile ? { width: '100%' } : {}) }}>
+                                <MedicationIcon style={{ fontSize: '16px' }} />
+                                Zapisz podanie
                               </button>
                             </>
                           )}
@@ -325,32 +327,6 @@ export default function Medications() {
   );
 }
 
-// ── TimePickerField ───────────────────────────────────────────────────────────
-
-function TimePickerField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const dayjsValue = value ? dayjs(`2000-01-01T${value}`) : null;
-
-  const handleChange = (newValue: Dayjs | null) => {
-    if (newValue && newValue.isValid()) {
-      onChange(newValue.format('HH:mm'));
-    } else {
-      onChange('');
-    }
-  };
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <TimePicker
-        label="Godzina pierwszej dawki"
-        value={dayjsValue}
-        onChange={handleChange}
-        ampm={false}
-        slotProps={{ textField: { fullWidth: true } }}
-      />
-    </LocalizationProvider>
-  );
-}
-
 // ── LekCard ───────────────────────────────────────────────────────────────────
 
 function LekCard({
@@ -370,6 +346,7 @@ function LekCard({
   onUndoGiven: () => void;
   onSaveOverride: (override: string) => void;
 }) {
+  const isMobile = useMediaQuery('(max-width: 600px)');
   const [showFullHistory, setShowFullHistory] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [showOverridePicker, setShowOverridePicker] = useState(false);
@@ -377,7 +354,8 @@ function LekCard({
   const [showGivenPicker, setShowGivenPicker] = useState(false);
   const [givenValue, setGivenValue] = useState<Dayjs | null>(null);
   const nextDose = getNextDoseTime(lek);
-  const historyToShow = showFullHistory ? lek.historia_dawek : lek.historia_dawek.slice(0, 3);
+  const sortedHistory = [...lek.historia_dawek].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  const historyToShow = showFullHistory ? sortedHistory : sortedHistory.slice(0, 3);
 
   const handleOpenOverride = () => {
     setOverrideValue(nextDose ? dayjs(nextDose) : dayjs());
@@ -480,31 +458,39 @@ function LekCard({
                 <div style={s.doneBox}>
                   Kurs leku zakończony — wszystkie dawki zostały przyjęte.
                 </div>
-                <button onClick={onUndoGiven} style={s.cofnijBtn}>
+                <button onClick={onUndoGiven} style={{ ...s.cofnijBtn, ...(isMobile ? { width: '100%' } : {}) }}>
                   Cofnij ostatnie podanie
                 </button>
               </>
             ) : (
               <>
                 {nextDose && (
-                  <div style={s.nextDose}>
+                  <div style={{ ...s.nextDose, flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center' }}>
                     <span>
                       Następna dawka: <strong>{formatNextDose(nextDose)}</strong>
                       {lek.nastepna_dawka_override && <span style={s.overrideBadge}>zmieniony</span>}
                     </span>
-                    <button onClick={handleOpenOverride} style={s.zmienBtn}>Zmień</button>
+                    <button onClick={handleOpenOverride} style={{ ...s.zmienBtn, ...(isMobile ? { width: '100%' } : {}) }}>Zmień</button>
                   </div>
                 )}
                 {showOverridePicker && (
                   <div style={s.overrideBox}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        label="Nowy czas następnej dawki"
-                        value={overrideValue}
-                        onChange={setOverrideValue}
-                        ampm={false}
-                        slotProps={{ textField: { fullWidth: true } }}
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <DatePicker
+                          label="Data"
+                          value={overrideValue}
+                          onChange={(d) => d && setOverrideValue((prev) => d.hour(prev?.hour() ?? 0).minute(prev?.minute() ?? 0))}
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                        <TimePicker
+                          label="Godzina"
+                          value={overrideValue}
+                          onChange={(t) => t && setOverrideValue((prev) => (prev ?? t).hour(t.hour()).minute(t.minute()))}
+                          ampm={false}
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                      </div>
                     </LocalizationProvider>
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       <button onClick={handleApplyOverride} style={s.zastosujBtn}>Zastosuj</button>
@@ -516,16 +502,16 @@ function LekCard({
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
                   <button
                     onClick={() => { setGivenValue(dayjs()); setShowGivenPicker(true); }}
-                    style={s.podanoBtn}
+                    style={{ ...s.podanoBtn, ...(isMobile ? { width: '100%', alignSelf: 'auto' } : {}) }}
                   >
-                    <CheckCircleOutlineIcon style={{ fontSize: '18px' }} />
-                    Podano
+                    <MedicationIcon style={{ fontSize: '18px' }} />
+                    Zapisz podanie leku
                   </button>
                   {lek.historia_dawek.length > 0 && (
-                    <button onClick={onUndoGiven} style={s.cofnijBtn}>
+                    <button onClick={onUndoGiven} style={{ ...s.cofnijBtn, ...(isMobile ? { width: '100%' } : {}) }}>
                       Cofnij ostatnie podanie
                     </button>
                   )}
@@ -533,13 +519,21 @@ function LekCard({
                 {showGivenPicker && (
                   <div style={s.overrideBox}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateTimePicker
-                        label="Czas podania"
-                        value={givenValue}
-                        onChange={setGivenValue}
-                        ampm={false}
-                        slotProps={{ textField: { fullWidth: true } }}
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <DatePicker
+                          label="Data"
+                          value={givenValue}
+                          onChange={(d) => d && setGivenValue((prev) => d.hour(prev?.hour() ?? 0).minute(prev?.minute() ?? 0))}
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                        <TimePicker
+                          label="Godzina"
+                          value={givenValue}
+                          onChange={(t) => t && setGivenValue((prev) => (prev ?? t).hour(t.hour()).minute(t.minute()))}
+                          ampm={false}
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                      </div>
                     </LocalizationProvider>
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       <button
@@ -718,7 +712,7 @@ const s: Record<string, React.CSSProperties> = {
   nextDose: {
     fontSize: '14px',
     color: '#2E2E2E',
-    backgroundColor: '#fde8ec',
+    backgroundColor: '#e3f0fb',
     borderRadius: '8px',
     padding: '10px 14px',
     display: 'flex',
@@ -738,9 +732,9 @@ const s: Record<string, React.CSSProperties> = {
   },
   zmienBtn: {
     background: 'none',
-    border: '1.5px solid #EC1A3B',
+    border: '1.5px solid #2383C5',
     borderRadius: '6px',
-    color: '#EC1A3B',
+    color: '#2383C5',
     fontWeight: 600,
     fontSize: '12px',
     padding: '4px 10px',
