@@ -21,7 +21,6 @@ export default function AppHeader({ user, logout }: AppHeaderProps) {
       <div style={s.topRow}>
         <div style={s.headerLeft}>
           <img src={logo} alt="Wyjątkowe Serca" style={s.headerLogo} />
-          <span style={s.headerTitle}>Wyjątkowe Serca</span>
         </div>
         <div style={s.headerRight}>
           <span style={s.headerEmail}>{user.email}</span>
@@ -51,15 +50,11 @@ const s: Record<string, React.CSSProperties> = {
   header: {
     backgroundColor: '#fff',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    position: 'sticky' as const,
-    top: 0,
-    zIndex: 100,
     fontFamily: 'Quicksand, sans-serif',
   },
   topRow: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: '0 24px',
     height: '52px',
   },
@@ -68,6 +63,7 @@ const s: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '12px',
     minWidth: 0,
+    overflow: 'hidden',
   },
   headerLogo: {
     height: '32px',
@@ -86,8 +82,10 @@ const s: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    flexShrink: 0,
-    marginLeft: '16px',
+    flexShrink: 1,
+    minWidth: 0,
+    marginLeft: 'auto',
+    paddingLeft: '16px',
   },
   headerEmail: {
     fontSize: '13px',
@@ -95,7 +93,8 @@ const s: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap' as const,
-    maxWidth: '200px',
+    flex: 1,
+    minWidth: 0,
   },
   logoutBtn: {
     background: 'none',

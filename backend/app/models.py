@@ -73,6 +73,7 @@ class Lek(BaseModel):
     sledzenie: bool = False
     ostatnia_dawka: str = ""
     historia_dawek: List[str] = []
+    nastepna_dawka_override: str = ""
 
 
 class MedicationsData(BaseModel):

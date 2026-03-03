@@ -14,7 +14,7 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
-import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -28,11 +28,11 @@ import { API } from './config.ts';
 // ── Frequency options ─────────────────────────────────────────────────────────
 
 const CZESTOTLIWOSCI = [
-  { label: 'Raz dziennie', value: 'raz_dziennie' },
-  { label: 'Dwa razy dziennie', value: 'dwa_razy_dziennie' },
-  { label: 'Trzy razy dziennie', value: 'trzy_razy_dziennie' },
-  { label: 'Co 6 godzin', value: 'co_6h' },
   { label: 'Co 4 godziny', value: 'co_4h' },
+  { label: 'Co 6 godzin', value: 'co_6h' },
+  { label: 'Trzy razy dziennie', value: 'trzy_razy_dziennie' },
+  { label: 'Dwa razy dziennie', value: 'dwa_razy_dziennie' },
+  { label: 'Raz dziennie', value: 'raz_dziennie' },
   { label: 'Co 2 dni', value: 'co_2_dni' },
   { label: 'Raz w tygodniu', value: 'raz_w_tygodniu' },
 ];
@@ -60,6 +60,7 @@ interface Lek {
   sledzenie: boolean;
   ostatnia_dawka: string;
   historia_dawek: string[];
+  nastepna_dawka_override: string;
 }
 
 const emptyLek = (): Lek => ({
@@ -73,6 +74,7 @@ const emptyLek = (): Lek => ({
   sledzenie: false,
   ostatnia_dawka: '',
   historia_dawek: [],
+  nastepna_dawka_override: '',
 });
 
 // ── Completion check ──────────────────────────────────────────────────────────
@@ -81,10 +83,10 @@ function isDone(lek: Lek): boolean {
   if (lek.czas_trwania_typ === 'dawki' && lek.czas_trwania_wartosc > 0) {
     return lek.historia_dawek.length >= lek.czas_trwania_wartosc;
   }
-  if (lek.czas_trwania_typ === 'dni' && lek.czas_trwania_wartosc > 0 && lek.data_pierwszej_dawki) {
-    const end = new Date(lek.data_pierwszej_dawki);
-    end.setDate(end.getDate() + lek.czas_trwania_wartosc);
-    return Date.now() >= end.getTime();
+  if (lek.czas_trwania_typ === 'dni' && lek.czas_trwania_wartosc > 0 && lek.historia_dawek.length > 0) {
+    const firstDose = new Date(lek.historia_dawek[lek.historia_dawek.length - 1]);
+    firstDose.setDate(firstDose.getDate() + lek.czas_trwania_wartosc);
+    return Date.now() >= firstDose.getTime();
   }
   return false;
 }
@@ -92,21 +94,12 @@ function isDone(lek: Lek): boolean {
 // ── Next dose calculation ─────────────────────────────────────────────────────
 
 function getNextDoseTime(lek: Lek): Date | null {
-  if (!lek.sledzenie || !lek.godzina_pierwszej_dawki) return null;
+  if (!lek.sledzenie || !lek.ostatnia_dawka) return null;
+
+  if (lek.nastepna_dawka_override) return new Date(lek.nastepna_dawka_override);
+
   const intervalMs = (FREQUENCY_HOURS[lek.czestotliwosc] ?? 24) * 3_600_000;
-
-  if (lek.ostatnia_dawka) {
-    const last = new Date(lek.ostatnia_dawka);
-    return new Date(last.getTime() + intervalMs);
-  }
-
-  if (!lek.data_pierwszej_dawki) return null;
-  const first = new Date(`${lek.data_pierwszej_dawki}T${lek.godzina_pierwszej_dawki}`);
-  if (isNaN(first.getTime())) return null;
-  const now = Date.now();
-  if (first.getTime() > now) return first;
-  const n = Math.floor((now - first.getTime()) / intervalMs);
-  return new Date(first.getTime() + (n + 1) * intervalMs);
+  return new Date(new Date(lek.ostatnia_dawka).getTime() + intervalMs);
 }
 
 function formatNextDose(next: Date): string {
@@ -206,14 +199,23 @@ export default function Medications() {
 
   const handleSave = () => saveLeki(leki, 'Leki zostały zapisane.');
 
-  const handleMarkGiven = (index: number) => {
-    const now = new Date().toISOString();
+  const handleSaveOverride = (index: number, override: string) => {
+    const updated = leki.map((lek, i) =>
+      i === index ? { ...lek, nastepna_dawka_override: override } : lek
+    );
+    setLeki(updated);
+    saveLeki(updated, override ? 'Czas następnej dawki zaktualizowany.' : 'Zmiana czasu dawki usunięta.');
+  };
+
+  const handleMarkGiven = (index: number, at?: string) => {
+    const now = at ?? new Date().toISOString();
     const updated = leki.map((lek, i) => {
       if (i !== index) return lek;
       return {
         ...lek,
         ostatnia_dawka: now,
         historia_dawek: [now, ...lek.historia_dawek],
+        nastepna_dawka_override: '',
       };
     });
     setLeki(updated);
@@ -289,8 +291,9 @@ export default function Medications() {
                 index={i}
                 onChange={(field, value) => updateLek(i, field, value)}
                 onRemove={() => removeLek(i)}
-                onMarkGiven={() => handleMarkGiven(i)}
+                onMarkGiven={(at) => handleMarkGiven(i, at)}
                 onUndoGiven={() => handleUndoGiven(i)}
+                onSaveOverride={(override) => handleSaveOverride(i, override)}
               />
             ))}
 
@@ -357,18 +360,41 @@ function LekCard({
   onRemove,
   onMarkGiven,
   onUndoGiven,
+  onSaveOverride,
 }: {
   lek: Lek;
   index: number;
   onChange: <K extends keyof Lek>(field: K, value: Lek[K]) => void;
   onRemove: () => void;
-  onMarkGiven: () => void;
+  onMarkGiven: (at: string) => void;
   onUndoGiven: () => void;
+  onSaveOverride: (override: string) => void;
 }) {
   const [showFullHistory, setShowFullHistory] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [showOverridePicker, setShowOverridePicker] = useState(false);
+  const [overrideValue, setOverrideValue] = useState<Dayjs | null>(null);
+  const [showGivenPicker, setShowGivenPicker] = useState(false);
+  const [givenValue, setGivenValue] = useState<Dayjs | null>(null);
   const nextDose = getNextDoseTime(lek);
   const historyToShow = showFullHistory ? lek.historia_dawek : lek.historia_dawek.slice(0, 3);
+
+  const handleOpenOverride = () => {
+    setOverrideValue(nextDose ? dayjs(nextDose) : dayjs());
+    setShowOverridePicker(true);
+  };
+
+  const handleApplyOverride = () => {
+    if (overrideValue && overrideValue.isValid()) {
+      onSaveOverride(overrideValue.toISOString());
+      setShowOverridePicker(false);
+    }
+  };
+
+  const handleClearOverride = () => {
+    onSaveOverride('');
+    setShowOverridePicker(false);
+  };
 
   return (
     <div style={s.card}>
@@ -390,16 +416,6 @@ function LekCard({
           label="Nazwa leku"
           value={lek.nazwa}
           onChange={(e) => onChange('nazwa', e.target.value)}
-          fullWidth
-        />
-
-        {/* Data pierwszej dawki */}
-        <TextField
-          label="Data pierwszej dawki"
-          type="date"
-          value={lek.data_pierwszej_dawki}
-          onChange={(e) => onChange('data_pierwszej_dawki', e.target.value)}
-          InputLabelProps={{ shrink: true }}
           fullWidth
         />
 
@@ -459,11 +475,6 @@ function LekCard({
 
         {lek.sledzenie && (
           <>
-            <TimePickerField
-              value={lek.godzina_pierwszej_dawki}
-              onChange={(v) => onChange('godzina_pierwszej_dawki', v)}
-            />
-
             {isDone(lek) ? (
               <>
                 <div style={s.doneBox}>
@@ -477,12 +488,39 @@ function LekCard({
               <>
                 {nextDose && (
                   <div style={s.nextDose}>
-                    Następna dawka: <strong>{formatNextDose(nextDose)}</strong>
+                    <span>
+                      Następna dawka: <strong>{formatNextDose(nextDose)}</strong>
+                      {lek.nastepna_dawka_override && <span style={s.overrideBadge}>zmieniony</span>}
+                    </span>
+                    <button onClick={handleOpenOverride} style={s.zmienBtn}>Zmień</button>
+                  </div>
+                )}
+                {showOverridePicker && (
+                  <div style={s.overrideBox}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateTimePicker
+                        label="Nowy czas następnej dawki"
+                        value={overrideValue}
+                        onChange={setOverrideValue}
+                        ampm={false}
+                        slotProps={{ textField: { fullWidth: true } }}
+                      />
+                    </LocalizationProvider>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <button onClick={handleApplyOverride} style={s.zastosujBtn}>Zastosuj</button>
+                      <button onClick={() => setShowOverridePicker(false)} style={s.cofnijBtn}>Anuluj</button>
+                      {lek.nastepna_dawka_override && (
+                        <button onClick={handleClearOverride} style={s.cofnijBtn}>Usuń zmianę</button>
+                      )}
+                    </div>
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button onClick={onMarkGiven} style={s.podanoBtn}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => { setGivenValue(dayjs()); setShowGivenPicker(true); }}
+                    style={s.podanoBtn}
+                  >
                     <CheckCircleOutlineIcon style={{ fontSize: '18px' }} />
                     Podano
                   </button>
@@ -492,6 +530,33 @@ function LekCard({
                     </button>
                   )}
                 </div>
+                {showGivenPicker && (
+                  <div style={s.overrideBox}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateTimePicker
+                        label="Czas podania"
+                        value={givenValue}
+                        onChange={setGivenValue}
+                        ampm={false}
+                        slotProps={{ textField: { fullWidth: true } }}
+                      />
+                    </LocalizationProvider>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <button
+                        onClick={() => {
+                          if (givenValue && givenValue.isValid()) {
+                            onMarkGiven(givenValue.toISOString());
+                            setShowGivenPicker(false);
+                          }
+                        }}
+                        style={s.zastosujBtn}
+                      >
+                        Potwierdź
+                      </button>
+                      <button onClick={() => setShowGivenPicker(false)} style={s.cofnijBtn}>Anuluj</button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -551,24 +616,27 @@ const s: Record<string, React.CSSProperties> = {
   shortlistRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    padding: '10px 20px',
+    gap: '8px',
+    padding: '10px 16px',
+    flexWrap: 'wrap' as const,
   },
   shortlistRowBorder: {
     borderTop: '1px solid #f7f7f7',
   },
   shortlistName: {
     flex: 1,
+    minWidth: '80px',
     fontWeight: 600,
     fontSize: '14px',
     color: '#2E2E2E',
+    wordBreak: 'break-word' as const,
   },
   shortlistNext: {
     fontSize: '13px',
     color: '#616161',
-    minWidth: '110px',
     textAlign: 'right' as const,
     whiteSpace: 'pre-line' as const,
+    flexShrink: 1,
   },
   shortlistRowDone: {
     opacity: 0.5,
@@ -585,6 +653,7 @@ const s: Record<string, React.CSSProperties> = {
   shortlistPodanoBtn: {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '4px',
     background: 'none',
     border: '1.5px solid #2383C5',
@@ -594,7 +663,9 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: '13px',
     padding: '5px 10px',
     cursor: 'pointer',
-    whiteSpace: 'nowrap' as const,
+    flexShrink: 1,
+    minWidth: 0,
+    overflow: 'hidden',
   },
   card: {
     backgroundColor: '#fff',
@@ -650,10 +721,53 @@ const s: Record<string, React.CSSProperties> = {
     backgroundColor: '#fde8ec',
     borderRadius: '8px',
     padding: '10px 14px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    flexWrap: 'wrap' as const,
+  },
+  overrideBadge: {
+    marginLeft: '8px',
+    fontSize: '11px',
+    fontWeight: 600,
+    color: '#2383C5',
+    backgroundColor: '#e3f0fb',
+    borderRadius: '4px',
+    padding: '2px 6px',
+  },
+  zmienBtn: {
+    background: 'none',
+    border: '1.5px solid #EC1A3B',
+    borderRadius: '6px',
+    color: '#EC1A3B',
+    fontWeight: 600,
+    fontSize: '12px',
+    padding: '4px 10px',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
+    flexShrink: 0,
+  },
+  overrideBox: {
+    backgroundColor: '#f9f9f9',
+    border: '1px solid #eee',
+    borderRadius: '8px',
+    padding: '14px',
+  },
+  zastosujBtn: {
+    background: '#EC1A3B',
+    border: 'none',
+    borderRadius: '8px',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: '14px',
+    padding: '8px 16px',
+    cursor: 'pointer',
   },
   podanoBtn: {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '6px',
     background: 'none',
     border: '1.5px solid #2383C5',
@@ -666,6 +780,10 @@ const s: Record<string, React.CSSProperties> = {
     alignSelf: 'flex-start' as const,
   },
   cofnijBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center' as const,
     background: 'none',
     border: '1.5px solid #616161',
     borderRadius: '8px',
@@ -674,6 +792,8 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     padding: '8px 14px',
     cursor: 'pointer',
+    whiteSpace: 'normal' as const,
+    wordBreak: 'break-word' as const,
   },
   historyBox: {
     borderTop: '1px solid #f0f0f0',
