@@ -1,7 +1,7 @@
 import "./css/Main.css";
 import HelpUsSide from "./HelpUsSide.tsx";
 import SocialsSide from "./SocialsSide.tsx";
-import logo from "../media/logo_podstawowe.png";
+import { LOGO as logo } from "../app/mediaUrls.ts";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export default function ThankYou() {

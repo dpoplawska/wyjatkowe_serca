@@ -1,13 +1,5 @@
-import ws5 from "../../../media/beneficiaries/WS5-CecyliaSuchocka.JPG";
-import ws3 from "../../../media/beneficiaries/WS3-CyprianZawadzki.png";
-import ws1 from "../../../media/beneficiaries/WS1-DanusiaGrzyb.JPG";
-import ws2 from "../../../media/beneficiaries/WS2-FranciszekGrzyb.JPG";
-import ws6 from "../../../media/beneficiaries/WS6-HubertSzymborski.png";
-import ws4 from "../../../media/beneficiaries/WS4-MikolajWegierski.JPG";
-import ws7 from "../../../media/beneficiaries/WS7-NikodemKochel.jpeg";
-import ws8_1 from "../../../media/beneficiaries/WS8-2-AgnieszkaPtaszek.JPG";
-import ws8_2 from "../../../media/beneficiaries/WS8-1-AgnieszkaPtaszek.JPG";
-import ws8_3 from "../../../media/beneficiaries/WS8-3-AgnieszkaPtaszek.JPG";
+import { BENEFICIARIES } from "../../../app/mediaUrls.ts";
+const { ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8_1, ws8_2, ws8_3 } = BENEFICIARIES;
 
 export const beneficiaries = [
 	{

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
-import logo from '../media/logo_podstawowe.png';
+import { LOGO as logo } from './mediaUrls.ts';
 
 const GoogleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="22px" height="22px">

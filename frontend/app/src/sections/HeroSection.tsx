@@ -1,4 +1,4 @@
-import logo from "../media/logo_podstawowe.png"
+import { LOGO as logo } from "../app/mediaUrls.ts"
 import "./css/Main.css"
 
 

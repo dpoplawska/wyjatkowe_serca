@@ -1,10 +1,6 @@
 import "./css/Footer.css";
-import logo from "../media/logo_podstawowe.png";
+import { LOGO as logo, PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations, PDF_STATUT as statut, PDF_KONKURS as konkurs } from "../app/mediaUrls.ts";
 import PlaceIcon from "@mui/icons-material/Place";
-import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
-import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
-import statut from "../media/Statut.pdf";
-import konkurs from "../media/OGLOSZENIE_O_KONKURSIE.pdf";
 
 export default function Footer() {
 	const addressLink =

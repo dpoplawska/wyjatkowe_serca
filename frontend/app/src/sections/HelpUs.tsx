@@ -1,5 +1,5 @@
 import "../sections/css/InfoContent.css"
-import logo from "../media/logo_sam_mis.png"
+import { LOGO_MIS as logo } from "../app/mediaUrls.ts"
 
 export default function HelpUs() {
     return (

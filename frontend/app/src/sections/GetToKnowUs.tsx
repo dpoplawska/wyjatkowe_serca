@@ -1,5 +1,5 @@
 import "../sections/css/InfoContent.css"
-import zdjecie from "../media/zdjecie_zespolu_z_lekarzami.jpg"
+import { PHOTO_TEAM_DOCTORS as zdjecie } from "../app/mediaUrls.ts"
 
 export default function GetToKnowUs() {
     return (

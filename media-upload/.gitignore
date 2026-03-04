@@ -1,0 +1,4 @@
+# Ignore all media files, track only README.md
+*
+!.gitignore
+!README.md

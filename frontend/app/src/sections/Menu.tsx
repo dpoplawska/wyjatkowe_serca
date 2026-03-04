@@ -1,6 +1,6 @@
 import "./css/Menu.css";
 import { useEffect, useState, useRef } from "react";
-import logo from "../media/logo_podstawowe.png";
+import { LOGO as logo } from "../app/mediaUrls.ts";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Squash as Hamburger } from "hamburger-react";

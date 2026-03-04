@@ -9,3 +9,11 @@ prompts
 secrets.json
 secrets_dev.json
 backend/service-account.json
+
+# Media files (stored in Firebase Storage)
+frontend/app/src/media/**/*.png
+frontend/app/src/media/**/*.PNG
+frontend/app/src/media/**/*.jpg
+frontend/app/src/media/**/*.JPG
+frontend/app/src/media/**/*.jpeg
+frontend/app/src/media/**/*.pdf

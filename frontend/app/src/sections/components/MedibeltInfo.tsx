@@ -1,10 +1,6 @@
 import { useState } from "react";
-import product1 from "../../media/nerka/1.png";
-import product2 from "../../media/nerka/2.png";
-import product3 from "../../media/nerka/3.png";
-import product4 from "../../media/nerka/4.png";
-import product5 from "../../media/nerka/5.png";
-import product6 from "../../media/nerka/6.png";
+import { NERKA } from "../../app/mediaUrls.ts";
+const [product1, product2, product3, product4, product5, product6] = NERKA;
 import Carousel from "react-bootstrap/esm/Carousel";
 
 type MediBeltProps = {

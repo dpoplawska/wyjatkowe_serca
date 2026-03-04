@@ -4,8 +4,7 @@ import HelpUsSide from "./HelpUsSide.tsx";
 import SocialsSide from "./SocialsSide.tsx";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
 import { Checkbox, TextField } from "@mui/material";
-import privacyPolicy from "../media/Polityka_prywatnosci.pdf";
-import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf";
+import { PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations } from "../app/mediaUrls.ts";
 import MedibeltInfo from "./components/MedibeltInfo.tsx";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 

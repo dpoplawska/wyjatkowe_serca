@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DownloadIcon from "@mui/icons-material/Download";
-import sprawozdanie2024 from "./../media/Sprawozdanie finansowe WyjatkoweSerca 2024.pdf";
+import { PDF_SPRAWOZDANIE_2024 as sprawozdanie2024 } from "../app/mediaUrls.ts";
 
 export default function FinancialReportsPage() {
   return (

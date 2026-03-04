@@ -1,5 +1,5 @@
 import "../sections/css/InfoContent.css"
-import zdjecie from "../media/zdjecie_zespolu.jpg"
+import { PHOTO_TEAM as zdjecie } from "../app/mediaUrls.ts"
 
 export default function WhatWeDo() {
     return (

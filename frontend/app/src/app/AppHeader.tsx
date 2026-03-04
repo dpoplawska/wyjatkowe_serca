@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'firebase/auth';
-import logo from '../media/logo_podstawowe.png';
+import { LOGO as logo } from './mediaUrls.ts';
 
 interface AppHeaderProps {
   user: User;
