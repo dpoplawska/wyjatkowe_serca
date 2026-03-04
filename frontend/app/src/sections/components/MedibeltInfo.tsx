@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { NERKA } from "../../app/mediaUrls.ts";
-const [product1, product2, product3, product4, product5, product6] = NERKA;
 import Carousel from "react-bootstrap/esm/Carousel";
+import { NERKA } from "../../app/mediaUrls.ts";
+
+const [product1, product2, product3, product4, product5, product6] = NERKA;
 
 type MediBeltProps = {
 	productPrice: number;

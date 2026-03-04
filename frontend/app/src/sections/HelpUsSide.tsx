@@ -4,8 +4,7 @@ import "./css/Sides.css"
 import ValueButton from "./components/ValueButton.tsx";
 import { useLocation } from "react-router-dom";
 import { Checkbox } from "@mui/material";
-import privacyPolicy from "../media/Polityka_prywatnosci.pdf"
-import serviceRegulations from "../media/Regulamin_serwisu_FWS.pdf"
+import { PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations } from "../app/mediaUrls.ts"
 
 import { API } from '../app/config.ts';
 

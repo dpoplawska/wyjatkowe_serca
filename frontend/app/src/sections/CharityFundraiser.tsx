@@ -2,7 +2,7 @@ import "./css/Main.css";
 import HelpUsSide from "./HelpUsSide.tsx";
 import SocialsSide from "./SocialsSide.tsx";
 import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
-import logo from "../media/logo_podstawowe.png";
+import { LOGO as logo } from "../app/mediaUrls.ts";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 import DefaultFundraiserBody from "./components/DefaultFundraiserBody.tsx";
 import SpecialFundraiserBody from "./components/SpecialFundraiserBody.tsx";

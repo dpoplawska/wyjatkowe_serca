@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import HelpUsSide from "./HelpUsSide.tsx";
 import SocialsSide from "./SocialsSide.tsx";
-import { POLACZENI_W_KRYZYSIE } from "../app/mediaUrls.ts";
-const [pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11] = POLACZENI_W_KRYZYSIE;
 import "../sections/css/Main.css";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 import Carousel from "react-bootstrap/esm/Carousel";
+import { POLACZENI_W_KRYZYSIE } from "../app/mediaUrls.ts";
+
+const [pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11] = POLACZENI_W_KRYZYSIE;
 
 const images = [pic1, pic2, pic10, pic4, pic8, pic5, pic9, pic6, pic7];
 

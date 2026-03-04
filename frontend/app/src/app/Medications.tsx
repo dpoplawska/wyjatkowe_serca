@@ -374,6 +374,13 @@ function LekCard({
     setShowOverridePicker(false);
   };
 
+  const undoBtn = (
+    <button onClick={onUndoGiven} style={{ ...s.usunBtn, ...(isMobile ? { width: '100%' } : {}) }}>
+      <DeleteOutlineIcon style={{ fontSize: '18px' }} />
+      Usuń ostatnie podanie
+    </button>
+  );
+
   return (
     <div style={s.card}>
       <div style={s.cardHeader}>
@@ -458,9 +465,7 @@ function LekCard({
                 <div style={s.doneBox}>
                   Kurs leku zakończony — wszystkie dawki zostały przyjęte.
                 </div>
-                <button onClick={onUndoGiven} style={{ ...s.cofnijBtn, ...(isMobile ? { width: '100%' } : {}) }}>
-                  Cofnij ostatnie podanie
-                </button>
+                {undoBtn}
               </>
             ) : (
               <>
@@ -510,11 +515,7 @@ function LekCard({
                     <MedicationIcon style={{ fontSize: '18px' }} />
                     Zapisz podanie leku
                   </button>
-                  {lek.historia_dawek.length > 0 && (
-                    <button onClick={onUndoGiven} style={{ ...s.cofnijBtn, ...(isMobile ? { width: '100%' } : {}) }}>
-                      Cofnij ostatnie podanie
-                    </button>
-                  )}
+                  {lek.historia_dawek.length > 0 && undoBtn}
                 </div>
                 {showGivenPicker && (
                   <div style={s.overrideBox}>
@@ -782,6 +783,23 @@ const s: Record<string, React.CSSProperties> = {
     border: '1.5px solid #616161',
     borderRadius: '8px',
     color: '#616161',
+    fontWeight: 600,
+    fontSize: '14px',
+    padding: '8px 14px',
+    cursor: 'pointer',
+    whiteSpace: 'normal' as const,
+    wordBreak: 'break-word' as const,
+  },
+  usunBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    textAlign: 'center' as const,
+    background: 'none',
+    border: '1.5px solid #EC1A3B',
+    borderRadius: '8px',
+    color: '#EC1A3B',
     fontWeight: 600,
     fontSize: '14px',
     padding: '8px 14px',
