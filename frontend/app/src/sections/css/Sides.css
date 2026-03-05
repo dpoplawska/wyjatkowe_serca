@@ -20,7 +20,7 @@
   gap: 10px;
 }
 
-#icon {
+.icon {
   font-size: 50px;
   color: #000;
 }
@@ -58,13 +58,18 @@
 }
 
 @media screen and (min-width: 992px) {
-  #icon:hover {
+  .icon:hover {
     color:#2383C5;
   }
 
   .help-us.side {
-    width: 220px;
+    width: 240px;
   }
+}
+
+.fb-posts-embed {
+  display: flex;
+  justify-content: center;
 }
 
 @media screen and (max-width: 992px) {

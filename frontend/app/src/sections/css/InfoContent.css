@@ -87,7 +87,7 @@ h1, h2 {
     text-align: center;
 }
 
-.playlist #icon {
+.playlist .icon {
     color: var(--red);
 }
 
@@ -188,7 +188,7 @@ h1, h2 {
 }
 
 @media screen and (min-width: 992px) {
-  #icon:hover {
+  .icon:hover {
     color: var(--blue);
   }
 

@@ -6,7 +6,7 @@ const Playlist = ({ title, description, link }) => (
     <div>
         <div className="playlist">
             <a href={link} target="_blank" rel="noopener noreferrer" className="hashtags">
-                {title} <YouTube id="icon" />
+                {title} <YouTube className="icon" />
             </a>
         </div>
         <p className="content">{description}</p>
