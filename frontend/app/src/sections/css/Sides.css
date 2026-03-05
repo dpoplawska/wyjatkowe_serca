@@ -16,11 +16,12 @@
 
 .icons {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 35px;
+  justify-content: center;
 }
 
-.icon {
+.icons .icon {
   font-size: 50px;
   color: #000;
 }
@@ -58,7 +59,7 @@
 }
 
 @media screen and (min-width: 992px) {
-  .icon:hover {
+  .icons .icon:hover {
     color:#2383C5;
   }
 

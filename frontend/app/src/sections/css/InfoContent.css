@@ -188,7 +188,7 @@ h1, h2 {
 }
 
 @media screen and (min-width: 992px) {
-  .icon:hover {
+  .playlist .icon:hover {
     color: var(--blue);
   }
 
