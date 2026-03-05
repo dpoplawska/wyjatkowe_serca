@@ -78,3 +78,17 @@ class Lek(BaseModel):
 
 class MedicationsData(BaseModel):
     leki: List[Lek] = []
+
+
+class InrEntry(BaseModel):
+    id: str = ""
+    date: str = ""
+    inr: float = 0.0
+    pt: float = 0.0
+    pt_normal: float = 12.0
+    isi: float = 1.0
+    note: str = ""
+
+
+class InrData(BaseModel):
+    entries: List[InrEntry] = []

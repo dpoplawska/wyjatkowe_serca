@@ -15,6 +15,7 @@ import { AuthProvider } from './app/AuthContext.tsx';
 import AppLogin from './app/AppLogin.tsx';
 import PatientProfile from './app/PatientProfile.tsx';
 import Medications from './app/Medications.tsx';
+import InrCalculator from './app/InrCalculator.tsx';
 
 function AppContent() {
   const location = useLocation();
@@ -44,6 +45,7 @@ function AppContent() {
           <Route path="/app" element={<AppLogin />} />
           <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
           <Route path="/app/leki" element={<Medications />} />
+          <Route path="/app/kalkulator-inr" element={<InrCalculator />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

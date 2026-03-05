@@ -73,6 +73,29 @@
   justify-content: center;
 }
 
+.fb-posts-chevron {
+  display: none;
+  color: var(--red);
+  vertical-align: middle;
+}
+
+@media screen and (min-width: 993px) {
+  .fb-posts-embed {
+    display: flex !important;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .fb-posts-toggle-header {
+    cursor: pointer;
+  }
+
+  .fb-posts-chevron {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 @media screen and (max-width: 992px) {
   .side {
     height: auto;

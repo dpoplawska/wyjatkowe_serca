@@ -3,10 +3,13 @@ import "./css/Sides.css"
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function SocialsSide() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [fbWidth, setFbWidth] = useState(0);
+    const [postsExpanded, setPostsExpanded] = useState(true);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -34,11 +37,15 @@ export default function SocialsSide() {
                 </a>
             </div>
 
-            <div className="supportUs" style={{ fontSize: '22px', marginTop: '8px' }}>
+            <div className="supportUs fb-posts-toggle-header" style={{ fontSize: '22px', marginTop: '8px' }}
+                onClick={() => setPostsExpanded(e => !e)}>
                 Ostatnie posty
+                <span className="fb-posts-chevron">
+                    {postsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </span>
             </div>
 
-            <div className="fb-posts-embed" ref={containerRef}>
+            <div className="fb-posts-embed" ref={containerRef} style={{ display: postsExpanded ? 'flex' : 'none' }}>
                 {fbWidth > 0 && (
                     <iframe
                         title="Facebook posts"
