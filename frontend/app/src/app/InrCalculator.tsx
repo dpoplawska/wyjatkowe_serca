@@ -375,7 +375,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: '12px 24px',
     cursor: 'pointer',
     fontFamily: 'Quicksand, sans-serif',
-    alignSelf: 'flex-start' as const,
+    width: '100%',
   },
   calcBtnDisabled: {
     opacity: 0.5,
@@ -391,9 +391,10 @@ const s: Record<string, React.CSSProperties> = {
     padding: '10px 20px',
     cursor: 'pointer',
     fontFamily: 'Quicksand, sans-serif',
-    alignSelf: 'flex-start' as const,
+    width: '100%',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   rangesGrid: {
     display: 'flex',
@@ -435,6 +436,7 @@ const s: Record<string, React.CSSProperties> = {
   historyLeft: {
     flex: 1,
     minWidth: 0,
+    overflow: 'hidden',
   },
   historyDate: {
     fontSize: '14px',
