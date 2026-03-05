@@ -184,7 +184,8 @@ const s: Record<string, React.CSSProperties> = {
   mobileTab: {
     background: 'none',
     border: 'none',
-    textAlign: 'left' as const,
+    textAlign: 'center' as const,
+    width: '100%',
     padding: '14px 24px',
     fontWeight: 600,
     fontSize: '15px',
@@ -207,6 +208,7 @@ const s: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap' as const,
+    textAlign: 'center' as const,
   },
   mobileLogoutBtn: {
     background: 'none',
@@ -219,5 +221,6 @@ const s: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     margin: '0 24px',
     fontFamily: 'Quicksand, sans-serif',
+    alignSelf: 'center' as const,
   },
 };
