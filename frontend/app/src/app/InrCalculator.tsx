@@ -254,35 +254,23 @@ export default function InrCalculator() {
 
         {/* History */}
         {history.length > 0 && (
-          <div style={s.card}>
-            <div style={s.cardTitle}>Historia pomiarów</div>
-            <Divider style={{ marginBottom: '0' }} />
-            {history.map((entry, i) => {
+          <div style={s.historySection}>
+            <div style={s.historySectionTitle}>Historia pomiarów</div>
+            {history.map((entry) => {
               const interp = getInterpretation(entry.inr);
               return (
-                <div
-                  key={entry.id}
-                  style={{ ...s.historyRow, ...(i > 0 ? s.historyRowBorder : {}) }}
-                >
-                  <div style={s.historyMain}>
-                    <div style={s.historyLeft}>
-                      <div style={s.historyDate}>{formatDate(entry.date)}</div>
-                      {entry.note && <div style={s.historyNote}>{entry.note}</div>}
-                    </div>
-                    <div style={s.historyRight}>
-                      <div style={{ ...s.historyInr, color: interp.color, backgroundColor: interp.bg }}>
-                        {entry.inr.toFixed(2)}
-                      </div>
-                      <button
-                        onClick={() => handleDelete(entry.id)}
-                        style={s.deleteBtn}
-                        title="Usuń wpis"
-                      >
-                        <DeleteOutlineIcon style={{ fontSize: '18px' }} />
-                      </button>
-                    </div>
+                <div key={entry.id} style={{ ...s.historyCard, borderLeftColor: interp.color }}>
+                  <div style={{ ...s.historyInrBig, color: interp.color, backgroundColor: interp.bg }}>
+                    {entry.inr.toFixed(2)}
                   </div>
-                  <div style={s.historyDetails}>PT: {entry.pt} s · norma: {entry.pt_normal} s · ISI: {entry.isi}</div>
+                  <div style={s.historyCardBody}>
+                    <div style={s.historyCardDate}>{formatDate(entry.date)}</div>
+                    {entry.note && <div style={s.historyCardNote}>„{entry.note}"</div>}
+                    <div style={s.historyCardDetails}>PT: {entry.pt} s · norma: {entry.pt_normal} s · ISI: {entry.isi}</div>
+                  </div>
+                  <button onClick={() => handleDelete(entry.id)} style={s.deleteBtn} title="Usuń wpis">
+                    <DeleteOutlineIcon style={{ fontSize: '22px' }} />
+                  </button>
                 </div>
               );
             })}
@@ -418,54 +406,56 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: '13px',
     lineHeight: '1.4',
   },
-  historyRow: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    padding: '12px 4px',
-    gap: '4px',
+  historySection: {
+    marginBottom: '20px',
   },
-  historyRowBorder: {
-    borderTop: '1px solid #f0f0f0',
-  },
-  historyMain: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '12px',
-  },
-  historyLeft: {
-    flex: 1,
-    minWidth: 0,
-    overflow: 'hidden',
-  },
-  historyDate: {
-    fontSize: '14px',
-    fontWeight: 600,
+  historySectionTitle: {
+    fontWeight: 700,
+    fontSize: '16px',
     color: '#2E2E2E',
+    marginBottom: '12px',
+    paddingLeft: '2px',
   },
-  historyNote: {
-    fontSize: '13px',
-    color: '#616161',
-    marginTop: '2px',
-  },
-  historyDetails: {
-    fontSize: '12px',
-    color: '#999',
-    marginTop: '2px',
-  },
-  historyRight: {
+  historyCard: {
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    padding: '12px 14px',
+    marginBottom: '10px',
+    borderLeft: '4px solid transparent',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '14px',
+  },
+  historyInrBig: {
+    fontWeight: 800,
+    fontSize: '20px',
+    borderRadius: '10px',
+    padding: '8px 12px',
+    minWidth: '58px',
+    textAlign: 'center' as const,
+    lineHeight: '1.2',
     flexShrink: 0,
   },
-  historyInr: {
+  historyCardBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  historyCardDate: {
+    fontSize: '13px',
     fontWeight: 700,
-    fontSize: '18px',
-    borderRadius: '8px',
-    padding: '4px 12px',
-    minWidth: '52px',
-    textAlign: 'center' as const,
+    color: '#2E2E2E',
+  },
+  historyCardNote: {
+    fontSize: '12px',
+    color: '#616161',
+    fontStyle: 'italic' as const,
+    marginTop: '2px',
+  },
+  historyCardDetails: {
+    fontSize: '11px',
+    color: '#bbb',
+    marginTop: '3px',
   },
   deleteBtn: {
     background: 'none',
@@ -475,5 +465,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: '4px',
     display: 'flex',
     alignItems: 'center',
+    width: 'fit-content',
+    minWidth: 0,
   },
 };
