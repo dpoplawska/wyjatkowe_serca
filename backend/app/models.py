@@ -92,3 +92,18 @@ class InrEntry(BaseModel):
 
 class InrData(BaseModel):
     entries: List[InrEntry] = []
+
+
+class MeasurementEntry(BaseModel):
+    id: str = ""
+    date: str = ""
+    saturacja: Optional[float] = None
+    tetno: Optional[float] = None
+    cisnienie_skurczowe: Optional[float] = None
+    cisnienie_rozkurczowe: Optional[float] = None
+    diureza: Optional[float] = None
+    note: str = ""
+
+
+class MeasurementsData(BaseModel):
+    entries: List[MeasurementEntry] = []

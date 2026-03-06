@@ -16,6 +16,7 @@ import AppLogin from './app/AppLogin.tsx';
 import PatientProfile from './app/PatientProfile.tsx';
 import Medications from './app/Medications.tsx';
 import InrCalculator from './app/InrCalculator.tsx';
+import Pomiary from './app/Pomiary.tsx';
 
 function AppContent() {
   const location = useLocation();
@@ -46,6 +47,7 @@ function AppContent() {
           <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
           <Route path="/app/leki" element={<Medications />} />
           <Route path="/app/kalkulator-inr" element={<InrCalculator />} />
+          <Route path="/app/pomiary" element={<Pomiary />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

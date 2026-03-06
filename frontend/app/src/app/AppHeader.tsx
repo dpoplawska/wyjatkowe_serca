@@ -12,6 +12,7 @@ interface AppHeaderProps {
 const TABS = [
   { label: 'Profil pacjenta', path: '/app/profil-pacjenta' },
   { label: 'Leki', path: '/app/leki' },
+  { label: 'Pomiary', path: '/app/pomiary' },
   { label: 'Kalkulator INR', path: '/app/kalkulator-inr' },
 ];
 
