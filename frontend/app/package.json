@@ -30,6 +30,7 @@
     "react-scroll": "^1.9.3",
     "react-select": "^5.10.2",
     "react-use": "^17.6.0",
+    "recharts": "^3.7.0",
     "use-click-away": "^0.0.1",
     "web-vitals": "^5.1.0"
   },

@@ -18,6 +18,7 @@ import {
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/pl';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MedicationIcon from '@mui/icons-material/Medication';
@@ -480,7 +481,7 @@ function LekCard({
                 )}
                 {showOverridePicker && (
                   <div style={s.overrideBox}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <DatePicker
                           label="Data"
@@ -519,7 +520,7 @@ function LekCard({
                 </div>
                 {showGivenPicker && (
                   <div style={s.overrideBox}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <DatePicker
                           label="Data"
