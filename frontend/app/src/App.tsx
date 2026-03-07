@@ -13,6 +13,7 @@ import ConnectedInCrisisPage from './sections/ConnectedInCrisisPage.tsx';
 import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
 import { AuthProvider } from './app/AuthContext.tsx';
 import AppLogin from './app/AppLogin.tsx';
+import AcceptInvite from './app/AcceptInvite.tsx';
 import PatientProfile from './app/PatientProfile.tsx';
 import Medications from './app/Medications.tsx';
 import InrCalculator from './app/InrCalculator.tsx';
@@ -44,6 +45,7 @@ function AppContent() {
           <Route path="/sklep/admin" element={<LoginPage />} />
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
           <Route path="/app" element={<AppLogin />} />
+          <Route path="/app/accept" element={<AcceptInvite />} />
           <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
           <Route path="/app/leki" element={<Medications />} />
           <Route path="/app/kalkulator-inr" element={<InrCalculator />} />

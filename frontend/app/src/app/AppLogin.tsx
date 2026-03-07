@@ -22,19 +22,43 @@ export default function AppLogin() {
   const [devLoading, setDevLoading] = useState(false);
   const [devOpen, setDevOpen] = useState(false);
   const [devSearch, setDevSearch] = useState('');
+  const [selectedDevUser, setSelectedDevUser] = useState<{ uid: string; email: string } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletingUid, setDeletingUid] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!IS_DEV) return;
+  const fetchDevUsers = () => {
     setDevLoading(true);
     fetch('http://localhost:8000/dev/users')
       .then(r => r.json())
       .then((data: { uid: string; email: string }[]) => setDevUsers(data))
       .catch(() => setDevUsers([]))
       .finally(() => setDevLoading(false));
+  };
+
+  useEffect(() => {
+    if (!IS_DEV) return;
+    fetchDevUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <div style={styles.loadingWrap}>Ładowanie...</div>;
-  if (user) return <Navigate to="/app/profil-pacjenta" replace />;
+  if (user) {
+    const pendingToken = sessionStorage.getItem('pendingInviteToken');
+    if (pendingToken) return <Navigate to={`/app/accept?token=${pendingToken}`} replace />;
+    return <Navigate to="/app/profil-pacjenta" replace />;
+  }
+
+  const handleDevDelete = async (uid: string) => {
+    setDeletingUid(uid);
+    try {
+      await fetch(`http://localhost:8000/dev/users/${uid}`, { method: 'DELETE' });
+      setSelectedDevUser(null);
+      setConfirmDelete(false);
+      fetchDevUsers();
+    } finally {
+      setDeletingUid(null);
+    }
+  };
 
   const handleSignIn = async () => {
     setError('');
@@ -75,14 +99,14 @@ export default function AppLogin() {
 
         {IS_DEV && (
           <div style={styles.devPanel}>
-            <div style={styles.devLabel}>DEV — zaloguj jako pacjent</div>
+            <div style={styles.devLabel}>DEV</div>
             <div style={{ position: 'relative' }}>
               <button
                 style={styles.devBtn}
-                onClick={() => setDevOpen(o => !o)}
+                onClick={() => { setDevOpen(o => !o); setConfirmDelete(false); }}
                 disabled={devLoading}
               >
-                {devLoading ? 'Ładowanie...' : 'Wybierz użytkownika...'}
+                {selectedDevUser ? selectedDevUser.email : (devLoading ? 'Ładowanie...' : 'Wybierz użytkownika...')}
               </button>
               {devOpen && (
                 <div style={styles.devDropdown}>
@@ -102,8 +126,11 @@ export default function AppLogin() {
                       .map(u => (
                         <button
                           key={u.uid}
-                          style={styles.devOption}
-                          onClick={() => { loginAsDevUser(u.uid, u.email); setDevOpen(false); }}
+                          style={{
+                            ...styles.devOption,
+                            ...(selectedDevUser?.uid === u.uid ? styles.devOptionSelected : {}),
+                          }}
+                          onClick={() => { setSelectedDevUser(u); setDevOpen(false); setConfirmDelete(false); setDevSearch(''); }}
                         >
                           {u.email}
                         </button>
@@ -112,6 +139,43 @@ export default function AppLogin() {
                 </div>
               )}
             </div>
+
+            {selectedDevUser && (
+              <div style={styles.devActions}>
+                <button
+                  style={styles.devActionBtn}
+                  onClick={() => loginAsDevUser(selectedDevUser.uid, selectedDevUser.email)}
+                >
+                  Zaloguj
+                </button>
+                <button
+                  style={styles.devDeleteActionBtn}
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  Usuń użytkownika
+                </button>
+              </div>
+            )}
+
+            {confirmDelete && selectedDevUser && (
+              <div style={styles.devOverlay} onClick={() => setConfirmDelete(false)}>
+                <div style={styles.devModal} onClick={e => e.stopPropagation()}>
+                  <p style={styles.devConfirmText}>Na pewno usunąć <strong>{selectedDevUser.email}</strong>?</p>
+                  <div style={styles.devConfirmBtns}>
+                    <button style={styles.devCancelBtn} onClick={() => setConfirmDelete(false)}>
+                      Anuluj
+                    </button>
+                    <button
+                      style={styles.devConfirmDeleteBtn}
+                      disabled={!!deletingUid}
+                      onClick={() => handleDevDelete(selectedDevUser.uid)}
+                    >
+                      {deletingUid ? 'Usuwanie...' : 'Usuń'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -257,6 +321,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column' as const,
   },
   devOption: {
+    width: '100%',
     padding: '8px 12px',
     border: 'none',
     backgroundColor: 'transparent',
@@ -266,10 +331,94 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     textAlign: 'left' as const,
   },
+  devOptionSelected: {
+    backgroundColor: '#fef0f2',
+    color: '#EC1A3B',
+  },
   devHint: {
     padding: '8px 12px',
     fontFamily: 'Quicksand, sans-serif',
     fontSize: '13px',
     color: '#999',
+  },
+  devActions: {
+    display: 'flex',
+    gap: '8px',
+  },
+  devActionBtn: {
+    flex: 1,
+    padding: '8px 0',
+    border: '1px solid #e0e0e0',
+    borderRadius: '6px',
+    backgroundColor: '#fafafa',
+    color: '#2E2E2E',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '13px',
+    cursor: 'pointer',
+  },
+  devDeleteActionBtn: {
+    flex: 1,
+    padding: '8px 0',
+    border: '1px solid #f5c0c8',
+    borderRadius: '6px',
+    backgroundColor: '#fff5f6',
+    color: '#EC1A3B',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '13px',
+    cursor: 'pointer',
+  },
+  devOverlay: {
+    position: 'fixed' as const,
+    inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+  },
+  devModal: {
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    padding: '24px',
+    width: '300px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '16px',
+  },
+  devConfirmText: {
+    fontFamily: 'Quicksand, sans-serif',
+    fontSize: '14px',
+    color: '#2E2E2E',
+    margin: 0,
+  },
+  devConfirmBtns: {
+    display: 'flex',
+    gap: '8px',
+    justifyContent: 'flex-end',
+  },
+  devCancelBtn: {
+    padding: '6px 14px',
+    border: '1px solid #e0e0e0',
+    borderRadius: '6px',
+    backgroundColor: '#fff',
+    color: '#616161',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '13px',
+    cursor: 'pointer',
+  },
+  devConfirmDeleteBtn: {
+    padding: '6px 14px',
+    border: 'none',
+    borderRadius: '6px',
+    backgroundColor: '#EC1A3B',
+    color: '#fff',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 700,
+    fontSize: '13px',
+    cursor: 'pointer',
   },
 };

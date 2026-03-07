@@ -17,9 +17,15 @@ import {
   Chip,
   Box,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ShareIcon from '@mui/icons-material/Share';
 import { useAuth } from './AuthContext.tsx';
 import AppHeader from './AppHeader.tsx';
 import { shared } from './appStyles.ts';
@@ -143,6 +149,10 @@ export default function PatientProfile() {
   const [profile, setProfile] = useState<ProfileData>(emptyProfile);
   const [fetching, setFetching] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareLink, setShareLink] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -215,13 +225,69 @@ export default function PatientProfile() {
     }
   };
 
+  const handleShare = async () => {
+    setSharing(true);
+    setCopied(false);
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/invite`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error();
+      const { token: inviteToken } = await res.json();
+      setShareLink(`${window.location.origin}/app/accept?token=${inviteToken}`);
+      setShareOpen(true);
+    } catch {
+      setSnackbar({ open: true, message: 'Nie udało się wygenerować linku. Spróbuj ponownie.', severity: 'error' });
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareLink).then(() => setCopied(true));
+  };
+
   return (
     <div style={s.page}>
       <AppHeader user={user} logout={logout} />
 
       {/* Content */}
       <main style={s.main}>
-        <h2 style={s.pageTitle}>Profil pacjenta</h2>
+        <div style={s.titleRow}>
+          <h2 style={s.pageTitleInline}>Profil pacjenta</h2>
+          <button onClick={handleShare} disabled={sharing} style={s.shareBtn}>
+            <ShareIcon style={{ fontSize: 16 }} />
+            {sharing ? 'Generowanie...' : 'Udostępnij dostęp'}
+          </button>
+        </div>
+
+        <Dialog open={shareOpen} onClose={() => setShareOpen(false)} maxWidth="sm" fullWidth>
+          <DialogTitle style={{ fontFamily: 'Quicksand, sans-serif', fontWeight: 700 }}>
+            Udostępnij dostęp do profilu
+          </DialogTitle>
+          <DialogContent>
+            <p style={{ fontFamily: 'Quicksand, sans-serif', fontSize: 14, color: '#616161', marginBottom: 12 }}>
+              Wyślij ten link drugiemu opiekunowi. Po kliknięciu i zalogowaniu się kontem Google uzyska pełny dostęp do profilu pacjenta. Link wygaśnie po 7 dniach.
+            </p>
+            <div style={s.linkBox}>
+              <span style={s.linkText}>{shareLink}</span>
+            </div>
+          </DialogContent>
+          <DialogActions style={{ padding: '12px 24px 20px' }}>
+            <Button onClick={() => setShareOpen(false)} style={{ fontFamily: 'Quicksand, sans-serif', color: '#616161' }}>
+              Zamknij
+            </Button>
+            <Button
+              onClick={handleCopy}
+              variant="contained"
+              style={{ fontFamily: 'Quicksand, sans-serif', backgroundColor: '#EC1A3B', fontWeight: 700 }}
+            >
+              {copied ? 'Skopiowano!' : 'Kopiuj link'}
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {fetching ? (
           <div style={s.centerLoader}><CircularProgress style={{ color: '#EC1A3B' }} /></div>
@@ -591,5 +657,45 @@ const s: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'flex-end',
     marginTop: '8px',
+  },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '24px',
+    flexWrap: 'wrap' as const,
+    gap: '8px',
+  },
+  pageTitleInline: {
+    fontWeight: 700,
+    fontSize: '24px',
+    color: '#2E2E2E',
+    margin: 0,
+  },
+  shareBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 16px',
+    border: '1.5px solid #EC1A3B',
+    borderRadius: '8px',
+    backgroundColor: 'transparent',
+    color: '#EC1A3B',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '13px',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
+  },
+  linkBox: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: '8px',
+    padding: '12px 16px',
+    wordBreak: 'break-all' as const,
+  },
+  linkText: {
+    fontFamily: 'monospace',
+    fontSize: '13px',
+    color: '#2E2E2E',
   },
 };

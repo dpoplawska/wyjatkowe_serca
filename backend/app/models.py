@@ -107,3 +107,15 @@ class MeasurementEntry(BaseModel):
 
 class MeasurementsData(BaseModel):
     entries: List[MeasurementEntry] = []
+
+
+class InvitationData(BaseModel):
+    ownerUid: str
+    createdAt: str
+    expiresAt: str
+    used: bool = False
+
+
+class UserAccessData(BaseModel):
+    ownerUid: str
+    grantedAt: str
