@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { User } from 'firebase/auth';
+import { AppUser } from './AuthContext.tsx';
 import { Squash as Hamburger } from 'hamburger-react';
 import { LOGO as logo } from './mediaUrls.ts';
 
 interface AppHeaderProps {
-  user: User;
+  user: AppUser;
   logout: () => void;
 }
 

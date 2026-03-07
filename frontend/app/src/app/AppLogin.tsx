@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
 import { LOGO as logo } from './mediaUrls.ts';
+
+const IS_DEV = window.location.hostname === 'localhost';
 
 const GoogleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="22px" height="22px">
@@ -13,9 +15,23 @@ const GoogleIcon = () => (
 );
 
 export default function AppLogin() {
-  const { user, loading, signInWithGoogle } = useAuth();
+  const { user, loading, signInWithGoogle, loginAsDevUser } = useAuth();
   const [error, setError] = useState('');
   const [signingIn, setSigningIn] = useState(false);
+  const [devUsers, setDevUsers] = useState<{ uid: string; email: string }[]>([]);
+  const [devLoading, setDevLoading] = useState(false);
+  const [devOpen, setDevOpen] = useState(false);
+  const [devSearch, setDevSearch] = useState('');
+
+  useEffect(() => {
+    if (!IS_DEV) return;
+    setDevLoading(true);
+    fetch('http://localhost:8000/dev/users')
+      .then(r => r.json())
+      .then((data: { uid: string; email: string }[]) => setDevUsers(data))
+      .catch(() => setDevUsers([]))
+      .finally(() => setDevLoading(false));
+  }, []);
 
   if (loading) return <div style={styles.loadingWrap}>Ładowanie...</div>;
   if (user) return <Navigate to="/app/profil-pacjenta" replace />;
@@ -56,6 +72,48 @@ export default function AppLogin() {
         </button>
 
         {error && <p style={styles.error}>{error}</p>}
+
+        {IS_DEV && (
+          <div style={styles.devPanel}>
+            <div style={styles.devLabel}>DEV — zaloguj jako pacjent</div>
+            <div style={{ position: 'relative' }}>
+              <button
+                style={styles.devBtn}
+                onClick={() => setDevOpen(o => !o)}
+                disabled={devLoading}
+              >
+                {devLoading ? 'Ładowanie...' : 'Wybierz użytkownika...'}
+              </button>
+              {devOpen && (
+                <div style={styles.devDropdown}>
+                  <input
+                    autoFocus
+                    placeholder="Szukaj..."
+                    value={devSearch}
+                    onChange={e => setDevSearch(e.target.value)}
+                    style={styles.devSearch}
+                  />
+                  <div style={styles.devList}>
+                    {devUsers.length === 0 && (
+                      <div style={styles.devHint}>Brak pacjentów (backend niedostępny?)</div>
+                    )}
+                    {devUsers
+                      .filter(u => u.email.toLowerCase().includes(devSearch.toLowerCase()))
+                      .map(u => (
+                        <button
+                          key={u.uid}
+                          style={styles.devOption}
+                          onClick={() => { loginAsDevUser(u.uid, u.email); setDevOpen(false); }}
+                        >
+                          {u.email}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -139,5 +197,79 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     fontFamily: 'Quicksand, sans-serif',
     color: '#616161',
+  },
+  devPanel: {
+    marginTop: '28px',
+    borderTop: '1px dashed #e0e0e0',
+    paddingTop: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  devLabel: {
+    fontFamily: 'Quicksand, sans-serif',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: '#999',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    marginBottom: '4px',
+  },
+  devBtn: {
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #e0e0e0',
+    borderRadius: '6px',
+    backgroundColor: '#fafafa',
+    color: '#2E2E2E',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '13px',
+    cursor: 'pointer',
+    textAlign: 'left',
+  },
+  devDropdown: {
+    position: 'absolute',
+    top: 'calc(100% + 4px)',
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    border: '1px solid #e0e0e0',
+    borderRadius: '8px',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
+    zIndex: 100,
+    overflow: 'hidden',
+  },
+  devSearch: {
+    width: '100%',
+    padding: '8px 12px',
+    border: 'none',
+    borderBottom: '1px solid #e0e0e0',
+    fontFamily: 'Quicksand, sans-serif',
+    fontSize: '13px',
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+  },
+  devList: {
+    maxHeight: '180px',
+    overflowY: 'auto' as const,
+    display: 'flex',
+    flexDirection: 'column' as const,
+  },
+  devOption: {
+    padding: '8px 12px',
+    border: 'none',
+    backgroundColor: 'transparent',
+    color: '#2E2E2E',
+    fontFamily: 'Quicksand, sans-serif',
+    fontSize: '13px',
+    cursor: 'pointer',
+    textAlign: 'left' as const,
+  },
+  devHint: {
+    padding: '8px 12px',
+    fontFamily: 'Quicksand, sans-serif',
+    fontSize: '13px',
+    color: '#999',
   },
 };

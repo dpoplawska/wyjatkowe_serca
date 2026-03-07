@@ -22,12 +22,31 @@ def verify_token(authorization: str = Header(...)) -> str:
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization header format")
     token = authorization.removeprefix("Bearer ")
+    if os.getenv("ENV") == "dev" and token.startswith("dev:"):
+        return token.removeprefix("dev:")
     try:
         initialize_firestore()
         decoded = firebase_auth.verify_id_token(token)
         return decoded["uid"]
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+@router.get("/dev/users")
+def get_dev_users() -> list[dict]:
+    if os.getenv("ENV") != "dev":
+        raise HTTPException(status_code=404, detail="Not found")
+    initialize_firestore()
+    db_client = get_firestore_client()
+    uids = {doc.id for doc in db_client.collection("patientProfiles").stream()}
+    result = []
+    page = firebase_auth.list_users()
+    while page:
+        for user in page.users:
+            if user.uid in uids:
+                result.append({"uid": user.uid, "email": user.email or user.uid})
+        page = page.get_next_page()
+    return result
 
 @router.post("/payments", response_model=PaymentResponse)
 def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:

@@ -18,6 +18,8 @@ import AppHeader from './AppHeader.tsx';
 import { shared } from './appStyles.ts';
 import { API } from './config.ts';
 
+const IS_DEV = window.location.hostname === 'localhost';
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface MeasurementEntry {
@@ -519,14 +521,16 @@ export default function Pomiary() {
               : 'Zapisz pomiar'}
           </button>
 
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <button onClick={handleGenerateTestData} disabled={saving} style={{ ...s.testDataBtn, marginTop: 0, flex: 1 }}>
-              [DEV] Generuj dane testowe
-            </button>
-            <button onClick={() => { setEntries([]); persist([], 'Dane usunięte.'); }} disabled={saving} style={{ ...s.testDataBtn, marginTop: 0, flex: 1, borderColor: '#f87171', color: '#f87171' }}>
-              [DEV] Usuń wszystkie pomiary
-            </button>
-          </div>
+          {IS_DEV && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              <button onClick={handleGenerateTestData} disabled={saving} style={{ ...s.testDataBtn, marginTop: 0, flex: 1 }}>
+                [DEV] Generuj dane testowe
+              </button>
+              <button onClick={() => { setEntries([]); persist([], 'Dane usunięte.'); }} disabled={saving} style={{ ...s.testDataBtn, marginTop: 0, flex: 1, borderColor: '#f87171', color: '#f87171' }}>
+                [DEV] Usuń wszystkie pomiary
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Measurements history */}
