@@ -128,13 +128,22 @@ export default function AcceptInvite() {
                 Twoje konto ma już zapisany profil pacjenta. Po akceptacji zaproszenia Twoje dotychczasowe dane nie będą dostępne przez aplikację.
               </div>
             )}
-            <button
-              onClick={handleAccept}
-              disabled={accepting}
-              style={{ ...s.acceptBtn, ...(accepting ? s.acceptBtnDisabled : {}) }}
-            >
-              {accepting ? 'Akceptowanie...' : 'Akceptuj zaproszenie'}
-            </button>
+            <div style={s.btnRow}>
+              <button
+                onClick={() => { sessionStorage.removeItem('pendingInviteToken'); navigate('/app/profil-pacjenta', { replace: true }); }}
+                disabled={accepting}
+                style={s.rejectBtn}
+              >
+                Odrzuć
+              </button>
+              <button
+                onClick={handleAccept}
+                disabled={accepting}
+                style={{ ...s.acceptBtn, ...(accepting ? s.acceptBtnDisabled : {}) }}
+              >
+                {accepting ? 'Akceptowanie...' : 'Akceptuj'}
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -229,10 +238,25 @@ const s: Record<string, React.CSSProperties> = {
     textAlign: 'left' as const,
     lineHeight: '1.5',
   },
+  btnRow: {
+    display: 'flex',
+    gap: '10px',
+  },
+  rejectBtn: {
+    flex: 1,
+    padding: '12px 0',
+    border: '1.5px solid #e0e0e0',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    color: '#616161',
+    fontFamily: 'Quicksand, sans-serif',
+    fontWeight: 600,
+    fontSize: '15px',
+    cursor: 'pointer',
+  },
   acceptBtn: {
-    display: 'block',
-    width: '100%',
-    padding: '12px 24px',
+    flex: 1,
+    padding: '12px 0',
     border: 'none',
     borderRadius: '8px',
     backgroundColor: '#EC1A3B',
