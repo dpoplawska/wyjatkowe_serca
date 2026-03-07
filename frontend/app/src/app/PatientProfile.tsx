@@ -259,7 +259,7 @@ export default function PatientProfile() {
           <h2 style={s.pageTitleInline}>Profil pacjenta</h2>
           <button onClick={handleShare} disabled={sharing} style={s.shareBtn}>
             <ShareIcon style={{ fontSize: 16 }} />
-            {sharing ? 'Generowanie...' : 'Udostępnij dostęp'}
+            {sharing ? 'Generowanie...' : 'Dołącz opiekuna'}
           </button>
         </div>
 
@@ -269,7 +269,7 @@ export default function PatientProfile() {
           </DialogTitle>
           <DialogContent>
             <p style={{ fontFamily: 'Quicksand, sans-serif', fontSize: 14, color: '#616161', marginBottom: 12 }}>
-              Wyślij ten link drugiemu opiekunowi. Po kliknięciu i zalogowaniu się kontem Google uzyska pełny dostęp do profilu pacjenta. Link wygaśnie po 7 dniach.
+              Wyślij ten link nowemu opiekunowi. Po kliknięciu i zalogowaniu się kontem Google uzyska pełny dostęp do profilu pacjenta — będzie mógł przeglądać i edytować wszystkie dane. Link wygaśnie po 7 dniach.
             </p>
             <div style={s.linkBox}>
               <span style={s.linkText}>{shareLink}</span>
