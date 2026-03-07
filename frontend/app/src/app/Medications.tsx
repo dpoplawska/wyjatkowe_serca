@@ -153,7 +153,7 @@ export default function Medications() {
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.leki)) {
-            setLeki(data.leki);
+            setLeki(data.leki.map((l: Lek) => ({ ...emptyLek(), ...l })));
           }
         }
       } catch {
