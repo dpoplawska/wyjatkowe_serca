@@ -23,6 +23,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ShareIcon from '@mui/icons-material/Share';
@@ -35,29 +36,82 @@ import { API } from './config.ts';
 
 const GRUPY_KRWI = ['A Rh+', 'A Rh-', 'B Rh+', 'B Rh-', 'AB Rh+', 'AB Rh-', '0 Rh+', '0 Rh-'];
 
+function highlightFuzzy(text: string, query: string) {
+  if (!query) return text;
+  const chars = query.toLowerCase().split('');
+  const lower = text.toLowerCase();
+  const matched = new Set<number>();
+  let idx = 0;
+  for (const ch of chars) {
+    const found = lower.indexOf(ch, idx);
+    if (found === -1) return text;
+    matched.add(found);
+    idx = found + 1;
+  }
+  return (
+    <>
+      {text.split('').map((char, i) =>
+        matched.has(i)
+          ? <span key={i} style={{ color: '#EC1A3B', fontWeight: 700 }}>{char}</span>
+          : char
+      )}
+    </>
+  );
+}
+
 const WADY_SERCA = [
-  'Anomalia Blanda-White\'a-Garlanda (ALCAPA)',
-  'Anomalia Ebsteina',
-  'Całkowity nieprawidłowy spływ żył płucnych (TAPVR)',
-  'Hipoplazja lewego serca (HLHS)',
-  'Koarktacja aorty',
-  'Niedomykalność zastawki aortalnej',
-  'Niedomykalność zastawki mitralnej',
-  'Niedomykalność zastawki płucnej',
-  'Odejście obu naczyń od prawej komory (DORV)',
-  'Przetrwały przewód tętniczy (PDA)',
+  'Arytmie nadkomorowe',
+  'Arytmogenna kardiomiopatia prawej komory',
+  'Atrezja (zarośnięcie) zastawki mitralnej',
+  'Atrezja (zarośnięcie) zastawki trójdzielnej (AT)',
+  'Bradyarytmie',
+  'Całkowite nieprawidłowe połączenie żył płucnych',
+  'Choroba Kawasaki',
+  'Choroba Kawasakiego',
+  'Częściowy nieprawidłowy spływ żył płucnych',
+  'Dwunapływowa lewa komora',
+  'Dwuujściowa prawa komora (DORV)',
+  'Guzy serca',
+  'Infekcyjne zapalenie wsierdzia',
+  'Kanał przedsionkowo-komorowy',
+  'Kardiomiopatia przerostowa (HCM)',
+  'Kardiomiopatia restrykcyjna',
+  'Kardiomiopatia rozstrzeniowa (zastoinowa) (DCM)',
+  'Komorowe zaburzenia rytmu serca',
+  'Mechaniczne wspomaganie serca (VAD)',
+  'Nadkomorowe zaburzenia rytmu serca',
+  'Nadzastawkowe zwężenie aorty',
+  'Nawrotowy częstoskurcz przedsionkowo-komorowy',
+  'Niezrównoważony kanał przedsionkowo-komorowy',
+  'Okienko aortalno-płucne',
+  'Pierścienie naczyniowe',
+  'Podzastawkowe zwężenie aorty',
+  'Przełożenie dużych naczyń',
+  'Przerwanie łuku aorty',
+  'Przetoki tętnic wieńcowych',
+  'Przetrwały przewód tętniczy (Botalla)',
   'Serce jednokomorowe',
-  'Tetralogia Fallota',
-  'Transpozycja wielkich naczyń (TGA)',
+  'Serce trójprzedsionkowe',
+  'Skorygowane przełożenie dużych naczyń',
+  'Transplantacja serca',
   'Ubytek przegrody międzykomorowej (VSD)',
   'Ubytek przegrody międzyprzedsionkowej (ASD)',
-  'Wspólny kanał przedsionkowo-komorowy (CAVC)',
   'Wspólny pień tętniczy',
-  'Zarośnięcie zastawki trójdzielnej',
-  'Zwężenie zastawki aortalnej',
-  'Zwężenie zastawki mitralnej',
-  'Zwężenie zastawki płucnej',
-  'Inne',
+  'Zapalenie mięśnia sercowego',
+  'Zapalenie osierdzia',
+  'Zarośnięcie zastawki tętnicy płucnej z ciągłą przegrodą międzykomorową',
+  'Zastawkowe zwężenie aorty',
+  'Zespoły arytmii wrodzonych',
+  'Zespół Blanda, White\'a i Garlanda',
+  'Zespół Ebsteina',
+  'Zespół Fallota',
+  'Zespół niedorozwoju lewego serca (HLHS)',
+  'Zespół niedorozwoju prawego serca (HRHS)',
+  'Zespół preekscytacji. Zespół Wolffa, Parkinsona i White\'a',
+  'Zespół wrodzonego braku zastawki tętnicy płucnej',
+  'Zwężenie cieśni aorty (koarktacja aorty)',
+  'Zwężenie lub niedomykalność zastawki mitralnej',
+  'Zwężenie zastawki tętnicy płucnej',
 ];
 
 const ZABURZENIA_RYTMU_TYPY = [
@@ -314,31 +368,43 @@ export default function PatientProfile() {
                 </Select>
               </FormControl>
 
-              <FormControl fullWidth>
-                <InputLabel>Wady serca</InputLabel>
-                <Select
-                  multiple
-                  value={profile.wada_serca}
-                  label="Wady serca"
-                  onChange={(e) => set('wada_serca', e.target.value as string[])}
-                  input={<OutlinedInput label="Wady serca" />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((val) => <Chip key={val} label={val} size="small" />)}
-                    </Box>
-                  )}
-                >
-                  {WADY_SERCA.map((w) => (
-                    <MenuItem key={w} value={w}>
-                      <Checkbox
-                        checked={profile.wada_serca.includes(w)}
-                        sx={{ py: 0, color: '#EC1A3B', '&.Mui-checked': { color: '#EC1A3B' } }}
-                      />
-                      {w}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Autocomplete
+                multiple
+                options={WADY_SERCA}
+                value={profile.wada_serca}
+                onChange={(_e, val) => set('wada_serca', val)}
+                filterOptions={(options, { inputValue }) => {
+                  if (!inputValue.trim()) return options;
+                  const chars = inputValue.trim().toLowerCase().split('');
+                  return options.filter((opt) => {
+                    const str = opt.toLowerCase();
+                    let idx = 0;
+                    for (const ch of chars) {
+                      const found = str.indexOf(ch, idx);
+                      if (found === -1) return false;
+                      idx = found + 1;
+                    }
+                    return true;
+                  });
+                }}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((val, index) => (
+                    <Chip {...getTagProps({ index })} key={val} label={val} size="small" />
+                  ))
+                }
+                renderOption={(props, option, { inputValue }) => (
+                  <li {...props} key={option}>
+                    <Checkbox
+                      checked={profile.wada_serca.includes(option)}
+                      sx={{ py: 0, mr: 1, color: '#EC1A3B', '&.Mui-checked': { color: '#EC1A3B' } }}
+                    />
+                    <span>{highlightFuzzy(option, inputValue.trim())}</span>
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} label="Wady serca" placeholder="Szukaj..." />
+                )}
+              />
             </Section>
 
             {/* Section: Zaburzenia rytmu */}
