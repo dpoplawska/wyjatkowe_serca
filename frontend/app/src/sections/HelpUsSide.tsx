@@ -280,7 +280,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
                 </div>
                 {specialFundraiser === true && transferTitle && (
                     <p className="content" style={{ fontSize: "16px", color: "#616161", marginBottom: "6px", textAlign: "center" }}>
-                        Wpłata bezpośrednio dla<br /><strong>{transferTitle.replace(/^WS\d+ - /, '')}</strong>
+                        <span style={{ display: "block" }}>Wpłata bezpośrednio dla</span><strong>{transferTitle.replace(/^WS\d+ - /, '')}</strong>
                     </p>
                 )}
                 {showValueTextField && (
