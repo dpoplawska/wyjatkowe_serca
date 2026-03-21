@@ -3,4 +3,5 @@ pydantic==2.7.1
 requests==2.32.2
 uvicorn==0.29.0
 fastapi==0.111.0
+slowapi==0.1.9
 firebase-admin==6.5.0
