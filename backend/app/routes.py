@@ -380,7 +380,7 @@ def accept_invite(token: str, uid: str = Depends(verify_token)) -> dict:
 def check_admin_password(x_password: str):
     if os.getenv("ENV") == "dev":
         return
-    if x_password != os.getenv("ACCESS_PASSWORD"):
+    if not hmac.compare_digest(x_password, os.getenv("ACCESS_PASSWORD", "")):
         raise HTTPException(status_code=401, detail="Invalid password")
 
 
