@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./css/Main.css";
 
 import { API } from '../app/config.ts';
@@ -17,179 +17,284 @@ interface TableData {
   units: number;
 }
 
+interface PaymentData {
+  id: string;
+  email: string;
+  amount: number;
+  status: string;
+  modifiedAt?: string;
+  beneficiary?: string;
+}
+
 type AdminProps = {
   password: string;
 }
 
-export default function Admin({password}: AdminProps) {
-  const [data, setData] = useState<TableData[]>([]);
-  const [sortConfig, setSortConfig] = React.useState<{
-        key: keyof TableData;
-        direction: 'asc' | 'desc' | null;
-      }>({ key: 'id', direction: null });
-  const [filterStatus, setFilterStatus] = React.useState<string>('');
-  const uniqueStatuses = Array.from(new Set(data.map((item) => item.status)));
+type SortConfig<T> = {
+  key: keyof T;
+  direction: 'asc' | 'desc' | null;
+};
 
-  const sortData = (key: keyof TableData) => {
-        let direction: 'asc' | 'desc' = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-          direction = 'desc';
-        }
+function sortByKey<T>(data: T[], key: keyof T, direction: 'asc' | 'desc'): T[] {
+  return [...data].sort((a, b) => {
+    const aVal = a[key], bVal = b[key];
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+    if (typeof aVal === 'string' && typeof bVal === 'string')
+      return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    if (typeof aVal === 'number' && typeof bVal === 'number')
+      return direction === 'asc' ? aVal - bVal : bVal - aVal;
+    return 0;
+  });
+}
 
-        const sortedData = [...data].sort((a, b) => {
-          const aValue = a[key];
-          const bValue = b[key];
+function useSortedData<T extends object>(initial: T[], defaultSort: { key: keyof T; direction: 'asc' | 'desc' }) {
+  const [data, setData] = useState<T[]>(() => sortByKey(initial, defaultSort.key, defaultSort.direction));
+  const [sortConfig, setSortConfig] = useState<SortConfig<T>>({ key: defaultSort.key, direction: defaultSort.direction });
 
-          if (aValue === null || aValue === undefined) return 1;
-          if (bValue === null || bValue === undefined) return -1;
+  useEffect(() => { setData(sortByKey(initial, defaultSort.key, defaultSort.direction)); }, [initial, defaultSort.key, defaultSort.direction]);
 
-          if (typeof aValue === 'string' && typeof bValue === 'string') {
-            return direction === 'asc'
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
-          }
-          if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return direction === 'asc' ? aValue - bValue : bValue - aValue;
-          }
-          if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
-            return direction === 'asc'
-              ? aValue === bValue
-                ? 0
-                : aValue
-                ? -1
-                : 1
-              : aValue === bValue
-              ? 0
-              : aValue
-              ? 1
-              : -1;
-          }
-          return 0;
-        });
+  const sortData = (key: keyof T) => {
+    const direction: 'asc' | 'desc' =
+      sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
 
-        setSortConfig({ key, direction });
-        setData(sortedData);
+    const sorted = sortByKey(data, key, direction);
+
+    setSortConfig({ key, direction });
+    setData(sorted);
   };
 
-  const filteredData = filterStatus
-  ? data.filter((row) => row.status === filterStatus)
-  : data;
+  return { data, setData, sortConfig, sortData };
+}
 
-  const getData = useCallback(async () => {
+function SortTh<T>({ col, label, sortConfig, onSort }: { col: keyof T; label: string; sortConfig: SortConfig<T>; onSort: (k: keyof T) => void }) {
+  const [hovered, setHovered] = React.useState(false);
+  const isActive = sortConfig.key === col && sortConfig.direction;
+  return (
+    <th
+      onClick={() => onSort(col)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: "8px 12px",
+        cursor: "pointer",
+        userSelect: "none",
+        whiteSpace: "nowrap",
+        background: hovered ? "#dbeafe" : isActive ? "#eff6ff" : "#f3f4f6",
+        borderBottom: isActive ? "2px solid #2383C5" : "2px solid transparent",
+        color: isActive ? "#2383C5" : "#2E2E2E",
+        fontWeight: isActive ? "bold" : "600",
+        transition: "background 0.1s",
+      }}
+    >
+      {label}
+      <span style={{ marginLeft: "6px", opacity: isActive ? 1 : 0.3, fontSize: "12px" }}>
+        {isActive ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '⇅'}
+      </span>
+    </th>
+  );
+}
+
+export default function Admin({ password }: AdminProps) {
+  const [activeTab, setActiveTab] = useState<'purchases' | 'payments'>('purchases');
+
+  const [rawPurchases, setRawPurchases] = useState<TableData[]>([]);
+  const [rawPayments, setRawPayments] = useState<PaymentData[]>([]);
+
+  const [filterPurchaseStatus, setFilterPurchaseStatus] = useState('');
+  const [filterPaymentStatus, setFilterPaymentStatus] = useState('');
+  const [filterBeneficiary, setFilterBeneficiary] = useState('');
+
+  const purchases = useSortedData<TableData>(rawPurchases, { key: 'modifiedAt', direction: 'desc' });
+  const payments = useSortedData<PaymentData>(rawPayments, { key: 'modifiedAt', direction: 'desc' });
+
+  const uniquePurchaseStatuses = useMemo(() => Array.from(new Set(rawPurchases.map(r => r.status))), [rawPurchases]);
+  const uniquePaymentStatuses = useMemo(() => Array.from(new Set(rawPayments.map(r => r.status))), [rawPayments]);
+  const uniqueBeneficiaries = useMemo(() => Array.from(new Set(rawPayments.map(r => r.beneficiary ?? '(ogólna)'))).sort(), [rawPayments]);
+
+  const fetchCollection = useCallback(async (path: string, setter: (data: any[]) => void) => {
     try {
-            fetch(`${API}/purchases`, {
-            headers: {
-                'x-password': password
-            }
-        })
-              .then((response) => {
-                  if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                }
-                return response.json();
-              })
-              .then((data) => {
-                   console.log(data)
-                  setData(data);
-              })
-              .catch((error) => {
-                  console.error("There was a problem with the fetch operation:", error);
-              });
-      } catch (error) {
-          console.error("Error:", error);
-      }
+      const res = await fetch(`${API}/${path}`, { headers: { 'x-password': password } });
+      if (!res.ok) return;
+      setter(await res.json());
+    } catch { }
   }, [password]);
 
   useEffect(() => {
-      getData();
-  }, [getData]);
+    fetchCollection('purchases', setRawPurchases);
+    fetchCollection('payments/all', setRawPayments);
+  }, [fetchCollection]);
 
-  return (
-    <>
-      {data.length === 0 ? (
-        <section className="main">
-          <div className="col-xs-12 col-lg-11" id="fundraiser-content">
-            <div className="admin-panel">
-              <h4>Brak danych do wyświetlenia lub błędne hasło.</h4>
-            </div>
+  const filteredPurchases = useMemo(() =>
+    filterPurchaseStatus ? purchases.data.filter(r => r.status === filterPurchaseStatus) : purchases.data,
+    [purchases.data, filterPurchaseStatus]);
+
+  const filteredPayments = useMemo(() =>
+    payments.data
+      .filter(r => !filterPaymentStatus || r.status === filterPaymentStatus)
+      .filter(r => !filterBeneficiary || (r.beneficiary ?? '(ogólna)') === filterBeneficiary),
+    [payments.data, filterPaymentStatus, filterBeneficiary]);
+
+  const purchaseTotal = useMemo(() => filteredPurchases.filter(r => r.status === 'CONFIRMED').reduce((s, r) => s + r.amount, 0), [filteredPurchases]);
+  const paymentTotal = useMemo(() => filteredPayments.filter(r => r.status === 'CONFIRMED').reduce((s, r) => s + r.amount, 0), [filteredPayments]);
+
+  const noData = rawPurchases.length === 0 && rawPayments.length === 0;
+
+  if (noData) {
+    return (
+      <section className="main">
+        <div className="col-xs-12 col-lg-11" id="fundraiser-content">
+          <div className="admin-panel">
+            <h4>Brak danych do wyświetlenia lub błędne hasło.</h4>
+          </div>
         </div>
       </section>
-      ) : (
-          <section className="main">
-            <div className="col-xs-12 col-lg-11" id="fundraiser-content">
-              <div className="admin-panel">
-                <h2>Panel administracyjny sklepu</h2>
-     <div>
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-            <label className="mr-2 font-semibold">Filtruj po statusie:</label>
-            <select
-              className="p-2 border rounded"
-              value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  style={{ margin: "10px"}}
-            >
-              <option value="">Wszystkie</option>
-              {uniqueStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+    );
+  }
+
+  return (
+    <section className="main">
+      <div className="col-xs-12 col-lg-11" id="fundraiser-content">
+        <div className="admin-panel">
+          <h2>Panel administracyjny</h2>
+
+          <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+            {([
+              { key: 'purchases', label: `Sklep (${rawPurchases.length})` },
+              { key: 'payments', label: `Wpłaty (${rawPayments.length})` },
+            ] as { key: typeof activeTab; label: string }[]).map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                style={{
+                  padding: "8px 20px",
+                  border: "2px solid #2383C5",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontFamily: "Quicksand",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                  background: activeTab === key ? "#2383C5" : "white",
+                  color: activeTab === key ? "white" : "#2383C5",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <div>
-            <table className="min-w-full border-collapse bg-white shadow-md">
-              <thead>
-                <tr className="bg-gray-100">
-                  {[
-                    { key: 'name', label: 'Imię i nazwisko' },
-                    { key: 'modifiedAt', label: 'Data modyfikacji' },
-                    { key: 'address', label: 'Adres' },
-                    { key: 'units', label: 'Ilość' },
-                    { key: 'amount', label: 'Kwota' },
-                    { key: 'email', label: 'E-mail' },
-                    { key: 'phone', label: 'Telefon' },
-                    { key: 'paczkomat', label: 'Paczkomat' },
-                    { key: 'paczkomat_id', label: 'Kod paczkomatu' },
-                            { key: 'status', label: 'Status' },
-                  ].map(({ key, label }) => (
-                    <th
-                      key={key}
-                      className="border p-2 text-left cursor-pointer hover:bg-gray-200"
-                      onClick={() => sortData(key as keyof TableData)}
-                    >
-                      {label}
-                      {sortConfig.key === key && sortConfig.direction && (
-                        <span className="ml-1">
-                          {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50">
-                    <td className="border p-2">{row.name}</td>
-                    <td className="border p-2">{row.modifiedAt.split('T').join(' ').slice(0, -3)}</td>
-                    <td className="border p-2">{row.address}</td>
-                    <td className="border p-2">{row.units}</td>
-                    <td className="border p-2">{row.amount} zł</td>
-                    <td className="border p-2">{row.email}</td>
-                    <td className="border p-2">{row.phone}</td>
-                    <td className="border p-2">{row.paczkomat ? "Tak" : "Nie"}</td>
-                    <td className="border p-2">{row.paczkomat_id ?? '-'}</td>
-                    <td className="border p-2">{row.status}</td>
+
+          {activeTab === 'purchases' && (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                <label className="mr-2 font-semibold">Filtruj po statusie:</label>
+                <select
+                  className="p-2 border rounded"
+                  value={filterPurchaseStatus}
+                  onChange={e => setFilterPurchaseStatus(e.target.value)}
+                  style={{ margin: "10px" }}
+                >
+                  <option value="">Wszystkie</option>
+                  {uniquePurchaseStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <span style={{ marginLeft: "auto", fontWeight: "bold" }}>
+                  Łącznie (CONFIRMED): {purchaseTotal} zł
+                </span>
+              </div>
+              <table className="min-w-full border-collapse bg-white shadow-md">
+                <thead>
+                  <tr className="bg-gray-100">
+                    {([
+                      { col: 'name', label: 'Imię i nazwisko' },
+                      { col: 'modifiedAt', label: 'Data modyfikacji' },
+                      { col: 'address', label: 'Adres' },
+                      { col: 'units', label: 'Ilość' },
+                      { col: 'amount', label: 'Kwota' },
+                      { col: 'email', label: 'E-mail' },
+                      { col: 'phone', label: 'Telefon' },
+                      { col: 'paczkomat', label: 'Paczkomat' },
+                      { col: 'paczkomat_id', label: 'Kod paczkomatu' },
+                      { col: 'status', label: 'Status' },
+                    ] as { col: keyof TableData; label: string }[]).map(({ col, label }) => (
+                      <SortTh key={col} col={col} label={label} sortConfig={purchases.sortConfig} onSort={purchases.sortData} />
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredPurchases.map(row => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="border p-2">{row.name}</td>
+                      <td className="border p-2">{row.modifiedAt?.split('T').join(' ').slice(0, -3)}</td>
+                      <td className="border p-2">{row.address}</td>
+                      <td className="border p-2">{row.units}</td>
+                      <td className="border p-2">{row.amount} zł</td>
+                      <td className="border p-2">{row.email}</td>
+                      <td className="border p-2">{row.phone}</td>
+                      <td className="border p-2">{row.paczkomat ? "Tak" : "Nie"}</td>
+                      <td className="border p-2">{row.paczkomat_id ?? '-'}</td>
+                      <td className="border p-2">{row.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === 'payments' && (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", flexWrap: "wrap" }}>
+                <label className="font-semibold">Filtruj po statusie:</label>
+                <select
+                  className="p-2 border rounded"
+                  value={filterPaymentStatus}
+                  onChange={e => setFilterPaymentStatus(e.target.value)}
+                >
+                  <option value="">Wszystkie</option>
+                  {uniquePaymentStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <label className="font-semibold">Podopieczny:</label>
+                <select
+                  className="p-2 border rounded"
+                  value={filterBeneficiary}
+                  onChange={e => setFilterBeneficiary(e.target.value)}
+                >
+                  <option value="">Wszyscy</option>
+                  {uniqueBeneficiaries.map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
+                <span style={{ marginLeft: "auto", fontWeight: "bold" }}>
+                  Łącznie (CONFIRMED): {paymentTotal} zł
+                </span>
+              </div>
+              <table className="min-w-full border-collapse bg-white shadow-md">
+                <thead>
+                  <tr className="bg-gray-100">
+                    {([
+                      { col: 'beneficiary', label: 'Podopieczny' },
+                      { col: 'email', label: 'E-mail' },
+                      { col: 'amount', label: 'Kwota' },
+                      { col: 'modifiedAt', label: 'Data' },
+                      { col: 'status', label: 'Status' },
+                    ] as { col: keyof PaymentData; label: string }[]).map(({ col, label }) => (
+                      <SortTh key={col} col={col} label={label} sortConfig={payments.sortConfig} onSort={payments.sortData} />
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPayments.map(row => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="border p-2">{row.beneficiary ?? <span style={{ color: '#999' }}>(ogólna)</span>}</td>
+                      <td className="border p-2">{row.email}</td>
+                      <td className="border p-2">{row.amount} zł</td>
+                      <td className="border p-2">{row.modifiedAt?.split('T').join(' ').slice(0, -3) ?? '-'}</td>
+                      <td className="border p-2">{row.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-          </div>
-        </div>
-        </section>
-            )}
-      </>
+      </div>
+    </section>
   );
 }

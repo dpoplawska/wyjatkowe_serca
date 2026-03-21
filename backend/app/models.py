@@ -5,6 +5,7 @@ from typing import Optional, List
 class PaymentRequest(BaseModel):
     amount: int = Field(..., gt=0, description="The amount must be an integer greater than 0")
     email: EmailStr
+    beneficiary: Optional[str] = None
 
 
 class PaymentResponse(BaseModel):

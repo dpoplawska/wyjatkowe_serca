@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 
 from fastapi import APIRouter, HTTPException, Request, Header, Depends
+from app.limiter import limiter
 import pandas as pd
 from firebase_admin import auth as firebase_auth
 
@@ -127,11 +128,14 @@ def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:
         try:
             db_client = get_firestore_client()
             payment_ref = db_client.collection("payments").document(payment_response.paymentId)
-            payment_ref.set({
+            doc = {
                 "amount": payment_request.amount,
                 "email": payment_request.email,
-                "status": payment_response.status
-            })
+                "status": payment_response.status,
+            }
+            if payment_request.beneficiary:
+                doc["beneficiary"] = payment_request.beneficiary
+            payment_ref.set(doc)
         except Exception as e:
             pass
 
@@ -194,8 +198,8 @@ async def payment_status(request: Request):
                 raise HTTPException(status_code=404, detail="No matching donation or purchase found")
 
         return {"message": "Status updated successfully"}
-
-        return {"message": "Payment status updated successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         logging.exception("An error occurred while updating payment status")
         raise HTTPException(status_code=500, detail=str(e))
@@ -248,6 +252,8 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
             pass
 
         return purchase_response
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -371,11 +377,27 @@ def accept_invite(token: str, uid: str = Depends(verify_token)) -> dict:
     return {"message": "Dostęp przyznany"}
 
 
-@router.get("/purchases")
-def get_all_purchases(x_password: str = Header(...)) -> list[dict]:
-    expected_password = os.getenv("ACCESS_PASSWORD")
-    if x_password != expected_password:
+def check_admin_password(x_password: str):
+    if os.getenv("ENV") == "dev":
+        return
+    if x_password != os.getenv("ACCESS_PASSWORD"):
         raise HTTPException(status_code=401, detail="Invalid password")
+
+
+@router.get("/payments/all")
+@limiter.limit("20/minute")
+def get_all_payments(request: Request, x_password: str = Header(...)) -> list[dict]:
+    check_admin_password(x_password)
+    db_client = get_firestore_client()
+    payments_stream = db_client.collection("payments").stream()
+    payments = [{"id": payment.id, **payment.to_dict()} for payment in payments_stream]
+    return payments
+
+
+@router.get("/purchases")
+@limiter.limit("20/minute")
+def get_all_purchases(request: Request, x_password: str = Header(...)) -> list[dict]:
+    check_admin_password(x_password)
     
     db_client = get_firestore_client()
     purchases_stream = db_client.collection("purchases").stream()

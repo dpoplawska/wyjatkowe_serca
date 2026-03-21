@@ -5,9 +5,11 @@ import { Button } from "react-scroll";
 import Admin from "./Admin.tsx";
 
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export default function LoginPage() {
   const [password, setPassword] = useState<string>("");
-  const [showAdmin, setShowAdmin] = useState<boolean>(false);
+  const [showAdmin, setShowAdmin] = useState<boolean>(isDev);
   const handleButton = (newPassword: string) => {
     setShowAdmin(true);
   }
@@ -32,7 +34,7 @@ export default function LoginPage() {
       </section>
 
     ) }
-      {password.length > 0 && showAdmin && <Admin password={password} />}
+      {(isDev || password.length > 0) && showAdmin && <Admin password={password} />}
         </>
   );
 }

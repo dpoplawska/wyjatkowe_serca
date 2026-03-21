@@ -42,7 +42,7 @@ function AppContent() {
           <Route path="polaczeni_w_kryzysie" element={<ConnectedInCrisisPage/>}/>
           <Route path="/podopieczni" element={<BeneficiariesPage />} />
           <Route path="/sklep" element={<Shop />} />
-          <Route path="/sklep/admin" element={<LoginPage />} />
+          <Route path="/admin" element={<LoginPage />} />
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
           <Route path="/app" element={<AppLogin />} />
           <Route path="/app/accept" element={<AcceptInvite />} />
