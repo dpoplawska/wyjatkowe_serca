@@ -27,6 +27,7 @@ import {
   pickSamples,
   pickInrSamples,
   MIN_CHART_POINTS,
+  diurezaStatus,
 } from '../lib/measurements';
 import { MetricChip } from '../components/MetricChip';
 import { MiniLineChart } from '../components/MiniLineChart';
@@ -137,7 +138,6 @@ export default function PomiaryScreen() {
   return (
     <View style={styles.page}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text variant="titleLarge" style={styles.pageTitle}>Pomiary</Text>
 
         <Card style={styles.card} mode="elevated">
           <Card.Content>
@@ -154,7 +154,6 @@ export default function PomiaryScreen() {
                   onChangeText={setSaturacja}
                   keyboardType="numeric"
                   placeholder="np. 98"
-                  activeOutlineColor={colors.red}
                 />
               </View>
               <View style={styles.metricBox}>
@@ -167,7 +166,6 @@ export default function PomiaryScreen() {
                   onChangeText={setTetno}
                   keyboardType="numeric"
                   placeholder="np. 72"
-                  activeOutlineColor={colors.red}
                 />
               </View>
             </View>
@@ -184,7 +182,6 @@ export default function PomiaryScreen() {
                   keyboardType="numeric"
                   placeholder="120"
                   style={{ flex: 1 }}
-                  activeOutlineColor={colors.red}
                 />
                 <Text style={styles.bpSlash}>/</Text>
                 <TextInput
@@ -195,7 +192,6 @@ export default function PomiaryScreen() {
                   keyboardType="numeric"
                   placeholder="80"
                   style={{ flex: 1 }}
-                  activeOutlineColor={colors.red}
                 />
               </View>
             </View>
@@ -210,7 +206,6 @@ export default function PomiaryScreen() {
                 onChangeText={setDiureza}
                 keyboardType="numeric"
                 placeholder="np. 1500"
-                activeOutlineColor={colors.red}
               />
             </View>
 
@@ -224,7 +219,6 @@ export default function PomiaryScreen() {
               value={note}
               onChangeText={setNote}
               style={{ marginTop: 12 }}
-              activeOutlineColor={colors.red}
             />
 
             <Button
@@ -232,7 +226,6 @@ export default function PomiaryScreen() {
               onPress={handleSave}
               loading={saving}
               disabled={!hasAnyValue || saving}
-              buttonColor={colors.red}
               style={{ marginTop: 12 }}
             >
               Zapisz pomiar
@@ -255,9 +248,9 @@ export default function PomiaryScreen() {
                       )}
                       <MiniLineChart title="Saturacja (SpO₂ %)" samples={samples.sat} color={colors.blue} unit="%" yMin={85} yMax={100} />
                       <MiniLineChart title="Tętno (bpm)" samples={samples.tet} color={colors.red} unit="bpm" />
-                      <MiniLineChart title="Ciśnienie skurczowe (mmHg)" samples={samples.sys} color="#7c3aed" unit="mmHg" />
-                      <MiniLineChart title="Ciśnienie rozkurczowe (mmHg)" samples={samples.dia} color="#a78bfa" unit="mmHg" />
-                      <MiniLineChart title="Diureza (ml)" samples={samples.diu} color="#1e40af" unit="ml" />
+                      <MiniLineChart title="Ciśnienie skurczowe (mmHg)" samples={samples.sys} color={colors.purpleFg} unit="mmHg" />
+                      <MiniLineChart title="Ciśnienie rozkurczowe (mmHg)" samples={samples.dia} color={colors.purpleFgAlt} unit="mmHg" />
+                      <MiniLineChart title="Diureza (ml)" samples={samples.diu} color={colors.infoFg} unit="ml" />
                     </Card.Content>
                   </Card>
                 )}
@@ -285,7 +278,7 @@ export default function PomiaryScreen() {
                           />
                         )}
                         {entry.diureza != null && (
-                          <MetricChip label="Diureza" value={String(entry.diureza)} unit="ml" status={{ color: '#1e40af', bg: '#dbeafe' }} />
+                          <MetricChip label="Diureza" value={String(entry.diureza)} unit="ml" status={diurezaStatus} />
                         )}
                       </View>
                       {entry.note ? <Text style={styles.historyNote}>„{entry.note}"</Text> : null}
@@ -390,7 +383,6 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
-  pageTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 16 },
 
   card: { marginBottom: 12, backgroundColor: colors.cardBg },
   cardTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 16, fontSize: 16 },

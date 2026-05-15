@@ -60,7 +60,7 @@ export function MultiSelectModal({ visible, options, value, onChange, onClose, t
             );
           }}
         />
-        <Button mode="contained" buttonColor={colors.red} onPress={onClose} style={styles.done}>
+        <Button mode="contained" onPress={onClose} style={styles.done}>
           Gotowe ({value.length})
         </Button>
       </Modal>

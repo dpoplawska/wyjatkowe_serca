@@ -44,7 +44,6 @@ export function SelectMenu({ label, value, onChange, options, searchable }: Prop
           multiline
           right={<TextInput.Icon icon="menu-down" onPress={() => setOpen(true)} />}
           onPressIn={() => setOpen(true)}
-          activeOutlineColor={colors.red}
         />
       </Pressable>
 
@@ -60,7 +59,6 @@ export function SelectMenu({ label, value, onChange, options, searchable }: Prop
               dense
               style={styles.search}
               autoCorrect={false}
-              activeOutlineColor={colors.red}
             />
           )}
           <FlatList
@@ -97,8 +95,8 @@ const styles = StyleSheet.create({
   title: { marginBottom: 12, fontWeight: '700' },
   search: { marginBottom: 8 },
   list: { maxHeight: 480, marginBottom: 8 },
-  row: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 6, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
-  rowSelected: { backgroundColor: '#fde8ec' },
+  row: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 6, borderBottomWidth: 1, borderBottomColor: colors.borderLighter },
+  rowSelected: { backgroundColor: colors.redTint },
   rowText: { color: colors.grey1, fontSize: 14, lineHeight: 19 },
   rowTextSelected: { color: colors.red, fontWeight: '700' },
 });

@@ -88,7 +88,7 @@ export default function AcceptInviteScreen() {
                 dane zostaną zachowane, ale niewidoczne.
               </Text>
             )}
-            <Button mode="contained" onPress={accept} loading={submitting} disabled={submitting} buttonColor={colors.red}>
+            <Button mode="contained" onPress={accept} loading={submitting} disabled={submitting}>
               Akceptuję
             </Button>
           </Card.Content>

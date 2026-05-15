@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Pressable, Share } from 'react-native';
 import {
   Text,
@@ -12,7 +12,9 @@ import {
   Dialog,
   Portal,
 } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import { WrappedChip } from '../components/WrappedChip';
+import { LogoutButton } from '../components/LogoutButton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import {
@@ -36,6 +38,7 @@ const emptyOp: Operacja = { typ: '', data: '', czas_it: '' };
 
 export default function PatientProfileScreen() {
   const { getToken } = useAuth();
+  const navigation = useNavigation();
   const [profile, setProfile] = useState<PatientProfileData>(EMPTY_PATIENT_PROFILE);
   const [fetching, setFetching] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -119,6 +122,23 @@ export default function PatientProfileScreen() {
     }
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={styles.headerRight}>
+          <IconButton
+            icon="account-plus"
+            iconColor={colors.red}
+            onPress={createShareLink}
+            accessibilityLabel="Dołącz opiekuna"
+            size={22}
+          />
+          <LogoutButton />
+        </View>
+      ),
+    });
+  }, [navigation]);
+
   if (fetching) {
     return (
       <View style={styles.loader}>
@@ -130,27 +150,12 @@ export default function PatientProfileScreen() {
   return (
     <View style={styles.page}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.titleRow}>
-          <Text variant="titleLarge" style={styles.pageTitle}>Profil pacjenta</Text>
-          <Button
-            mode="outlined"
-            icon="account-plus"
-            onPress={createShareLink}
-            textColor={colors.red}
-            style={{ borderColor: colors.red }}
-            compact
-          >
-            Opiekun
-          </Button>
-        </View>
-
         <SectionCard title="Podstawowe informacje">
           <TextInput
             mode="outlined"
             label="Imię i nazwisko"
             value={profile.imie_nazwisko}
             onChangeText={(v) => set('imie_nazwisko', v)}
-            activeOutlineColor={colors.red}
           />
 
           <SelectMenu
@@ -168,7 +173,6 @@ export default function PatientProfileScreen() {
               editable={false}
               right={<TextInput.Icon icon="menu-down" onPress={() => setWadyOpen(true)} />}
               onPressIn={() => setWadyOpen(true)}
-              activeOutlineColor={colors.red}
             />
           </Pressable>
           {profile.wada_serca.length > 0 && (
@@ -205,7 +209,6 @@ export default function PatientProfileScreen() {
                   onChangeText={(v) => set('zaburzenia_rytmu_opis', v)}
                   multiline
                   numberOfLines={3}
-                  activeOutlineColor={colors.red}
                 />
               )}
             </>
@@ -242,7 +245,6 @@ export default function PatientProfileScreen() {
                   onChangeText={(v) => updateOp(i, 'typ', v)}
                   multiline
                   style={styles.opField}
-                  activeOutlineColor={colors.red}
                 />
                 <TextInput
                   mode="outlined"
@@ -251,7 +253,6 @@ export default function PatientProfileScreen() {
                   onChangeText={(v) => updateOp(i, 'data', v)}
                   placeholder="np. 2024-05-20"
                   style={styles.opField}
-                  activeOutlineColor={colors.red}
                 />
                 <TextInput
                   mode="outlined"
@@ -259,7 +260,6 @@ export default function PatientProfileScreen() {
                   value={op.czas_it}
                   onChangeText={(v) => updateOp(i, 'czas_it', v)}
                   keyboardType="numeric"
-                  activeOutlineColor={colors.red}
                 />
               </Card.Content>
             </Card>
@@ -282,7 +282,6 @@ export default function PatientProfileScreen() {
               onChangeText={(v) => set('powiklania_opis', v)}
               multiline
               numberOfLines={4}
-              activeOutlineColor={colors.red}
             />
           )}
         </SectionCard>
@@ -300,7 +299,6 @@ export default function PatientProfileScreen() {
               onChangeText={(v) => set('dodatkowe_choroby_opis', v)}
               multiline
               numberOfLines={4}
-              activeOutlineColor={colors.red}
             />
           )}
         </SectionCard>
@@ -326,14 +324,13 @@ export default function PatientProfileScreen() {
                   onChangeText={(v) => set('zespoly_genetyczne_opis', v)}
                   multiline
                   numberOfLines={3}
-                  activeOutlineColor={colors.red}
                 />
               )}
             </>
           )}
         </SectionCard>
 
-        <Button mode="contained" onPress={save} loading={saving} disabled={saving} buttonColor={colors.red} style={styles.saveBtn}>
+        <Button mode="contained" onPress={save} loading={saving} disabled={saving} style={styles.saveBtn}>
           Zapisz profil
         </Button>
       </ScrollView>
@@ -367,7 +364,7 @@ export default function PatientProfileScreen() {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setShareDialog({ open: false, link: '', loading: false })}>Zamknij</Button>
-            <Button mode="contained" buttonColor={colors.red} onPress={shareLink} disabled={!shareDialog.link}>
+            <Button mode="contained" onPress={shareLink} disabled={!shareDialog.link}>
               Udostępnij
             </Button>
           </Dialog.Actions>
@@ -394,12 +391,11 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  pageTitle: { fontWeight: '700', color: colors.grey1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   switchLabel: { fontSize: 14, color: colors.grey1 },
   chips: { flexDirection: 'column' },
-  opCard: { backgroundColor: '#fafafa' },
+  opCard: { backgroundColor: colors.surfaceTint },
   opHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   opNum: { fontWeight: '600', color: colors.grey1 },
   opField: { marginBottom: 12 },

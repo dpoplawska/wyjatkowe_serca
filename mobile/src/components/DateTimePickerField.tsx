@@ -35,7 +35,6 @@ export function DateTimePickerField({ label, value, onChange, onClear }: Props) 
             />
           }
           onPressIn={() => setDatePickerOpen(true)}
-          activeOutlineColor={colors.red}
         />
       </Pressable>
 

@@ -17,10 +17,10 @@ import { calculateInr, getInterpretation, formatInrDate } from '../lib/inr';
 import { colors } from '../theme/colors';
 
 const REFERENCE_RANGES = [
-  { range: '< 2,0', label: 'Poniżej terapeutycznego', color: '#b45309', bg: '#fef3c7' },
-  { range: '2,0 – 3,0', label: 'Migotanie przedsionków, zakrzepica, protezy biologiczne', color: '#166534', bg: '#dcfce7' },
-  { range: '2,5 – 3,5', label: 'Protezy zastawkowe mechaniczne', color: '#166534', bg: '#dcfce7' },
-  { range: '> 4,0', label: 'Ryzyko krwawienia — konsultacja lekarska', color: '#991b1b', bg: '#fee2e2' },
+  { range: '< 2,0', label: 'Poniżej terapeutycznego', color: colors.warningFgStrong, bg: colors.warningBg },
+  { range: '2,0 – 3,0', label: 'Migotanie przedsionków, zakrzepica, protezy biologiczne', color: colors.successFg, bg: colors.successBg },
+  { range: '2,5 – 3,5', label: 'Protezy zastawkowe mechaniczne', color: colors.successFg, bg: colors.successBg },
+  { range: '> 4,0', label: 'Ryzyko krwawienia — konsultacja lekarska', color: colors.dangerFg, bg: colors.dangerBg },
 ];
 
 function newId(): string {
@@ -116,7 +116,6 @@ export default function InrScreen() {
   return (
     <View style={styles.page}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text variant="titleLarge" style={styles.pageTitle}>Kalkulator INR</Text>
 
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
@@ -139,7 +138,6 @@ export default function InrScreen() {
               onChangeText={(v) => { setPt(v); setResult(null); }}
               keyboardType="decimal-pad"
               placeholder="np. 28"
-              activeOutlineColor={colors.red}
             />
 
             <Pressable onPress={() => setShowAdvanced((v) => !v)} style={styles.advancedToggle}>
@@ -156,7 +154,6 @@ export default function InrScreen() {
                   value={ptNormal}
                   onChangeText={(v) => { setPtNormal(v); setResult(null); }}
                   keyboardType="decimal-pad"
-                  activeOutlineColor={colors.red}
                 />
                 <TextInput
                   mode="outlined"
@@ -164,7 +161,6 @@ export default function InrScreen() {
                   value={isi}
                   onChangeText={(v) => { setIsi(v); setResult(null); }}
                   keyboardType="decimal-pad"
-                  activeOutlineColor={colors.red}
                 />
               </View>
             )}
@@ -201,7 +197,6 @@ export default function InrScreen() {
                   numberOfLines={2}
                   placeholder="np. kontrola po zmianie dawki"
                   style={{ marginTop: 12 }}
-                  activeOutlineColor={colors.red}
                 />
                 <Button
                   mode="contained"
@@ -267,7 +262,6 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
-  pageTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 16 },
 
   infoBox: { backgroundColor: colors.infoBg, borderRadius: 10, padding: 14, marginBottom: 12 },
   infoText: { fontSize: 13, color: '#1a3a5c', lineHeight: 18 },
@@ -275,7 +269,7 @@ const styles = StyleSheet.create({
   card: { marginBottom: 12, backgroundColor: colors.cardBg },
   cardTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 8, fontSize: 16 },
 
-  advancedToggle: { backgroundColor: '#f0f7fd', borderRadius: 8, padding: 10, marginTop: 12 },
+  advancedToggle: { backgroundColor: colors.blueTintAlt, borderRadius: 8, padding: 10, marginTop: 12 },
   advancedToggleText: { color: colors.blue, fontWeight: '600', fontSize: 13 },
 
   resultBox: { borderRadius: 10, padding: 14, marginTop: 12 },

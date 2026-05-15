@@ -132,7 +132,6 @@ export default function MedicationsScreen() {
   return (
     <View style={styles.page}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text variant="titleLarge" style={styles.pageTitle}>Leki</Text>
 
         {tracked.length > 0 && (
           <Card style={styles.shortlist} mode="elevated">
@@ -195,7 +194,7 @@ export default function MedicationsScreen() {
           Dodaj lek
         </Button>
 
-        <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving} buttonColor={colors.red} style={styles.saveBtn}>
+        <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving} style={styles.saveBtn}>
           Zapisz leki
         </Button>
       </ScrollView>
@@ -268,7 +267,6 @@ function LekCard({
                 label="Nazwa leku"
                 value={lek.nazwa}
                 onChangeText={(v) => onChange('nazwa', v)}
-                activeOutlineColor={colors.red}
               />
 
               <SelectMenu
@@ -301,7 +299,6 @@ function LekCard({
                     onChangeText={(v) => onChange('czas_trwania_wartosc', parseInt(v, 10) || 0)}
                     keyboardType="numeric"
                     style={{ width: 110 }}
-                    activeOutlineColor={colors.red}
                   />
                 )}
               </View>
@@ -313,7 +310,7 @@ function LekCard({
 
               {lek.sledzenie && done && (
                 <View style={styles.doneBox}>
-                  <Text style={{ color: '#2E7D32' }}>Kurs zakończony — wszystkie dawki przyjęte.</Text>
+                  <Text style={{ color: colors.successFgAlt }}>Kurs zakończony — wszystkie dawki przyjęte.</Text>
                 </View>
               )}
 
@@ -335,7 +332,7 @@ function LekCard({
                     <View style={styles.editBox}>
                       <DateTimePickerField label="Data i godzina" value={overrideDate} onChange={setOverrideDate} />
                       <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-                        <Button mode="contained" buttonColor={colors.red} onPress={applyOverride}>Zastosuj</Button>
+                        <Button mode="contained" onPress={applyOverride}>Zastosuj</Button>
                         <Button onPress={() => setOverrideEditing(false)} textColor={colors.grey2}>Anuluj</Button>
                         {lek.nastepna_dawka_override !== '' && (
                           <Button onPress={() => { onSaveOverride(''); setOverrideEditing(false); }} textColor={colors.grey2}>
@@ -375,7 +372,6 @@ function LekCard({
                       <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
                         <Button
                           mode="contained"
-                          buttonColor={colors.red}
                           onPress={() => {
                             if (givenDate) {
                               onMarkGiven(givenDate);
@@ -426,18 +422,17 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
-  pageTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 16 },
 
   shortlist: { marginBottom: 16, backgroundColor: colors.cardBg },
   shortlistToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   shortlistToggleText: { fontWeight: '700', color: colors.grey1, fontSize: 15 },
   chevron: { fontSize: 11, color: colors.grey2 },
-  shortlistBody: { borderTopWidth: 1, borderTopColor: '#f0f0f0' },
+  shortlistBody: { borderTopWidth: 1, borderTopColor: colors.borderLight },
   shortlistRow: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, flexWrap: 'wrap' },
   shortlistRowBorder: { borderTopWidth: 1, borderTopColor: '#f7f7f7' },
   shortlistName: { flex: 1, fontWeight: '600', color: colors.grey1 },
   shortlistNext: { fontSize: 12, color: colors.grey2 },
-  doneLabel: { fontSize: 12, fontWeight: '600', color: '#2E7D32', backgroundColor: '#e8f5e9', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  doneLabel: { fontSize: 12, fontWeight: '600', color: colors.successFgAlt, backgroundColor: colors.successBgAlt, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 
   lekCard: { marginBottom: 12, backgroundColor: colors.cardBg },
   lekHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -445,11 +440,11 @@ const styles = StyleSheet.create({
 
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
-  doneBox: { backgroundColor: '#e8f5e9', borderRadius: 8, padding: 10 },
-  nextDoseBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#e3f0fb', borderRadius: 8, padding: 12 },
+  doneBox: { backgroundColor: colors.successBgAlt, borderRadius: 8, padding: 10 },
+  nextDoseBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.infoBgSoft, borderRadius: 8, padding: 12 },
   editBox: { backgroundColor: '#f9f9f9', borderRadius: 8, padding: 12, borderWidth: 1, borderColor: '#eee' },
 
-  historyBox: { borderTopWidth: 1, borderTopColor: '#f0f0f0', paddingTop: 12 },
+  historyBox: { borderTopWidth: 1, borderTopColor: colors.borderLight, paddingTop: 12 },
   historyLabel: { fontSize: 13, fontWeight: '600', color: colors.grey2, marginBottom: 4 },
   historyItem: { fontSize: 13, color: colors.grey2, paddingVertical: 2 },
 

@@ -66,7 +66,6 @@ export default function LoginScreen() {
             icon="google"
             onPress={handleGoogleSignIn}
             style={styles.googleBtn}
-            buttonColor={colors.red}
             disabled={googleDisabled}
             loading={signingIn}
           >
