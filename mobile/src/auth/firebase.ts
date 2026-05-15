@@ -1,38 +1,19 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+// React Native Firebase — initializes from google-services.json (Android) /
+// GoogleService-Info.plist (iOS) at build time. No JS config needed.
+// API key restrictions can stay strict (Android headers verified by Google).
+
+import { getAuth } from '@react-native-firebase/auth';
 import Constants from 'expo-constants';
 
-interface FirebaseExtras {
-  firebaseApiKey?: string;
-  firebaseAuthDomain?: string;
-  firebaseProjectId?: string;
-  firebaseStorageBucket?: string;
-  firebaseMessagingSenderId?: string;
-  firebaseAppId?: string;
+interface Extras {
   googleWebClientId?: string;
 }
 
-const extra = (Constants.expoConfig?.extra ?? {}) as FirebaseExtras;
+const extra = (Constants.expoConfig?.extra ?? {}) as Extras;
 
-const firebaseConfig = {
-  apiKey: extra.firebaseApiKey,
-  authDomain: extra.firebaseAuthDomain,
-  projectId: extra.firebaseProjectId,
-  storageBucket: extra.firebaseStorageBucket,
-  messagingSenderId: extra.firebaseMessagingSenderId,
-  appId: extra.firebaseAppId,
-};
-
-export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 export const googleWebClientId = extra.googleWebClientId ?? '';
 export const isGoogleSignInConfigured = Boolean(googleWebClientId);
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
-
-if (isFirebaseConfigured) {
-  app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-}
-
-export { app, auth };
+// RNFB auth() is initialized lazily; calling getAuth() before native init
+// would throw, but by the time any screen mounts, init is done.
+export const auth = getAuth;

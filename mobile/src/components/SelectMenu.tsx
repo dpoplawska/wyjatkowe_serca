@@ -1,52 +1,104 @@
-import React, { useState } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
-import { Menu, TextInput } from 'react-native-paper';
+import React, { useMemo, useState } from 'react';
+import { View, Pressable, FlatList, StyleSheet } from 'react-native';
+import {
+  Modal,
+  Portal,
+  TextInput,
+  Text,
+  Button,
+} from 'react-native-paper';
 import { colors } from '../theme/colors';
+import { fuzzyMatch } from '../lib/patientProfileOptions';
 
 interface Props {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: string[];
+  searchable?: boolean;
 }
 
-export function SelectMenu({ label, value, onChange, options }: Props) {
+export function SelectMenu({ label, value, onChange, options, searchable }: Props) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const enableSearch = searchable ?? options.length > 10;
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return options;
+    return options.filter((o) => fuzzyMatch(o, query.trim()));
+  }, [options, query]);
+
+  const close = () => {
+    setOpen(false);
+    setQuery('');
+  };
 
   return (
     <View>
-      <Menu
-        visible={open}
-        onDismiss={() => setOpen(false)}
-        anchor={
-          <Pressable onPress={() => setOpen(true)}>
+      <Pressable onPress={() => setOpen(true)}>
+        <TextInput
+          mode="outlined"
+          label={label}
+          value={value}
+          editable={false}
+          multiline
+          right={<TextInput.Icon icon="menu-down" onPress={() => setOpen(true)} />}
+          onPressIn={() => setOpen(true)}
+          activeOutlineColor={colors.red}
+        />
+      </Pressable>
+
+      <Portal>
+        <Modal visible={open} onDismiss={close} contentContainerStyle={styles.modal}>
+          <Text variant="titleMedium" style={styles.title}>{label}</Text>
+          {enableSearch && (
             <TextInput
               mode="outlined"
-              label={label}
-              value={value}
-              editable={false}
-              right={<TextInput.Icon icon="menu-down" onPress={() => setOpen(true)} />}
-              onPressIn={() => setOpen(true)}
-              outlineColor={colors.border}
+              placeholder="Szukaj..."
+              value={query}
+              onChangeText={setQuery}
+              dense
+              style={styles.search}
+              autoCorrect={false}
               activeOutlineColor={colors.red}
             />
-          </Pressable>
-        }
-        contentStyle={styles.menu}
-      >
-        {options.map((opt) => (
-          <Menu.Item
-            key={opt}
-            onPress={() => { onChange(opt); setOpen(false); }}
-            title={opt}
-            titleStyle={{ color: opt === value ? colors.red : colors.grey1 }}
+          )}
+          <FlatList
+            data={filtered}
+            keyExtractor={(item) => item}
+            style={styles.list}
+            renderItem={({ item }) => {
+              const selected = item === value;
+              return (
+                <Pressable
+                  onPress={() => { onChange(item); close(); }}
+                  style={[styles.row, selected && styles.rowSelected]}
+                >
+                  <Text style={[styles.rowText, selected && styles.rowTextSelected]}>{item}</Text>
+                </Pressable>
+              );
+            }}
           />
-        ))}
-      </Menu>
+          <Button mode="text" onPress={close} textColor={colors.grey2}>Anuluj</Button>
+        </Modal>
+      </Portal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  menu: { maxHeight: 400, backgroundColor: 'white' },
+  modal: {
+    backgroundColor: 'white',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    maxHeight: '85%',
+  },
+  title: { marginBottom: 12, fontWeight: '700' },
+  search: { marginBottom: 8 },
+  list: { maxHeight: 480, marginBottom: 8 },
+  row: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 6, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  rowSelected: { backgroundColor: '#fde8ec' },
+  rowText: { color: colors.grey1, fontSize: 14, lineHeight: 19 },
+  rowTextSelected: { color: colors.red, fontWeight: '700' },
 });

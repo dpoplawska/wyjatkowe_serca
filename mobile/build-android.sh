@@ -15,6 +15,24 @@ cd "$(dirname "$0")"
 CLEAN=${CLEAN:-1}
 RELEASE=${RELEASE:-0}
 
+# Auto-fetch google-services.json if missing (it's gitignored).
+# Needs gcloud auth (account: project owner of wyjatkowe-serca).
+if [[ ! -f google-services.json ]]; then
+  echo "==> google-services.json missing — fetching from Firebase"
+  TOKEN=$(gcloud auth print-access-token)
+  if [[ -z "$TOKEN" ]]; then
+    echo "  gcloud not authenticated. Run: gcloud auth login"
+    exit 1
+  fi
+  curl -sS -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: wyjatkowe-serca" \
+    "https://firebase.googleapis.com/v1beta1/projects/wyjatkowe-serca/androidApps/1:38835307240:android:ffe3008a2da925304e3f5d/config" \
+    | python3 -c "import sys, json, base64; d = json.load(sys.stdin); open('google-services.json', 'wb').write(base64.b64decode(d['configFileContents']))"
+  if [[ ! -f google-services.json ]]; then
+    echo "  Fetch failed"
+    exit 1
+  fi
+fi
+
 if [[ "$CLEAN" == "1" ]]; then
   echo "==> Cleaning previous android/ for a fresh prebuild"
   rm -rf android

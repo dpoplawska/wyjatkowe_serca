@@ -1,18 +1,14 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
+  getAuth,
   onAuthStateChanged,
-  User as FirebaseUser,
   signOut,
   GoogleAuthProvider,
   signInWithCredential,
-} from 'firebase/auth';
-import {
-  auth as firebaseAuth,
-  isFirebaseConfigured,
-  googleWebClientId,
-  isGoogleSignInConfigured,
-} from './firebase';
+  FirebaseAuthTypes,
+} from '@react-native-firebase/auth';
+import { googleWebClientId, isGoogleSignInConfigured } from './firebase';
 
 export interface AppUser {
   uid: string;
@@ -34,7 +30,7 @@ const DEV_USER_KEY = 'devUser';
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [devUser, setDevUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,18 +49,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch {
         // ignore
-      } finally {
-        if (!isFirebaseConfigured) setLoading(false);
       }
     })();
   }, []);
 
-  // Subscribe to Firebase auth state if configured
+  // Subscribe to Firebase native auth state
   useEffect(() => {
-    if (!isFirebaseConfigured || !firebaseAuth) {
-      return;
-    }
-    const unsub = onAuthStateChanged(firebaseAuth, (u) => {
+    const unsub = onAuthStateChanged(getAuth(), (u) => {
       setFirebaseUser(u);
       setLoading(false);
     });
@@ -94,25 +85,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    if (!isFirebaseConfigured || !firebaseAuth) {
-      throw new Error('Firebase nie jest skonfigurowane');
-    }
     if (!isGoogleSignInConfigured) {
       throw new Error('Brak googleWebClientId w app.json');
     }
-    // Native module — import lazily so JS bundle works without it (e.g. in Expo Go)
     const { GoogleSignin, statusCodes } = await import('@react-native-google-signin/google-signin');
     GoogleSignin.configure({ webClientId: googleWebClientId });
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     try {
       const result = await GoogleSignin.signIn();
-      // RNGoogleSignin v13+ returns { type: 'success', data: { idToken } }
       const idToken =
         (result as { data?: { idToken?: string } }).data?.idToken ??
         (result as { idToken?: string }).idToken;
       if (!idToken) throw new Error('Brak idToken z Google');
       const credential = GoogleAuthProvider.credential(idToken);
-      await signInWithCredential(firebaseAuth, credential);
+      await signInWithCredential(getAuth(), credential);
     } catch (err: unknown) {
       const code = (err as { code?: string } | null)?.code;
       if (code === statusCodes.SIGN_IN_CANCELLED) return;
@@ -124,14 +110,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOutUser = async () => {
     setDevUser(null);
     await SecureStore.deleteItemAsync(DEV_USER_KEY);
-    if (isFirebaseConfigured && firebaseAuth) {
-      try {
-        const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
-        await GoogleSignin.signOut();
-      } catch {
-        // not configured / not on native — ignore
-      }
-      await signOut(firebaseAuth);
+    try {
+      const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
+      await GoogleSignin.signOut();
+    } catch {
+      // ignore
+    }
+    try {
+      await signOut(getAuth());
+    } catch {
+      // not signed in
     }
   };
 

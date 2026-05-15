@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Text, Button, Card, ActivityIndicator, Snackbar, Banner } from 'react-native-paper';
 import { useAuth } from '../auth/AuthContext';
-import { isFirebaseConfigured, isGoogleSignInConfigured } from '../auth/firebase';
+import { isGoogleSignInConfigured } from '../auth/firebase';
 import { listDevUsers } from '../api/client';
 import { DevUser } from '../types/api';
 import { colors } from '../theme/colors';
@@ -32,10 +32,6 @@ export default function LoginScreen() {
   }, []);
 
   const handleGoogleSignIn = async () => {
-    if (!isFirebaseConfigured) {
-      setSnackbar('Brak konfiguracji Firebase w app.json.');
-      return;
-    }
     if (!isGoogleSignInConfigured) {
       setSnackbar('Brak googleWebClientId w app.json -> extra.');
       return;
@@ -50,12 +46,10 @@ export default function LoginScreen() {
     }
   };
 
-  const googleDisabled = !isFirebaseConfigured || !isGoogleSignInConfigured || signingIn;
-  const googleHint = !isFirebaseConfigured
-    ? 'Konfiguracja Firebase jeszcze nie ustawiona w app.json -> extra.'
-    : !isGoogleSignInConfigured
-      ? 'Brak googleWebClientId w app.json. Pobierz go z Firebase Console → Authentication → Google → Web SDK config.'
-      : null;
+  const googleDisabled = !isGoogleSignInConfigured || signingIn;
+  const googleHint = !isGoogleSignInConfigured
+    ? 'Brak googleWebClientId w app.json. Pobierz go z Firebase Console → Authentication → Google → Web SDK config.'
+    : null;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

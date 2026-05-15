@@ -5,7 +5,6 @@ import {
   TextInput,
   Button,
   Switch,
-  Chip,
   ActivityIndicator,
   Snackbar,
   IconButton,
@@ -13,6 +12,7 @@ import {
   Dialog,
   Portal,
 } from 'react-native-paper';
+import { WrappedChip } from '../components/WrappedChip';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import {
@@ -174,14 +174,11 @@ export default function PatientProfileScreen() {
           {profile.wada_serca.length > 0 && (
             <View style={styles.chips}>
               {profile.wada_serca.map((w) => (
-                <Chip
+                <WrappedChip
                   key={w}
+                  label={w}
                   onClose={() => set('wada_serca', profile.wada_serca.filter((x) => x !== w))}
-                  style={styles.chip}
-                  textStyle={styles.chipText}
-                >
-                  {w}
-                </Chip>
+                />
               ))}
             </View>
           )}
@@ -243,6 +240,7 @@ export default function PatientProfileScreen() {
                   label="Typ operacji"
                   value={op.typ}
                   onChangeText={(v) => updateOp(i, 'typ', v)}
+                  multiline
                   style={styles.opField}
                   activeOutlineColor={colors.red}
                 />
@@ -400,9 +398,7 @@ const styles = StyleSheet.create({
   pageTitle: { fontWeight: '700', color: colors.grey1 },
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   switchLabel: { fontSize: 14, color: colors.grey1 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: { backgroundColor: '#fde8ec' },
-  chipText: { color: colors.red, fontSize: 12 },
+  chips: { flexDirection: 'column' },
   opCard: { backgroundColor: '#fafafa' },
   opHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   opNum: { fontWeight: '600', color: colors.grey1 },

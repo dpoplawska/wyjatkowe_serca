@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "pl.wyjatkoweserca.pacjent",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -32,16 +33,12 @@
     "plugins": [
       "expo-secure-store",
       "expo-font",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
     "extra": {
       "apiUrl": "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app",
-      "firebaseApiKey": "AIzaSyAihhmAuUX9QZtKswkHM7a3weHS6wR_Jls",
-      "firebaseAuthDomain": "wyjatkoweserca.pl",
-      "firebaseProjectId": "wyjatkowe-serca",
-      "firebaseStorageBucket": "wyjatkowe-serca.firebasestorage.app",
-      "firebaseMessagingSenderId": "38835307240",
-      "firebaseAppId": "1:38835307240:web:23b4c9c567e1b4ad4e3f5d",
       "googleWebClientId": "38835307240-5reop4t95r6ago759sidhk9o6r7jvsgj.apps.googleusercontent.com"
     }
   }
