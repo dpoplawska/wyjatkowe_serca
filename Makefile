@@ -62,3 +62,18 @@ mobile-typecheck:
 
 mobile-doctor:
 	cd mobile && npx expo-doctor
+
+mobile-build-android:
+	bash mobile/build-android.sh
+
+mobile-build-android-fast:
+	CLEAN=0 bash mobile/build-android.sh
+
+mobile-build-android-standalone:
+	RELEASE=1 bash mobile/build-android.sh
+
+mobile-build-android-standalone-fast:
+	RELEASE=1 CLEAN=0 bash mobile/build-android.sh
+
+mobile-dev-client:
+	cd mobile && npx expo start --dev-client

@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Text, Button, Card, ActivityIndicator, Snackbar, Banner } from 'react-native-paper';
 import { useAuth } from '../auth/AuthContext';
-import { isFirebaseConfigured } from '../auth/firebase';
+import { isFirebaseConfigured, isGoogleSignInConfigured } from '../auth/firebase';
 import { listDevUsers } from '../api/client';
 import { DevUser } from '../types/api';
 import { colors } from '../theme/colors';
 
 export default function LoginScreen() {
-  const { signInAsDevUser } = useAuth();
+  const { signInAsDevUser, signInWithGoogle } = useAuth();
   const [devUsers, setDevUsers] = useState<DevUser[] | null>(null);
   const [loadingDev, setLoadingDev] = useState(true);
   const [devError, setDevError] = useState<string | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
   const [snackbar, setSnackbar] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,9 +31,31 @@ export default function LoginScreen() {
     })();
   }, []);
 
-  const handleGoogleSignIn = () => {
-    setSnackbar('Logowanie Google wymaga konfiguracji Firebase — na razie użyj konta deweloperskiego.');
+  const handleGoogleSignIn = async () => {
+    if (!isFirebaseConfigured) {
+      setSnackbar('Brak konfiguracji Firebase w app.json.');
+      return;
+    }
+    if (!isGoogleSignInConfigured) {
+      setSnackbar('Brak googleWebClientId w app.json -> extra.');
+      return;
+    }
+    setSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      setSnackbar(e instanceof Error ? `Logowanie nieudane: ${e.message}` : 'Logowanie nieudane');
+    } finally {
+      setSigningIn(false);
+    }
   };
+
+  const googleDisabled = !isFirebaseConfigured || !isGoogleSignInConfigured || signingIn;
+  const googleHint = !isFirebaseConfigured
+    ? 'Konfiguracja Firebase jeszcze nie ustawiona w app.json -> extra.'
+    : !isGoogleSignInConfigured
+      ? 'Brak googleWebClientId w app.json. Pobierz go z Firebase Console → Authentication → Google → Web SDK config.'
+      : null;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -50,16 +73,12 @@ export default function LoginScreen() {
             onPress={handleGoogleSignIn}
             style={styles.googleBtn}
             buttonColor={colors.red}
-            disabled={!isFirebaseConfigured}
+            disabled={googleDisabled}
+            loading={signingIn}
           >
             Zaloguj przez Google
           </Button>
-          {!isFirebaseConfigured && (
-            <Text style={styles.hint}>
-              Konfiguracja Firebase jeszcze nie ustawiona. Dodaj klucze w app.json &gt; extra,
-              lub użyj poniżej konta deweloperskiego.
-            </Text>
-          )}
+          {googleHint && <Text style={styles.hint}>{googleHint}</Text>}
         </Card.Content>
       </Card>
 

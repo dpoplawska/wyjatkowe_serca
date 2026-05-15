@@ -1,8 +1,3 @@
-// Firebase JS SDK initialization. This works in Expo Go without native builds.
-// To enable real Google sign-in later, fill in REACT_APP_FIREBASE_* values
-// in app.json's `extra` or via process.env, then add expo-auth-session.
-// Until then, the app relies on the dev-user bypass (see AuthContext).
-
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import Constants from 'expo-constants';
@@ -14,6 +9,7 @@ interface FirebaseExtras {
   firebaseStorageBucket?: string;
   firebaseMessagingSenderId?: string;
   firebaseAppId?: string;
+  googleWebClientId?: string;
 }
 
 const extra = (Constants.expoConfig?.extra ?? {}) as FirebaseExtras;
@@ -28,6 +24,8 @@ const firebaseConfig = {
 };
 
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
+export const googleWebClientId = extra.googleWebClientId ?? '';
+export const isGoogleSignInConfigured = Boolean(googleWebClientId);
 
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
