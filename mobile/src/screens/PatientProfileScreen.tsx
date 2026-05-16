@@ -48,6 +48,8 @@ export default function PatientProfileScreen() {
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [wadyOpen, setWadyOpen] = useState(false);
+  const [access, setAccess] = useState<{ isGuest: boolean; ownerName?: string }>({ isGuest: false });
+  const [guests, setGuests] = useState<{ uid: string; email: string }[]>([]);
   const creatingInviteRef = useRef(false);
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
   const showSnackbarRef = useRef(showSnackbar);
@@ -62,7 +64,13 @@ export default function PatientProfileScreen() {
   const load = useCallback(async () => {
     try {
       const api = makeApi(getToken);
-      const data = await api.getPatientProfile();
+      const [data, accessData, guestList] = await Promise.all([
+        api.getPatientProfile(),
+        api.getAccessStatus().catch(() => ({ isGuest: false, ownerName: undefined })),
+        api.listGuests().catch(() => []),
+      ]);
+      setAccess({ isGuest: accessData.isGuest, ownerName: accessData.ownerName });
+      setGuests(guestList);
       if (data && Object.keys(data).length > 0) {
         const normalized = { ...data } as Partial<PatientProfileData> & { wada_serca?: string | string[] };
         if (typeof normalized.wada_serca === 'string') {
@@ -144,6 +152,40 @@ export default function PatientProfileScreen() {
 
   // Stable callback captured via refs so the header IconButton sees the latest
   // showSnackbar / getToken without re-running setOptions on every render.
+  const handleRevokeGuest = (guestUid: string, email: string) => {
+    confirmDelete({
+      title: 'Odebrać dostęp?',
+      message: `${email} nie będzie już mógł widzieć Twojego profilu.`,
+      onConfirm: async () => {
+        try {
+          const api = makeApi(getTokenRef.current);
+          await api.revokeGuest(guestUid);
+          showSnackbarRef.current('Dostęp odebrany');
+          await load();
+        } catch (e) {
+          showSnackbarRef.current(e instanceof Error ? e.message : 'Nie udało się odłączyć');
+        }
+      },
+    });
+  };
+
+  const handleUnlinkAccess = () => {
+    confirmDelete({
+      title: 'Odłączyć konto opiekuna?',
+      message: 'Wrócisz do swojego własnego profilu. Możesz w każdej chwili przyjąć nowe zaproszenie.',
+      onConfirm: async () => {
+        try {
+          const api = makeApi(getTokenRef.current);
+          await api.unlinkAccess();
+          showSnackbarRef.current('Odłączono');
+          await load();
+        } catch (e) {
+          showSnackbarRef.current(e instanceof Error ? e.message : 'Nie udało się odłączyć');
+        }
+      },
+    });
+  };
+
   const shareInviteLink = useCallback(async () => {
     if (creatingInviteRef.current) return;
     creatingInviteRef.current = true;
@@ -185,6 +227,18 @@ export default function PatientProfileScreen() {
   return (
     <View style={styles.page}>
       <PageScroll refreshing={refreshing} onRefresh={refresh}>
+        {access.isGuest && (
+          <View style={styles.guestBanner}>
+            <Text style={styles.guestBannerText}>
+              {access.ownerName
+                ? `Masz dostęp do profilu: ${access.ownerName}`
+                : 'Masz dostęp do profilu opiekuna.'}
+            </Text>
+            <Button mode="text" compact onPress={handleUnlinkAccess} textColor={colors.dangerFg}>
+              Odłącz
+            </Button>
+          </View>
+        )}
         <SectionCard title="Podstawowe informacje">
           <TextInput
             mode="outlined"
@@ -366,6 +420,22 @@ export default function PatientProfileScreen() {
             </>
           )}
         </SectionCard>
+
+        {guests.length > 0 && (
+          <SectionCard title="Osoby z dostępem do profilu">
+            {guests.map((g) => (
+              <View key={g.uid} style={styles.guestRow}>
+                <Text style={styles.guestEmail} numberOfLines={1}>{g.email}</Text>
+                <IconButton
+                  icon="account-remove-outline"
+                  iconColor={colors.dangerFg}
+                  onPress={() => handleRevokeGuest(g.uid, g.email)}
+                  accessibilityLabel={`Odbierz dostęp ${g.email}`}
+                />
+              </View>
+            ))}
+          </SectionCard>
+        )}
       </PageScroll>
 
       <SaveStatusPill status={saveStatus} />
@@ -397,6 +467,33 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
   headerRight: { flexDirection: 'row', alignItems: 'center' },
+  guestBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.blueTint,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 12,
+  },
+  guestBannerText: {
+    flex: 1,
+    color: colors.infoFgStrong,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  guestRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  guestEmail: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.grey1,
+  },
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   switchLabel: { fontSize: 14, color: colors.grey1 },
   chips: { flexDirection: 'column' },

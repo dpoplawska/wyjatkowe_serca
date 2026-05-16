@@ -38,6 +38,7 @@ import { DateTimePickerField } from '../components/DateTimePickerField';
 import { CollapseHeader } from '../components/CollapseHeader';
 import { TabScreenNav } from '../navigation/types';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { useTopToast } from '../components/TopToast';
 import {
   ensureNotificationPermission,
   getPomiaryReminderTime,
@@ -75,6 +76,9 @@ export default function PomiaryScreen() {
     getPomiaryReminderTime().then(setReminderTimeState);
   }, []);
 
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
+  const { show: showTopToast, element: topToastEl } = useTopToast();
+
   const toggleReminder = async (value: boolean) => {
     if (value) {
       const granted = await ensureNotificationPermission();
@@ -85,9 +89,11 @@ export default function PomiaryScreen() {
       const defaultTime = '09:00';
       await setPomiaryReminderTime(defaultTime);
       setReminderTimeState(defaultTime);
+      showTopToast(`Codzienne przypomnienie o ${defaultTime}`);
     } else {
       await setPomiaryReminderTime(null);
       setReminderTimeState(null);
+      showTopToast('Przypomnienie wyłączone');
     }
   };
 
@@ -96,9 +102,8 @@ export default function PomiaryScreen() {
     const hhmm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
     await setPomiaryReminderTime(hhmm);
     setReminderTimeState(hhmm);
+    showTopToast(`Przypomnienie zmienione na ${hhmm}`);
   };
-
-  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   const load = useCallback(async () => {
     try {
@@ -426,6 +431,7 @@ export default function PomiaryScreen() {
         </View>
       </PageScroll>
 
+      {topToastEl}
       {snackbarEl}
     </View>
   );

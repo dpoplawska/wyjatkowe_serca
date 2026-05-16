@@ -22,11 +22,13 @@ import {
   formatNextDose,
   formatHistoryEntry,
   isDone,
+  normalizeHistory,
 } from '../lib/medications';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
 import { EmptyState } from '../components/EmptyState';
 import { CollapseHeader } from '../components/CollapseHeader';
+import { useTopToast } from '../components/TopToast';
 import { useSnackbar } from '../hooks/useSnackbar';
 import {
   ensureNotificationPermission,
@@ -51,6 +53,7 @@ export default function MedicationsScreen() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [shortlistOpen, setShortlistOpen] = useState(true);
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
+  const { show: showTopToast, element: topToastEl } = useTopToast();
   // Track latest leki for the in-flight save snapshot match (avoids racing
   // user edits made during the network round-trip).
   const lekiRef = useRef(leki);
@@ -61,7 +64,11 @@ export default function MedicationsScreen() {
       const api = makeApi(getToken);
       const data = await api.getMedications();
       if (data && Array.isArray(data.leki)) {
-        const next = data.leki.map((l) => ({ ...emptyLek(), ...l }));
+        const next: Lek[] = data.leki.map((l) => ({
+          ...emptyLek(),
+          ...l,
+          historia_dawek: normalizeHistory((l as { historia_dawek?: unknown }).historia_dawek),
+        }));
         setLeki(next);
         // Align OS-scheduled dose reminders with the loaded state.
         reconcileDoseReminders(next).catch(() => { /* best effort */ });
@@ -111,15 +118,20 @@ export default function MedicationsScreen() {
   }, [dirty, leki, getToken, showSnackbar]);
 
   const updateLek = <K extends keyof Lek>(index: number, field: K, value: Lek[K]) => {
-    const next = leki.map((lek, i) => (i === index ? { ...lek, [field]: value } : lek));
-    update(next);
+    const updatedList = leki.map((lek, i) => (i === index ? { ...lek, [field]: value } : lek));
+    update(updatedList);
     // User enables tracking → prompt for notification permission so they
     // actually get reminders. No-op if already granted.
     if (field === 'sledzenie' && value === true) {
       ensureNotificationPermission().then((granted) => {
         if (!granted) {
           showSnackbar('Powiadomienia są wyłączone — włącz je w ustawieniach systemowych, aby dostawać przypomnienia.');
+          return;
         }
+        const nextDose = getNextDoseTime(updatedList[index]);
+        showTopToast(nextDose
+          ? `Przypomnienie zaplanowane: ${formatNextDose(nextDose)}`
+          : 'Powiadomienia o lekach włączone');
       });
     }
   };
@@ -139,24 +151,34 @@ export default function MedicationsScreen() {
 
   const markGiven = (index: number, at?: Date) => {
     const now = (at ?? new Date()).toISOString();
-    update(leki.map((lek, i) => i === index ? {
+    const updatedList = leki.map((lek, i) => i === index ? {
       ...lek,
       ostatnia_dawka: now,
-      historia_dawek: [now, ...lek.historia_dawek],
+      historia_dawek: [{ at: now, dawka: lek.dawka }, ...lek.historia_dawek],
       nastepna_dawka_override: '',
-    } : lek));
+    } : lek);
+    update(updatedList);
+    if (updatedList[index].sledzenie) {
+      const nextDose = getNextDoseTime(updatedList[index]);
+      if (nextDose) showTopToast(`Następne przypomnienie: ${formatNextDose(nextDose)}`);
+    }
   };
 
   const undoLastGiven = (index: number) => {
     update(leki.map((lek, i) => {
       if (i !== index) return lek;
       const newHistory = lek.historia_dawek.slice(1);
-      return { ...lek, ostatnia_dawka: newHistory[0] ?? '', historia_dawek: newHistory };
+      return { ...lek, ostatnia_dawka: newHistory[0]?.at ?? '', historia_dawek: newHistory };
     }));
   };
 
   const saveOverride = (index: number, override: string) => {
-    update(leki.map((lek, i) => (i === index ? { ...lek, nastepna_dawka_override: override } : lek)));
+    const updatedList = leki.map((lek, i) => (i === index ? { ...lek, nastepna_dawka_override: override } : lek));
+    update(updatedList);
+    if (updatedList[index].sledzenie) {
+      const nextDose = getNextDoseTime(updatedList[index]);
+      if (nextDose) showTopToast(`Następne przypomnienie: ${formatNextDose(nextDose)}`);
+    }
   };
 
   // Filter to tracked meds, then push finished courses to the bottom so the
@@ -193,15 +215,15 @@ export default function MedicationsScreen() {
                   const next = getNextDoseTime(lek);
                   return (
                     <View key={lek.id} style={[styles.shortlistRow, i > 0 && styles.shortlistRowBorder, done && { opacity: 0.5 }]}>
-                      <Text style={styles.shortlistName} numberOfLines={2}>
+                      <Text style={styles.shortlistName} numberOfLines={3}>
                         {lek.nazwa || 'bez nazwy'}
                       </Text>
                       {done ? (
                         <Text style={styles.doneLabel}>zakończony</Text>
                       ) : (
-                        <>
+                        <View style={styles.shortlistActionRow}>
                           <Text style={styles.shortlistNext}>
-                            {next ? `następna: ${formatNextDose(next)}` : '—'}
+                            {next ? `następna:\n${formatNextDose(next)}` : '—'}
                           </Text>
                           <Button
                             mode="outlined"
@@ -213,7 +235,7 @@ export default function MedicationsScreen() {
                           >
                             Podanie
                           </Button>
-                        </>
+                        </View>
                       )}
                     </View>
                   );
@@ -260,6 +282,7 @@ export default function MedicationsScreen() {
       </PageScroll>
 
       <SaveStatusPill status={saveStatus} />
+      {topToastEl}
 
       {snackbarEl}
     </View>
@@ -292,7 +315,7 @@ function LekCard({
 
   const next = getNextDoseTime(lek);
   const done = isDone(lek);
-  const sorted = [...lek.historia_dawek].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  const sorted = [...lek.historia_dawek].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
   const history = showFullHistory ? sorted : sorted.slice(0, 3);
 
   const openOverride = () => {
@@ -333,6 +356,15 @@ function LekCard({
                 multiline
               />
 
+              <TextInput
+                mode="outlined"
+                label="Dawka"
+                value={lek.dawka}
+                onChangeText={(v) => onChange('dawka', v)}
+                placeholder="np. 5 mg, 2 tabletki"
+                placeholderTextColor={colors.grey3}
+              />
+
               <SelectMenu
                 label="Częstotliwość"
                 value={CZESTOTLIWOSCI.find((c) => c.value === lek.czestotliwosc)?.label ?? ''}
@@ -368,7 +400,10 @@ function LekCard({
               </View>
 
               <Pressable style={styles.switchRow} onPress={() => onChange('sledzenie', !lek.sledzenie)}>
-                <Text style={{ color: colors.grey1 }}>Śledzenie harmonogramu</Text>
+                <View style={{ flex: 1, paddingRight: 12 }}>
+                  <Text style={{ color: colors.grey1 }}>Śledzenie harmonogramu</Text>
+                  <Text style={styles.switchHint}>Powiadomienia o kolejnych dawkach</Text>
+                </View>
                 <Switch value={lek.sledzenie} onValueChange={(v) => onChange('sledzenie', v)} />
               </Pressable>
 
@@ -455,8 +490,11 @@ function LekCard({
               {lek.sledzenie && lek.historia_dawek.length > 0 && (
                 <View style={styles.historyBox}>
                   <Text style={styles.historyLabel}>Historia podań:</Text>
-                  {history.map((iso, i) => (
-                    <Text key={i} style={styles.historyItem}>{formatHistoryEntry(iso)}</Text>
+                  {history.map((entry, i) => (
+                    <Text key={i} style={styles.historyItem}>
+                      {formatHistoryEntry(entry.at)}
+                      {entry.dawka ? ` — ${entry.dawka}` : ''}
+                    </Text>
                   ))}
                   {lek.historia_dawek.length > 3 && (
                     <Button compact mode="text" onPress={() => setShowFullHistory((v) => !v)} textColor={colors.blue}>
@@ -480,10 +518,11 @@ const styles = StyleSheet.create({
   shortlist: { marginBottom: 16, backgroundColor: colors.cardBg },
   shortlistToggleWrap: { paddingHorizontal: 12, paddingTop: 4 },
   shortlistBody: { borderTopWidth: 1, borderTopColor: colors.borderLight, marginTop: 4 },
-  shortlistRow: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, flexWrap: 'wrap' },
+  shortlistRow: { padding: 12, gap: 8 },
   shortlistRowBorder: { borderTopWidth: 1, borderTopColor: colors.borderLight },
-  shortlistName: { flex: 1, fontWeight: '600', color: colors.grey1 },
-  shortlistNext: { fontSize: 12, color: colors.grey2 },
+  shortlistName: { fontWeight: '600', color: colors.grey1 },
+  shortlistActionRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  shortlistNext: { flex: 1, fontSize: 12, color: colors.grey2, lineHeight: 16 },
   doneLabel: { fontSize: 12, fontWeight: '600', color: colors.successFgAlt, backgroundColor: colors.successBgAlt, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 
   lekCard: { marginBottom: 12, backgroundColor: colors.cardBg },
@@ -491,6 +530,7 @@ const styles = StyleSheet.create({
   lekTitle: { fontWeight: '700', color: colors.grey1, fontSize: 15 },
 
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  switchHint: { color: colors.grey3, fontSize: 12, marginTop: 2 },
 
   doneBox: { backgroundColor: colors.successBgAlt, borderRadius: 8, padding: 10 },
   nextDoseBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.infoBgSoft, borderRadius: 8, padding: 12 },

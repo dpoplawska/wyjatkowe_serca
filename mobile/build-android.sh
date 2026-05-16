@@ -50,6 +50,17 @@ if ! grep -q "kotlin.compiler.execution.strategy" "$GRADLE_PROPS"; then
   echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=2g" >> "$GRADLE_PROPS"
 fi
 
+# APK size: ship arm64-v8a only (covers all Android 8+ phones). Cuts the
+# release APK from ~110 MB to ~50 MB. R8 minify is intentionally OFF —
+# enabling it stripped reflective bridge classes in expo-notifications and
+# broke runtime permission requests. Re-enable only with a proper keep rules
+# pass.
+if ! grep -q "^# size optimisations" "$GRADLE_PROPS"; then
+  echo "" >> "$GRADLE_PROPS"
+  echo "# size optimisations (last-write-wins overrides the defaults above)" >> "$GRADLE_PROPS"
+  echo "reactNativeArchitectures=arm64-v8a" >> "$GRADLE_PROPS"
+fi
+
 if [[ "$RELEASE" == "1" ]]; then
   echo "==> Running gradle assembleRelease (self-contained APK, JS bundled, signed with debug keystore)"
   cd android

@@ -28,9 +28,17 @@ export interface PatientProfileData {
   zespoly_genetyczne_opis: string;
 }
 
+export interface DoseEntry {
+  at: string;
+  dawka: string;
+}
+
 export interface Lek {
   id: string;
   nazwa: string;
+  // Default dose value (freeform, e.g. "5 mg" / "2 tabletki"). Captured
+  // into each history entry when a dose is marked given.
+  dawka: string;
   data_pierwszej_dawki: string;
   godzina_pierwszej_dawki: string;
   czestotliwosc: string;
@@ -38,7 +46,7 @@ export interface Lek {
   czas_trwania_wartosc: number;
   sledzenie: boolean;
   ostatnia_dawka: string;
-  historia_dawek: string[];
+  historia_dawek: DoseEntry[];
   nastepna_dawka_override: string;
 }
 

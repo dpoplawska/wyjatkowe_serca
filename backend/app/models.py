@@ -63,9 +63,17 @@ class PatientProfileData(BaseModel):
     zespoly_genetyczne_opis: str = ""
 
 
+class DoseEntry(BaseModel):
+    at: str = ""
+    dawka: str = ""
+
+
 class Lek(BaseModel):
     id: str = ""
     nazwa: str = ""
+    # Default dose for this medication (e.g. "5 mg", "2 tabletki"). Captured
+    # into each history entry at the moment a dose is marked given.
+    dawka: str = ""
     data_pierwszej_dawki: str = ""
     godzina_pierwszej_dawki: str = ""
     czestotliwosc: str = ""
@@ -73,7 +81,7 @@ class Lek(BaseModel):
     czas_trwania_wartosc: int = 0
     sledzenie: bool = False
     ostatnia_dawka: str = ""
-    historia_dawek: List[str] = []
+    historia_dawek: List[DoseEntry] = []
     nastepna_dawka_override: str = ""
 
 

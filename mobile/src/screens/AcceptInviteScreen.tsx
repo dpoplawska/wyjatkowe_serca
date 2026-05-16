@@ -16,7 +16,7 @@ export default function AcceptInviteScreen() {
   const { user, getToken } = useAuth();
   const token = route.params?.token;
 
-  const [info, setInfo] = useState<{ childName: string; hasExistingData: boolean } | null>(null);
+  const [info, setInfo] = useState<{ childName: string; hasExistingData: boolean; ownerUid: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function AcceptInviteScreen() {
       try {
         const api = makeApi(getToken);
         const data = await api.getInvite(token);
-        setInfo({ childName: data.childName, hasExistingData: data.hasExistingData });
+        setInfo({ ownerUid: data.ownerUid, childName: data.childName, hasExistingData: data.hasExistingData });
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Nie udało się pobrać zaproszenia');
       } finally {
@@ -36,6 +36,8 @@ export default function AcceptInviteScreen() {
       }
     })();
   }, [token, user]);
+
+  const isOwnInvite = info != null && user != null && info.ownerUid === user.uid;
 
   if (!user) {
     return (
@@ -73,6 +75,19 @@ export default function AcceptInviteScreen() {
         <ActivityIndicator />
       ) : error ? (
         <Card><Card.Content><Text>{error}</Text></Card.Content></Card>
+      ) : info && isOwnInvite ? (
+        <Card>
+          <Card.Content>
+            <Text variant="titleMedium" style={{ marginBottom: 12 }}>To Twoje zaproszenie</Text>
+            <Text style={{ marginBottom: 12 }}>
+              Ten link został wygenerowany z Twojego profilu. Wyślij go opiekunowi,
+              któremu chcesz udostępnić swoje dane.
+            </Text>
+            <Button mode="contained" onPress={() => navigation.replace('Main')}>
+              Wróć
+            </Button>
+          </Card.Content>
+        </Card>
       ) : info ? (
         <Card>
           <Card.Content>

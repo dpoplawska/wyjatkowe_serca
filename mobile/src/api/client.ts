@@ -76,6 +76,16 @@ export function makeApi(getToken: TokenProvider) {
       request<InviteInfo>('GET', `/invite/${token}`, getToken),
     acceptInvite: (token: string) =>
       request<{ message: string }>('POST', `/accept-invite/${token}`, getToken),
+    getAccessStatus: () =>
+      request<{ isGuest: boolean; ownerUid?: string; ownerName?: string }>(
+        'GET', '/access', getToken,
+      ),
+    unlinkAccess: () =>
+      request<{ message: string }>('DELETE', '/access', getToken),
+    listGuests: () =>
+      request<{ uid: string; email: string; grantedAt: string }[]>('GET', '/access/guests', getToken),
+    revokeGuest: (guestUid: string) =>
+      request<{ message: string }>('DELETE', `/access/guests/${guestUid}`, getToken),
   };
 }
 

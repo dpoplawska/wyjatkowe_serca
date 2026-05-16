@@ -377,6 +377,69 @@ def accept_invite(token: str, uid: str = Depends(verify_token)) -> dict:
     return {"message": "Dostęp przyznany"}
 
 
+@router.get("/access")
+def get_access_status(uid: str = Depends(verify_token)) -> dict:
+    """Returns whether the caller is currently a guest on someone else's profile."""
+    db_client = get_firestore_client()
+    doc = db_client.collection("userAccess").document(uid).get()
+    if not doc.exists:
+        return {"isGuest": False}
+    data = doc.to_dict()
+    owner_uid = data["ownerUid"]
+    # Best-effort: include owner's display name so the UI can show context.
+    profile_doc = db_client.collection("patientProfiles").document(owner_uid).get()
+    owner_name = profile_doc.to_dict().get("imie_nazwisko", "") if profile_doc.exists else ""
+    return {"isGuest": True, "ownerUid": owner_uid, "ownerName": owner_name}
+
+
+@router.delete("/access")
+def unlink_access(uid: str = Depends(verify_token)) -> dict:
+    """Removes the caller's link to another user's profile. Reversible by accepting a new invite."""
+    db_client = get_firestore_client()
+    doc = db_client.collection("userAccess").document(uid).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Nie jesteś podłączony do żadnego konta")
+    db_client.collection("userAccess").document(uid).delete()
+    return {"message": "Odłączono"}
+
+
+@router.get("/access/guests")
+def list_guests(uid: str = Depends(verify_token)) -> list[dict]:
+    """List every user that the caller has granted access to. Empty if the caller is themselves a guest."""
+    db_client = get_firestore_client()
+    if db_client.collection("userAccess").document(uid).get().exists:
+        return []
+    docs = db_client.collection("userAccess").where("ownerUid", "==", uid).stream()
+    guests = []
+    for doc in docs:
+        guest_uid = doc.id
+        data = doc.to_dict()
+        try:
+            user = firebase_auth.get_user(guest_uid)
+            email = user.email or guest_uid
+        except Exception:
+            email = guest_uid
+        guests.append({
+            "uid": guest_uid,
+            "email": email,
+            "grantedAt": data.get("grantedAt", ""),
+        })
+    return guests
+
+
+@router.delete("/access/guests/{guest_uid}")
+def revoke_guest(guest_uid: str, uid: str = Depends(verify_token)) -> dict:
+    """Revoke a specific user's access to the caller's profile."""
+    db_client = get_firestore_client()
+    doc = db_client.collection("userAccess").document(guest_uid).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Ten użytkownik nie ma dostępu do Twojego profilu")
+    if doc.to_dict()["ownerUid"] != uid:
+        raise HTTPException(status_code=403, detail="Nie możesz odłączyć tego użytkownika")
+    db_client.collection("userAccess").document(guest_uid).delete()
+    return {"message": "Odłączono"}
+
+
 def check_admin_password(x_password: str):
     if os.getenv("ENV") == "dev":
         return

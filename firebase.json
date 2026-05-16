@@ -2,7 +2,15 @@
   "hosting": {
     "site": "wyjatkowe-serca-app",
     "public": "frontend/app/build",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": ["firebase.json", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "/.well-known/assetlinks.json",
+        "headers": [
+          { "key": "Content-Type", "value": "application/json" }
+        ]
+      }
+    ],
     "rewrites": [
       { "source": "**", "destination": "/index.html" }
     ]

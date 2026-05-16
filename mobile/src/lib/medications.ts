@@ -1,6 +1,20 @@
-import { Lek } from '../types/api';
+import { Lek, DoseEntry } from '../types/api';
 import { formatDateTime, newId } from './format';
 import dayjs from 'dayjs';
+
+// Older patient records have historia_dawek as a list of ISO strings. New
+// shape is { at, dawka }[]. Normalise on read so the rest of the app can
+// treat the field uniformly.
+export function normalizeHistory(history: unknown): DoseEntry[] {
+  if (!Array.isArray(history)) return [];
+  return history.map((entry) => {
+    if (typeof entry === 'string') return { at: entry, dawka: '' };
+    if (entry && typeof entry === 'object' && 'at' in entry) {
+      return { at: String((entry as DoseEntry).at ?? ''), dawka: String((entry as DoseEntry).dawka ?? '') };
+    }
+    return { at: '', dawka: '' };
+  });
+}
 
 export const CZESTOTLIWOSCI = [
   { label: 'Co 4 godziny', value: 'co_4h' },
@@ -36,6 +50,7 @@ export function emptyLek(): Lek {
   return {
     id: newId(),
     nazwa: '',
+    dawka: '',
     data_pierwszej_dawki: '',
     godzina_pierwszej_dawki: '',
     czestotliwosc: '',
@@ -53,7 +68,7 @@ export function isDone(lek: Lek): boolean {
     return lek.historia_dawek.length >= lek.czas_trwania_wartosc;
   }
   if (lek.czas_trwania_typ === 'dni' && lek.czas_trwania_wartosc > 0 && lek.historia_dawek.length > 0) {
-    const firstDose = new Date(lek.historia_dawek[lek.historia_dawek.length - 1]);
+    const firstDose = new Date(lek.historia_dawek[lek.historia_dawek.length - 1].at);
     firstDose.setDate(firstDose.getDate() + lek.czas_trwania_wartosc);
     return Date.now() >= firstDose.getTime();
   }
