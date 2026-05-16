@@ -32,13 +32,12 @@ import { SectionCard } from '../components/SectionCard';
 import { MultiSelectModal } from '../components/MultiSelectModal';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
+import { SaveStatusPill, SaveStatus } from '../components/SaveStatusPill';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { parseIsoDate, toIsoDate, newId } from '../lib/format';
 import { colors } from '../theme/colors';
 
 const emptyOp = (): Operacja => ({ id: newId(), typ: '', data: '', czas_it: '' });
-
-type SaveStatus = 'idle' | 'saving' | 'saved';
 
 export default function PatientProfileScreen() {
   const { getToken } = useAuth();
@@ -184,10 +183,6 @@ export default function PatientProfileScreen() {
   return (
     <View style={styles.page}>
       <PageScroll refreshing={refreshing} onRefresh={refresh}>
-        <View style={styles.statusBar}>
-          {saveStatus === 'saving' && <Text style={styles.statusSaving}>Zapisywanie…</Text>}
-          {saveStatus === 'saved' && <Text style={styles.statusSaved}>Zapisane ✓</Text>}
-        </View>
         <SectionCard title="Podstawowe informacje">
           <TextInput
             mode="outlined"
@@ -371,6 +366,8 @@ export default function PatientProfileScreen() {
         </SectionCard>
       </PageScroll>
 
+      <SaveStatusPill status={saveStatus} />
+
       <MultiSelectModal
         visible={wadyOpen}
         options={WADY_SERCA}
@@ -405,7 +402,4 @@ const styles = StyleSheet.create({
   opHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   opNum: { fontWeight: '600', color: colors.grey1 },
   opField: { marginBottom: 12 },
-  statusBar: { minHeight: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  statusSaving: { color: colors.grey2, fontSize: 12 },
-  statusSaved: { color: colors.successFg, fontSize: 12, fontWeight: '600' },
 });

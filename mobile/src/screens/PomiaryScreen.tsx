@@ -35,6 +35,7 @@ import {
 import { MetricChip } from '../components/MetricChip';
 import { MiniLineChart } from '../components/MiniLineChart';
 import { DateTimePickerField } from '../components/DateTimePickerField';
+import { CollapseHeader } from '../components/CollapseHeader';
 import { TabScreenNav } from '../navigation/types';
 import { useSnackbar } from '../hooks/useSnackbar';
 import {
@@ -201,6 +202,7 @@ export default function PomiaryScreen() {
                   onChangeText={setSaturacja}
                   keyboardType="numeric"
                   placeholder="np. 98"
+                  placeholderTextColor={colors.grey3}
                 />
               </View>
               <View style={styles.metricBox}>
@@ -213,6 +215,7 @@ export default function PomiaryScreen() {
                   onChangeText={setTetno}
                   keyboardType="numeric"
                   placeholder="np. 72"
+                  placeholderTextColor={colors.grey3}
                 />
               </View>
             </View>
@@ -228,6 +231,7 @@ export default function PomiaryScreen() {
                   onChangeText={setCisSys}
                   keyboardType="numeric"
                   placeholder="120"
+                  placeholderTextColor={colors.grey3}
                   style={{ flex: 1 }}
                 />
                 <Text style={styles.bpSlash}>/</Text>
@@ -238,6 +242,7 @@ export default function PomiaryScreen() {
                   onChangeText={setCisDia}
                   keyboardType="numeric"
                   placeholder="80"
+                  placeholderTextColor={colors.grey3}
                   style={{ flex: 1 }}
                 />
               </View>
@@ -253,6 +258,7 @@ export default function PomiaryScreen() {
                 onChangeText={setDiureza}
                 keyboardType="numeric"
                 placeholder="np. 1500"
+                placeholderTextColor={colors.grey3}
               />
             </View>
 
@@ -441,14 +447,6 @@ function openTimePicker(initial: Date, onPicked: (d: Date) => void) {
   });
 }
 
-function CollapseHeader({ title, open, onToggle, sub }: { title: string; open: boolean; onToggle: () => void; sub?: boolean }) {
-  return (
-    <Pressable onPress={onToggle} style={[styles.collapseHeader, sub && styles.collapseHeaderSub]}>
-      <Text style={[styles.collapseTitle, sub && styles.collapseTitleSub]}>{title}</Text>
-      <Text style={styles.chevron}>{open ? '▲' : '▼'}</Text>
-    </Pressable>
-  );
-}
 
 function RangePicker({ range, onChange }: { range: ChartRange; onChange: (r: ChartRange) => void }) {
   return (
@@ -490,11 +488,6 @@ const styles = StyleSheet.create({
   bpSlash: { fontSize: 20, fontWeight: '700', color: colors.grey3 },
 
   section: { marginBottom: 8 },
-  collapseHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 4, marginBottom: 8 },
-  collapseHeaderSub: { paddingVertical: 2 },
-  collapseTitle: { fontWeight: '700', fontSize: 16, color: colors.grey1 },
-  collapseTitleSub: { fontSize: 13, fontWeight: '600', color: colors.grey2 },
-  chevron: { fontSize: 11, color: colors.grey2 },
 
   chartCard: { marginBottom: 12, backgroundColor: colors.cardBg },
   emptyText: { color: colors.grey2, fontSize: 13, padding: 10 },

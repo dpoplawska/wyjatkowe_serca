@@ -27,11 +27,13 @@ import {
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
 import { EmptyState } from '../components/EmptyState';
+import { CollapseHeader } from '../components/CollapseHeader';
 import { useSnackbar } from '../hooks/useSnackbar';
 import {
   ensureNotificationPermission,
   reconcileDoseReminders,
 } from '../lib/notifications';
+import { SaveStatusPill, SaveStatus } from '../components/SaveStatusPill';
 import { colors } from '../theme/colors';
 
 const CZESTOTLIWOSCI_LABELS = CZESTOTLIWOSCI.map((c) => c.label);
@@ -40,8 +42,6 @@ const CZAS_TRWANIA_OPTIONS = [
   { label: 'Liczba dni', value: 'dni' },
   { label: 'Liczba dawek', value: 'dawki' },
 ];
-
-type SaveStatus = 'idle' | 'saving' | 'saved';
 
 export default function MedicationsScreen() {
   const { getToken } = useAuth();
@@ -177,17 +177,15 @@ export default function MedicationsScreen() {
     <View style={styles.page}>
       <PageScroll refreshing={refreshing} onRefresh={refresh}>
 
-        <View style={styles.statusBar}>
-          {saveStatus === 'saving' && <Text style={styles.statusSaving}>Zapisywanie…</Text>}
-          {saveStatus === 'saved' && <Text style={styles.statusSaved}>Zapisane ✓</Text>}
-        </View>
-
         {tracked.length > 0 && (
           <Card style={styles.shortlist} mode="elevated">
-            <Pressable onPress={() => setShortlistOpen((v) => !v)} style={styles.shortlistToggle}>
-              <Text style={styles.shortlistToggleText}>Harmonogram dawek</Text>
-              <Text style={styles.chevron}>{shortlistOpen ? '▲' : '▼'}</Text>
-            </Pressable>
+            <View style={styles.shortlistToggleWrap}>
+              <CollapseHeader
+                title="Harmonogram dawek"
+                open={shortlistOpen}
+                onToggle={() => setShortlistOpen((v) => !v)}
+              />
+            </View>
             {shortlistOpen && (
               <View style={styles.shortlistBody}>
                 {tracked.map(({ lek, globalIndex }, i) => {
@@ -248,6 +246,8 @@ export default function MedicationsScreen() {
 
       </PageScroll>
 
+      <SaveStatusPill status={saveStatus} />
+
       <FAB
         icon="plus"
         style={styles.fab}
@@ -306,12 +306,13 @@ function LekCard({
     <Card style={styles.lekCard} mode="elevated">
       <Card.Content>
         <View style={styles.lekHeader}>
-          <Pressable onPress={() => setCollapsed((v) => !v)} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={[styles.lekTitle, { flex: 1 }]} numberOfLines={2}>
-              {lek.nazwa || `Lek ${index + 1}`}
-            </Text>
-            <Text style={styles.chevron}>{collapsed ? '▼' : '▲'}</Text>
-          </Pressable>
+          <View style={{ flex: 1 }}>
+            <CollapseHeader
+              title={lek.nazwa || `Lek ${index + 1}`}
+              open={!collapsed}
+              onToggle={() => setCollapsed((v) => !v)}
+            />
+          </View>
           <IconButton icon="delete-outline" iconColor={colors.red} onPress={onRemove} />
         </View>
 
@@ -472,10 +473,8 @@ const styles = StyleSheet.create({
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
 
   shortlist: { marginBottom: 16, backgroundColor: colors.cardBg },
-  shortlistToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  shortlistToggleText: { fontWeight: '700', color: colors.grey1, fontSize: 15 },
-  chevron: { fontSize: 11, color: colors.grey2 },
-  shortlistBody: { borderTopWidth: 1, borderTopColor: colors.borderLight },
+  shortlistToggleWrap: { paddingHorizontal: 12, paddingTop: 4 },
+  shortlistBody: { borderTopWidth: 1, borderTopColor: colors.borderLight, marginTop: 4 },
   shortlistRow: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, flexWrap: 'wrap' },
   shortlistRowBorder: { borderTopWidth: 1, borderTopColor: colors.borderLight },
   shortlistName: { flex: 1, fontWeight: '600', color: colors.grey1 },
@@ -495,10 +494,6 @@ const styles = StyleSheet.create({
   historyBox: { borderTopWidth: 1, borderTopColor: colors.borderLight, paddingTop: 12 },
   historyLabel: { fontSize: 13, fontWeight: '600', color: colors.grey2, marginBottom: 4 },
   historyItem: { fontSize: 13, color: colors.grey2, paddingVertical: 2 },
-
-  statusBar: { minHeight: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  statusSaving: { color: colors.grey2, fontSize: 12 },
-  statusSaved: { color: colors.successFg, fontSize: 12, fontWeight: '600' },
 
   fab: {
     position: 'absolute',

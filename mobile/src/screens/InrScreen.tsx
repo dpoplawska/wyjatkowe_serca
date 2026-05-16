@@ -145,6 +145,7 @@ export default function InrScreen() {
               onChangeText={(v) => { setPt(v); setResult(null); }}
               keyboardType="decimal-pad"
               placeholder="np. 28"
+              placeholderTextColor={colors.grey3}
             />
 
             <Pressable onPress={() => setShowAdvanced((v) => !v)} style={styles.advancedToggle}>
@@ -202,6 +203,7 @@ export default function InrScreen() {
                   multiline
                   numberOfLines={2}
                   placeholder="np. kontrola po zmianie dawki"
+                  placeholderTextColor={colors.grey3}
                   style={{ marginTop: 12 }}
                 />
                 <Button

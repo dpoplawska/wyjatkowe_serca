@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import * as SplashScreen from 'expo-splash-screen';
 import {
   getAuth,
   onAuthStateChanged,
@@ -61,6 +62,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     return unsub;
   }, []);
+
+  // Once we know who the user is (or that they're not signed in), dismiss
+  // the splash screen so the next surface (Login or MainTabs) takes over
+  // without a blank/spinner gap.
+  useEffect(() => {
+    if (!loading) {
+      SplashScreen.hideAsync().catch(() => { /* already hidden */ });
+    }
+  }, [loading]);
 
   const user: AppUser | null = useMemo(() => {
     if (devUser) return devUser;
