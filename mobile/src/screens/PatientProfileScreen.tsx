@@ -35,6 +35,7 @@ import { DateTimePickerField } from '../components/DateTimePickerField';
 import { SaveStatusPill, SaveStatus } from '../components/SaveStatusPill';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { parseIsoDate, toIsoDate, newId } from '../lib/format';
+import { generatePatientPdf } from '../lib/pdfReport';
 import { colors } from '../theme/colors';
 
 const emptyOp = (): Operacja => ({ id: newId(), typ: '', data: '', czas_it: '' });
@@ -203,10 +204,31 @@ export default function PatientProfileScreen() {
     }
   }, []);
 
+  const generatingPdfRef = useRef(false);
+  const exportPdf = useCallback(async () => {
+    if (generatingPdfRef.current) return;
+    generatingPdfRef.current = true;
+    try {
+      showSnackbarRef.current('Generowanie PDF…');
+      await generatePatientPdf(getTokenRef.current);
+    } catch (e) {
+      showSnackbarRef.current(e instanceof Error ? `Błąd PDF: ${e.message}` : 'Nie udało się wygenerować PDF');
+    } finally {
+      generatingPdfRef.current = false;
+    }
+  }, []);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.headerRight}>
+          <IconButton
+            icon="file-pdf-box"
+            iconColor={colors.blue}
+            onPress={exportPdf}
+            accessibilityLabel="Eksportuj PDF"
+            size={22}
+          />
           <IconButton
             icon="account-plus"
             iconColor={colors.blue}
@@ -218,7 +240,7 @@ export default function PatientProfileScreen() {
         </View>
       ),
     });
-  }, [navigation, shareInviteLink]);
+  }, [navigation, shareInviteLink, exportPdf]);
 
   if (fetching) {
     return <ScreenSkeleton />;
