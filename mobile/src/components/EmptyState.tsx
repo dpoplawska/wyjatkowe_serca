@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
@@ -8,16 +8,29 @@ interface Props {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   title: string;
   message: string;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
-// Friendly hint shown on a screen with no user data yet. Kept minimal so it
-// doesn't compete with the actual form/list when there *is* data.
-export function EmptyState({ icon, title, message }: Props) {
+// Friendly hint shown on a screen with no user data yet. Includes an optional
+// primary CTA — first-time users land here with no FAB in their attention
+// span, so the inline button is the explicit "start here" affordance.
+export function EmptyState({ icon, title, message, actionLabel, onAction }: Props) {
   return (
     <View style={styles.wrap}>
       <MaterialCommunityIcons name={icon} size={56} color={colors.blue} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
+      {actionLabel && onAction && (
+        <Button
+          mode="contained"
+          icon="plus"
+          onPress={onAction}
+          style={styles.action}
+        >
+          {actionLabel}
+        </Button>
+      )}
     </View>
   );
 }
@@ -43,5 +56,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  action: {
+    marginTop: 16,
   },
 });

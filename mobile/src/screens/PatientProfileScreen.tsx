@@ -121,11 +121,13 @@ export default function PatientProfileScreen() {
 
   // Debounced autosave: 1s after last edit. Snapshots profile at save start;
   // only clears dirty if no further edits happened during the round-trip.
+  // The 'saving' pill is shown immediately on edit (not after the debounce
+  // completes) so the user sees feedback right away.
   useEffect(() => {
     if (!dirty) return;
+    setSaveStatus('saving');
     const t = setTimeout(async () => {
       const snapshot = profile;
-      setSaveStatus('saving');
       try {
         const api = makeApi(getToken);
         await api.putPatientProfile(snapshot);

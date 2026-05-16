@@ -11,6 +11,11 @@ export const paperTheme = {
     background: colors.greyBg,
     surface: colors.cardBg,
     error: colors.dangerFg,
+    // Resting label colour for TextInput when empty/unfocused. The MD3
+    // default is too saturated and reads as actual content. Light grey makes
+    // empty inputs feel like prompts. Trailing icons + dividers also pick
+    // this up — light grey is fine there too.
+    onSurfaceVariant: colors.grey3,
   },
   roundness: 8,
 };

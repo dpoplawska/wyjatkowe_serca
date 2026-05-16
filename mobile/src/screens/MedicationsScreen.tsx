@@ -10,7 +10,6 @@ import {
   IconButton,
   Card,
   Divider,
-  FAB,
 } from 'react-native-paper';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
@@ -89,12 +88,13 @@ export default function MedicationsScreen() {
   };
 
   // Debounced autosave: 1s after last mutation. Same snapshot-match pattern as
-  // Patient Profile to handle "user edited again during in-flight save".
+  // Patient Profile. The 'saving' pill is shown immediately on edit (not
+  // after the debounce completes) so the user sees feedback right away.
   useEffect(() => {
     if (!dirty) return;
+    setSaveStatus('saving');
     const t = setTimeout(async () => {
       const snapshot = leki;
-      setSaveStatus('saving');
       try {
         const api = makeApi(getToken);
         await api.putMedications({ leki: snapshot });
@@ -228,6 +228,8 @@ export default function MedicationsScreen() {
             icon="pill"
             title="Brak dodanych leków"
             message="Dodaj pierwszy lek, a my pomożemy Ci śledzić dawki i przypominać o ich podaniu."
+            actionLabel="Dodaj lek"
+            onAction={addLek}
           />
         )}
 
@@ -244,17 +246,20 @@ export default function MedicationsScreen() {
           />
         ))}
 
+        {leki.length > 0 && (
+          <Button
+            mode="outlined"
+            icon="plus-circle-outline"
+            onPress={addLek}
+            style={styles.addLekBtn}
+          >
+            Dodaj kolejny lek
+          </Button>
+        )}
+
       </PageScroll>
 
       <SaveStatusPill status={saveStatus} />
-
-      <FAB
-        icon="plus"
-        style={styles.fab}
-        color="white"
-        onPress={addLek}
-        accessibilityLabel="Dodaj lek"
-      />
 
       {snackbarEl}
     </View>
@@ -495,10 +500,10 @@ const styles = StyleSheet.create({
   historyLabel: { fontSize: 13, fontWeight: '600', color: colors.grey2, marginBottom: 4 },
   historyItem: { fontSize: 13, color: colors.grey2, paddingVertical: 2 },
 
-  fab: {
-    position: 'absolute',
-    right: 16,
-    bottom: 24,
-    backgroundColor: colors.blue,
+  addLekBtn: {
+    alignSelf: 'flex-start',
+    borderColor: colors.blue,
+    borderStyle: 'dashed',
+    marginVertical: 12,
   },
 });
