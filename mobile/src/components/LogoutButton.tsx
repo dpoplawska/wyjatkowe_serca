@@ -1,18 +1,26 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Alert } from 'react-native';
+import { IconButton } from 'react-native-paper';
 import { useAuth } from '../auth/AuthContext';
 import { colors } from '../theme/colors';
 
 export function LogoutButton() {
   const { signOutUser } = useAuth();
+
+  const handlePress = () => {
+    Alert.alert('Wylogować?', 'Wrócisz do ekranu logowania.', [
+      { text: 'Anuluj', style: 'cancel' },
+      { text: 'Wyloguj', style: 'destructive', onPress: () => { signOutUser(); } },
+    ]);
+  };
+
   return (
-    <Pressable onPress={signOutUser} style={styles.btn} hitSlop={8}>
-      <Text style={styles.text}>Wyloguj</Text>
-    </Pressable>
+    <IconButton
+      icon="logout-variant"
+      iconColor={colors.red}
+      onPress={handlePress}
+      accessibilityLabel="Wyloguj"
+      size={22}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  btn: { paddingHorizontal: 12, paddingVertical: 6 },
-  text: { color: colors.red, fontSize: 14, fontWeight: '600' },
-});

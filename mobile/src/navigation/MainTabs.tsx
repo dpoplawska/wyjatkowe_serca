@@ -26,6 +26,7 @@ export default function MainTabs() {
         component={PatientProfileScreen}
         options={{
           title: 'Profil pacjenta',
+          tabBarLabel: 'Profil',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account-heart" color={color} size={size} />
           ),
@@ -56,6 +57,7 @@ export default function MainTabs() {
         component={InrScreen}
         options={{
           title: 'Kalkulator INR',
+          tabBarLabel: 'INR',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calculator-variant" color={color} size={size} />
           ),

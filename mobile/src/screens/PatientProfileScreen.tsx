@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Pressable, Share } from 'react-native';
+import { View, StyleSheet, Pressable, Share, Alert } from 'react-native';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Switch,
-  ActivityIndicator,
   IconButton,
   Card,
 } from 'react-native-paper';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useNavigation } from '@react-navigation/native';
 import { WrappedChip } from '../components/WrappedChip';
 import { LogoutButton } from '../components/LogoutButton';
@@ -30,8 +30,20 @@ import {
 import { SectionCard } from '../components/SectionCard';
 import { MultiSelectModal } from '../components/MultiSelectModal';
 import { SelectMenu } from '../components/SelectMenu';
+import { DateTimePickerField } from '../components/DateTimePickerField';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
+
+function parseIsoDate(s: string): Date | null {
+  if (!s) return null;
+  const d = new Date(`${s}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function toIsoDate(d: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 const emptyOp: Operacja = { typ: '', data: '', czas_it: '' };
 
@@ -101,8 +113,20 @@ export default function PatientProfileScreen() {
   const addOp = () =>
     updateProfile((p) => ({ ...p, przebyte_operacje: [...p.przebyte_operacje, { ...emptyOp }] }));
 
-  const removeOp = (index: number) =>
-    updateProfile((p) => ({ ...p, przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index) }));
+  const removeOp = (index: number) => {
+    Alert.alert('Usunąć operację?', 'Tej operacji nie można cofnąć.', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Usuń',
+        style: 'destructive',
+        onPress: () =>
+          updateProfile((p) => ({
+            ...p,
+            przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index),
+          })),
+      },
+    ]);
+  };
 
   // Debounced autosave: 1s after last edit. Snapshots profile at save start;
   // only clears dirty if no further edits happened during the round-trip.
@@ -162,11 +186,7 @@ export default function PatientProfileScreen() {
   }, [navigation, shareInviteLink]);
 
   if (fetching) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator color={colors.red} />
-      </View>
-    );
+    return <ScreenSkeleton />;
   }
 
   return (
@@ -272,14 +292,15 @@ export default function PatientProfileScreen() {
                   multiline
                   style={styles.opField}
                 />
-                <TextInput
-                  mode="outlined"
-                  label="Data operacji (YYYY-MM-DD)"
-                  value={op.data}
-                  onChangeText={(v) => updateOp(i, 'data', v)}
-                  placeholder="np. 2024-05-20"
-                  style={styles.opField}
-                />
+                <View style={styles.opField}>
+                  <DateTimePickerField
+                    label="Data operacji"
+                    mode="date"
+                    value={parseIsoDate(op.data)}
+                    onChange={(d) => updateOp(i, 'data', toIsoDate(d))}
+                    onClear={() => updateOp(i, 'data', '')}
+                  />
+                </View>
                 <TextInput
                   mode="outlined"
                   label="Czas na intensywnej terapii (dni)"

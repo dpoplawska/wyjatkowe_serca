@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Alert } from 'react-native';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Card,
-  ActivityIndicator,
   IconButton,
   Divider,
 } from 'react-native-paper';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { InrEntry } from '../types/api';
@@ -106,19 +106,24 @@ export default function InrScreen() {
   };
 
   const handleDelete = (id: string) => {
-    const updated = history.filter((e) => e.id !== id);
-    setHistory(updated);
-    persist(updated, 'Wpis usunięty.');
+    Alert.alert('Usunąć wpis?', 'Tej operacji nie można cofnąć.', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Usuń',
+        style: 'destructive',
+        onPress: () => {
+          const updated = history.filter((e) => e.id !== id);
+          setHistory(updated);
+          persist(updated, 'Wpis usunięty.');
+        },
+      },
+    ]);
   };
 
   const interpretation = result !== null ? getInterpretation(result) : null;
 
   if (fetching) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator color={colors.red} />
-      </View>
-    );
+    return <ScreenSkeleton />;
   }
 
   return (

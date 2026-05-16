@@ -52,10 +52,11 @@ export function inrStatus(v: number): StatusColor {
 
 export const diurezaStatus: StatusColor = { color: colors.infoFg, bg: colors.infoBg };
 
+// Polish convention: DD.MM.YYYY HH:mm (24h).
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 export function formatDateShort(iso: string): string {

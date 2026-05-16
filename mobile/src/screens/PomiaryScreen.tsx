@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Alert, Platform } from 'react-native';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Card,
-  ActivityIndicator,
   IconButton,
   Divider,
+  Switch,
 } from 'react-native-paper';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
@@ -34,6 +36,11 @@ import { MiniLineChart } from '../components/MiniLineChart';
 import { DateTimePickerField } from '../components/DateTimePickerField';
 import { TabScreenNav } from '../navigation/types';
 import { useSnackbar } from '../hooks/useSnackbar';
+import {
+  ensureNotificationPermission,
+  getPomiaryReminderTime,
+  setPomiaryReminderTime,
+} from '../lib/notifications';
 import { colors } from '../theme/colors';
 
 export default function PomiaryScreen() {
@@ -58,6 +65,36 @@ export default function PomiaryScreen() {
   const [chartsOpen, setChartsOpen] = useState(true);
   const [historyOpen, setHistoryOpen] = useState(true);
   const [inrOpen, setInrOpen] = useState(true);
+
+  // Pomiary daily reminder: persisted "HH:MM" or null = off.
+  const [reminderTime, setReminderTimeState] = useState<string | null>(null);
+
+  useEffect(() => {
+    getPomiaryReminderTime().then(setReminderTimeState);
+  }, []);
+
+  const toggleReminder = async (value: boolean) => {
+    if (value) {
+      const granted = await ensureNotificationPermission();
+      if (!granted) {
+        showSnackbar('Powiadomienia są wyłączone — włącz je w ustawieniach systemowych.');
+        return;
+      }
+      const defaultTime = '09:00';
+      await setPomiaryReminderTime(defaultTime);
+      setReminderTimeState(defaultTime);
+    } else {
+      await setPomiaryReminderTime(null);
+      setReminderTimeState(null);
+    }
+  };
+
+  const handleReminderTimeChange = async (d: Date) => {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const hhmm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    await setPomiaryReminderTime(hhmm);
+    setReminderTimeState(hhmm);
+  };
 
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
@@ -116,9 +153,18 @@ export default function PomiaryScreen() {
   };
 
   const handleDelete = (id: string) => {
-    const updated = entries.filter((e) => e.id !== id);
-    setEntries(updated);
-    persist(updated, 'Wpis usunięty.');
+    Alert.alert('Usunąć pomiar?', 'Tej operacji nie można cofnąć.', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Usuń',
+        style: 'destructive',
+        onPress: () => {
+          const updated = entries.filter((e) => e.id !== id);
+          setEntries(updated);
+          persist(updated, 'Wpis usunięty.');
+        },
+      },
+    ]);
   };
 
   const filteredEntries = useMemo(() => filterByRange(entries, chartRange), [entries, chartRange]);
@@ -136,11 +182,7 @@ export default function PomiaryScreen() {
   const hasChartData = Object.values(samples).some((arr) => arr.length >= MIN_CHART_POINTS);
 
   if (fetching) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator color={colors.red} />
-      </View>
-    );
+    return <ScreenSkeleton />;
   }
 
   return (
@@ -238,6 +280,37 @@ export default function PomiaryScreen() {
             >
               Zapisz pomiar
             </Button>
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.reminderCard} mode="elevated">
+          <Card.Content style={styles.reminderRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.reminderTitle}>Codzienne przypomnienie</Text>
+              <Text style={styles.reminderSub}>
+                {reminderTime ? `O godzinie ${reminderTime}` : 'Wyłączone'}
+              </Text>
+            </View>
+            {reminderTime && (
+              <Button
+                mode="text"
+                compact
+                onPress={() => {
+                  const [h, m] = reminderTime.split(':').map((n) => parseInt(n, 10));
+                  const d = new Date();
+                  d.setHours(h, m, 0, 0);
+                  // Reuse the field's time-picker plumbing: tap edits time.
+                  openTimePicker(d, handleReminderTimeChange);
+                }}
+              >
+                Zmień
+              </Button>
+            )}
+            <Switch
+              value={reminderTime !== null}
+              onValueChange={toggleReminder}
+              color={colors.blue}
+            />
           </Card.Content>
         </Card>
 
@@ -357,6 +430,22 @@ export default function PomiaryScreen() {
   );
 }
 
+// Opens a native time picker. Android uses the imperative API; iOS would
+// need a modal — for the reminder time tweak we accept Android-only UX since
+// that's all we build for currently.
+function openTimePicker(initial: Date, onPicked: (d: Date) => void) {
+  if (Platform.OS !== 'android') return;
+  DateTimePickerAndroid.open({
+    value: initial,
+    mode: 'time',
+    is24Hour: true,
+    onChange: (event, time) => {
+      if (event.type !== 'set' || !time) return;
+      onPicked(time);
+    },
+  });
+}
+
 function CollapseHeader({ title, open, onToggle, sub }: { title: string; open: boolean; onToggle: () => void; sub?: boolean }) {
   return (
     <Pressable onPress={onToggle} style={[styles.collapseHeader, sub && styles.collapseHeaderSub]}>
@@ -391,6 +480,11 @@ const styles = StyleSheet.create({
 
   card: { marginBottom: 12, backgroundColor: colors.cardBg },
   cardTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 16, fontSize: 16 },
+
+  reminderCard: { marginBottom: 12, backgroundColor: colors.cardBg },
+  reminderRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  reminderTitle: { fontWeight: '600', fontSize: 14, color: colors.grey1 },
+  reminderSub: { fontSize: 12, color: colors.grey2, marginTop: 2 },
 
   metricsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   metricBox: { flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 },

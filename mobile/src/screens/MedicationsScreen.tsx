@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, StyleSheet, Pressable, Alert } from 'react-native';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Switch,
-  ActivityIndicator,
   IconButton,
   Card,
   Divider,
+  FAB,
 } from 'react-native-paper';
+import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { Lek } from '../types/api';
@@ -24,6 +25,7 @@ import {
 } from '../lib/medications';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
+import { EmptyState } from '../components/EmptyState';
 import { useSnackbar } from '../hooks/useSnackbar';
 import {
   ensureNotificationPermission,
@@ -38,14 +40,21 @@ const CZAS_TRWANIA_OPTIONS = [
   { label: 'Liczba dawek', value: 'dawki' },
 ];
 
+type SaveStatus = 'idle' | 'saving' | 'saved';
+
 export default function MedicationsScreen() {
   const { getToken } = useAuth();
   const [leki, setLeki] = useState<Lek[]>([]);
   const [fetching, setFetching] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [shortlistOpen, setShortlistOpen] = useState(true);
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
+  // Track latest leki for the in-flight save snapshot match (avoids racing
+  // user edits made during the network round-trip).
+  const lekiRef = useRef(leki);
+  lekiRef.current = leki;
 
   const load = useCallback(async () => {
     try {
@@ -72,14 +81,39 @@ export default function MedicationsScreen() {
     setRefreshing(false);
   }, [load]);
 
+  // All mutations flow through update() so any edit becomes a debounced autosave.
+  const update = (next: Lek[]) => {
+    setLeki(next);
+    setDirty(true);
+  };
+
+  // Debounced autosave: 1s after last mutation. Same snapshot-match pattern as
+  // Patient Profile to handle "user edited again during in-flight save".
+  useEffect(() => {
+    if (!dirty) return;
+    const t = setTimeout(async () => {
+      const snapshot = leki;
+      setSaveStatus('saving');
+      try {
+        const api = makeApi(getToken);
+        await api.putMedications({ leki: snapshot });
+        reconcileDoseReminders(snapshot).catch(() => { /* best effort */ });
+        if (lekiRef.current === snapshot) setDirty(false);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 1500);
+      } catch (e) {
+        showSnackbar(e instanceof Error ? `Błąd zapisu: ${e.message}` : 'Błąd zapisu');
+        setSaveStatus('idle');
+      }
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [dirty, leki, getToken, showSnackbar]);
+
   const updateLek = <K extends keyof Lek>(index: number, field: K, value: Lek[K]) => {
-    setLeki((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], [field]: value };
-      return next;
-    });
-    // User enables tracking → prompt for notification permission so they actually
-    // get reminders once they save. No-op if already granted.
+    const next = leki.map((lek, i) => (i === index ? { ...lek, [field]: value } : lek));
+    update(next);
+    // User enables tracking → prompt for notification permission so they
+    // actually get reminders. No-op if already granted.
     if (field === 'sledzenie' && value === true) {
       ensureNotificationPermission().then((granted) => {
         if (!granted) {
@@ -89,75 +123,61 @@ export default function MedicationsScreen() {
     }
   };
 
-  const addLek = () => setLeki((prev) => [...prev, emptyLek()]);
-  const removeLek = (index: number) => setLeki((prev) => prev.filter((_, i) => i !== index));
+  const addLek = () => update([...leki, emptyLek()]);
 
-  const persist = async (updated: Lek[], successMsg: string) => {
-    setSaving(true);
-    try {
-      const api = makeApi(getToken);
-      await api.putMedications({ leki: updated });
-      // Realign OS dose reminders to match persisted state — covers all of:
-      // mark-given, undo, override, sledzenie toggle, frequency change, delete.
-      reconcileDoseReminders(updated).catch(() => { /* best effort */ });
-      showSnackbar(successMsg);
-    } catch (e) {
-      showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
-    } finally {
-      setSaving(false);
-    }
+  const removeLek = (index: number) => {
+    const target = leki[index];
+    Alert.alert(
+      'Usunąć lek?',
+      target?.nazwa ? `"${target.nazwa}" zostanie usunięty wraz z historią podań.` : 'Lek wraz z historią podań zostanie usunięty.',
+      [
+        { text: 'Anuluj', style: 'cancel' },
+        { text: 'Usuń', style: 'destructive', onPress: () => update(leki.filter((_, i) => i !== index)) },
+      ],
+    );
   };
-
-  const handleSave = () => persist(leki, 'Leki zapisane.');
 
   const markGiven = (index: number, at?: Date) => {
     const now = (at ?? new Date()).toISOString();
-    const updated = leki.map((lek, i) => {
-      if (i !== index) return lek;
-      return {
-        ...lek,
-        ostatnia_dawka: now,
-        historia_dawek: [now, ...lek.historia_dawek],
-        nastepna_dawka_override: '',
-      };
-    });
-    setLeki(updated);
-    persist(updated, 'Podanie zapisane.');
+    update(leki.map((lek, i) => i === index ? {
+      ...lek,
+      ostatnia_dawka: now,
+      historia_dawek: [now, ...lek.historia_dawek],
+      nastepna_dawka_override: '',
+    } : lek));
   };
 
   const undoLastGiven = (index: number) => {
-    const updated = leki.map((lek, i) => {
+    update(leki.map((lek, i) => {
       if (i !== index) return lek;
       const newHistory = lek.historia_dawek.slice(1);
-      return {
-        ...lek,
-        ostatnia_dawka: newHistory[0] ?? '',
-        historia_dawek: newHistory,
-      };
-    });
-    setLeki(updated);
-    persist(updated, 'Cofnięto ostatnie podanie.');
+      return { ...lek, ostatnia_dawka: newHistory[0] ?? '', historia_dawek: newHistory };
+    }));
   };
 
   const saveOverride = (index: number, override: string) => {
-    const updated = leki.map((lek, i) => (i === index ? { ...lek, nastepna_dawka_override: override } : lek));
-    setLeki(updated);
-    persist(updated, override ? 'Czas dawki zaktualizowany.' : 'Zmiana usunięta.');
+    update(leki.map((lek, i) => (i === index ? { ...lek, nastepna_dawka_override: override } : lek)));
   };
 
-  const tracked = useMemo(() => leki.filter((l) => l.sledzenie), [leki]);
+  // Filter to tracked meds, then push finished courses to the bottom so the
+  // user's eye lands on the active reminders first.
+  const tracked = useMemo(() => {
+    const filtered = leki.filter((l) => l.sledzenie);
+    return [...filtered].sort((a, b) => Number(isDone(a)) - Number(isDone(b)));
+  }, [leki]);
 
   if (fetching) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator color={colors.red} />
-      </View>
-    );
+    return <ScreenSkeleton />;
   }
 
   return (
     <View style={styles.page}>
       <PageScroll refreshing={refreshing} onRefresh={refresh}>
+
+        <View style={styles.statusBar}>
+          {saveStatus === 'saving' && <Text style={styles.statusSaving}>Zapisywanie…</Text>}
+          {saveStatus === 'saved' && <Text style={styles.statusSaved}>Zapisane ✓</Text>}
+        </View>
 
         {tracked.length > 0 && (
           <Card style={styles.shortlist} mode="elevated">
@@ -203,6 +223,14 @@ export default function MedicationsScreen() {
           </Card>
         )}
 
+        {leki.length === 0 && (
+          <EmptyState
+            icon="pill"
+            title="Brak dodanych leków"
+            message="Dodaj pierwszy lek, a my pomożemy Ci śledzić dawki i przypominać o ich podaniu."
+          />
+        )}
+
         {leki.map((lek, i) => (
           <LekCard
             key={lek.id}
@@ -216,14 +244,15 @@ export default function MedicationsScreen() {
           />
         ))}
 
-        <Button mode="outlined" icon="plus-circle-outline" onPress={addLek} textColor={colors.red} style={{ borderColor: colors.red, borderStyle: 'dashed', alignSelf: 'flex-start', marginVertical: 8 }}>
-          Dodaj lek
-        </Button>
-
-        <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving} style={styles.saveBtn}>
-          Zapisz leki
-        </Button>
       </PageScroll>
+
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        color="white"
+        onPress={addLek}
+        accessibilityLabel="Dodaj lek"
+      />
 
       {snackbarEl}
     </View>
@@ -471,5 +500,14 @@ const styles = StyleSheet.create({
   historyLabel: { fontSize: 13, fontWeight: '600', color: colors.grey2, marginBottom: 4 },
   historyItem: { fontSize: 13, color: colors.grey2, paddingVertical: 2 },
 
-  saveBtn: { marginTop: 12, paddingVertical: 6 },
+  statusBar: { minHeight: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  statusSaving: { color: colors.grey2, fontSize: 12 },
+  statusSaved: { color: colors.successFg, fontSize: 12, fontWeight: '600' },
+
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 24,
+    backgroundColor: colors.red,
+  },
 });

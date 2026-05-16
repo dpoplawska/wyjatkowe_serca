@@ -19,11 +19,11 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: '700',
     fontSize: 16,
-    color: colors.red,
+    color: colors.blue,
     paddingBottom: 10,
     marginBottom: 16,
     borderBottomWidth: 2,
-    borderBottomColor: colors.redTint,
+    borderBottomColor: colors.blueTint,
   },
   body: { gap: 16 },
 });
