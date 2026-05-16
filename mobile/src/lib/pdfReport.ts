@@ -13,14 +13,11 @@ import {
   Lek,
   MeasurementEntry,
   InrEntry,
+  EMPTY_PATIENT_PROFILE,
 } from '../types/api';
 import { frequencyLabel, normalizeHistory, CZAS_TRWANIA_LABELS, isDone } from './medications';
-
-// PDF generation. expo-print runs the HTML through the platform's native print
-// engine (WebView/WKWebView for iOS, Android print framework for Android), so
-// any standard HTML+SVG+CSS works. We render charts as inline SVG to avoid the
-// view-shot dependency and keep the report self-contained — the same data is
-// re-drawn in the document rather than screenshotted from the screen.
+import { Sample, pickSamples, pickInrSamples, filterByRange } from './measurements';
+import { formatDateTime } from './format';
 
 const BRAND_RED = '#EC1A3B';
 const BRAND_BLUE = '#2383C5';
@@ -41,10 +38,6 @@ function fmtDate(iso: string): string {
   return iso ? dayjs(iso).format('DD.MM.YYYY') : '';
 }
 
-function fmtDateTime(iso: string): string {
-  return iso ? dayjs(iso).format('DD.MM.YYYY HH:mm') : '';
-}
-
 function fmtShort(iso: string): string {
   return iso ? dayjs(iso).format('DD.MM HH:mm') : '';
 }
@@ -53,7 +46,10 @@ function yesNo(v: boolean): string {
   return v ? 'Tak' : 'Nie';
 }
 
-interface Sample { value: number; ts: number; label: string }
+// reduce-based min/max avoids the `Math.min(...arr)` argument-spread limit
+// (~10k items on V8) for long histories.
+const minOf = (arr: number[]): number => arr.reduce((m, v) => (v < m ? v : m), Infinity);
+const maxOf = (arr: number[]): number => arr.reduce((m, v) => (v > m ? v : m), -Infinity);
 
 interface Series { name: string; color: string; samples: Sample[] }
 
@@ -65,8 +61,6 @@ interface ChartOpts {
   height?: number;
 }
 
-// Renders one or more series as an inline SVG line chart. Width is set via
-// CSS to 100% of the container; height is fixed so layout is predictable.
 function svgChart(series: Series[], opts: ChartOpts = {}): string {
   const points = series.flatMap((s) => s.samples);
   if (points.length === 0) {
@@ -78,28 +72,26 @@ function svgChart(series: Series[], opts: ChartOpts = {}): string {
   const ch = H - padT - padB;
 
   const values = points.map((p) => p.value);
-  const dataMin = Math.min(...values);
-  const dataMax = Math.max(...values);
+  const dataMin = minOf(values);
+  const dataMax = maxOf(values);
   // Pad the range a bit so the line isn't flush against the top/bottom of the box.
   const span = Math.max(dataMax - dataMin, 1);
   const yMin = opts.yMin ?? dataMin - span * 0.1;
   const yMax = opts.yMax ?? dataMax + span * 0.1;
   const yRange = Math.max(yMax - yMin, 1);
 
-  const allTs = points.map((p) => p.ts);
-  const tMin = Math.min(...allTs);
-  const tMax = Math.max(...allTs);
+  const timestamps = points.map((p) => p.timestamp);
+  const tMin = minOf(timestamps);
+  const tMax = maxOf(timestamps);
   const tRange = Math.max(tMax - tMin, 1);
 
   const x = (t: number) => padL + ((t - tMin) / tRange) * cw;
   const y = (v: number) => padT + ch - ((v - yMin) / yRange) * ch;
 
-  // Therapeutic / "good" band, drawn behind the data.
   const band = opts.goodBand
     ? `<rect x="${padL}" y="${y(opts.goodBand.max).toFixed(1)}" width="${cw}" height="${(y(opts.goodBand.min) - y(opts.goodBand.max)).toFixed(1)}" fill="${SUCCESS_BG}" opacity="0.5"/>`
     : '';
 
-  // Y-axis: 4 gridlines + labels.
   const yTicks = [0, 0.33, 0.66, 1]
     .map((p) => {
       const v = yMin + p * yRange;
@@ -109,15 +101,10 @@ function svgChart(series: Series[], opts: ChartOpts = {}): string {
     })
     .join('');
 
-  // X-axis: evenly-spaced date ticks across the timestamp range. Format
-  // depends on the span — short ranges show day+month, longer ones show
-  // month+year so labels don't all collapse to the same string.
+  // Switch to DD.MM.YY when spans exceed 2 years so the same day+month
+  // appearing in different years remains distinguishable.
   const spanDays = (tMax - tMin) / 86_400_000;
-  const fmtTick = (ts: number) => {
-    const d = dayjs(ts);
-    if (spanDays <= 730) return d.format('DD.MM');
-    return d.format('DD.MM.YY');
-  };
+  const fmtTick = (ts: number) => dayjs(ts).format(spanDays <= 730 ? 'DD.MM' : 'DD.MM.YY');
   const tickFractions = [0, 0.25, 0.5, 0.75, 1];
   const xLabels = tickFractions
     .map((p, i) => {
@@ -131,15 +118,14 @@ function svgChart(series: Series[], opts: ChartOpts = {}): string {
   const lines = series
     .map((s) => {
       if (s.samples.length === 0) return '';
-      const pts = s.samples.map((p) => `${x(p.ts).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
+      const pts = s.samples.map((p) => `${x(p.timestamp).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
       const dots = s.samples
-        .map((p) => `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2" fill="${s.color}"/>`)
+        .map((p) => `<circle cx="${x(p.timestamp).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2" fill="${s.color}"/>`)
         .join('');
       return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="1.6"/>${dots}`;
     })
     .join('');
 
-  // Legend (only when more than one series).
   const legend =
     series.length > 1
       ? `<div class="legend">${series
@@ -157,21 +143,20 @@ function svgChart(series: Series[], opts: ChartOpts = {}): string {
 
 function statsLine(values: number[], unit = ''): string {
   if (values.length === 0) return '<span class="muted">brak danych</span>';
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const min = minOf(values);
+  const max = maxOf(values);
   const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  return `min <b>${min.toFixed(unit === '' && Number.isInteger(min) ? 0 : 1)}${unit}</b> · max <b>${max.toFixed(unit === '' && Number.isInteger(max) ? 0 : 1)}${unit}</b> · śr. <b>${avg.toFixed(1)}${unit}</b> · ${values.length} pomiarów`;
+  const intMode = unit === '' && Number.isInteger(min) && Number.isInteger(max);
+  const fmt = (v: number) => v.toFixed(intMode ? 0 : 1);
+  return `min <b>${fmt(min)}${unit}</b> · max <b>${fmt(max)}${unit}</b> · śr. <b>${avg.toFixed(1)}${unit}</b> · ${values.length} pomiarów`;
 }
 
-function pickSamples<T extends { date: string }>(entries: T[], field: keyof T): Sample[] {
-  return entries
-    .filter((e) => typeof e[field] === 'number' && (e[field] as unknown) !== null)
-    .map((e) => ({
-      value: e[field] as unknown as number,
-      ts: new Date(e.date).getTime(),
-      label: dayjs(e.date).format('DD.MM'),
-    }))
-    .sort((a, b) => a.ts - b.ts);
+function chartCard(title: string, unit: string, series: Series[], opts: ChartOpts, statsHtml: string): string {
+  return `<div class="chart-card">
+    <div class="chart-title">${esc(title)} <span class="muted">${esc(unit)}</span></div>
+    ${svgChart(series, opts)}
+    <div class="chart-stats">${statsHtml}</div>
+  </div>`;
 }
 
 function renderProfile(p: PatientProfileData): string {
@@ -269,7 +254,7 @@ function renderMedications(leki: Lek[]): string {
         total > 0
           ? `<div class="med-stats">
                <span>Pierwsza: <b>${esc(fmtDate(first))}</b></span>
-               <span>Ostatnia: <b>${esc(fmtDateTime(last))}</b></span>
+               <span>Ostatnia: <b>${esc(formatDateTime(last))}</b></span>
                <span>Łącznie: <b>${total}</b> ${total === 1 ? 'podanie' : total < 5 ? 'podania' : 'podań'}</span>
              </div>
              <div class="med-recent"><span class="med-recent-label">Ostatnie:</span> ${recentLine}${total > 5 ? ` · <span class="muted">… +${total - 5}</span>` : ''}</div>`
@@ -288,13 +273,10 @@ function renderMeasurements(entries: MeasurementEntry[]): string {
   if (entries.length === 0) {
     return `<h2>Pomiary</h2><p class="muted">Brak zapisanych pomiarów.</p>`;
   }
-  // Sort newest-first for the table, oldest-first for charts.
   const desc = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  // Charts are bounded to the last 6 months so older outliers don't squash
-  // the y-axis and the time-density stays readable. The recent-entries
-  // table below uses the full history.
-  const sixMonthsAgo = Date.now() - 180 * 86_400_000;
-  const chartEntries = entries.filter((e) => new Date(e.date).getTime() >= sixMonthsAgo);
+  // Charts windowed to 6 months so old outliers don't squash the y-axis;
+  // the table below uses the full history.
+  const chartEntries = filterByRange(entries, '6m');
   const sat = pickSamples(chartEntries, 'saturacja');
   const tet = pickSamples(chartEntries, 'tetno');
   const sys = pickSamples(chartEntries, 'cisnienie_skurczowe');
@@ -303,38 +285,37 @@ function renderMeasurements(entries: MeasurementEntry[]): string {
 
   const recent = desc.slice(0, 30);
   const rest = desc.length - recent.length;
+  const cisStats = sys.length > 0
+    ? `sk. ${statsLine(sys.map((s) => s.value))}<br/>roz. ${statsLine(dia.map((s) => s.value))}`
+    : '<span class="muted">brak danych</span>';
+
+  const charts = [
+    chartCard('Tętno', '/min',
+      [{ name: 'Tętno', color: BRAND_RED, samples: tet }],
+      { goodBand: { min: 60, max: 100 } },
+      statsLine(tet.map((s) => s.value))),
+    chartCard('Saturacja', '%',
+      [{ name: 'Saturacja', color: BRAND_BLUE, samples: sat }],
+      { yMin: 80, yMax: 100, goodBand: { min: 95, max: 100 } },
+      statsLine(sat.map((s) => s.value), '%')),
+    chartCard('Ciśnienie', 'mmHg',
+      [
+        { name: 'Skurczowe', color: BRAND_RED, samples: sys },
+        { name: 'Rozkurczowe', color: BRAND_BLUE, samples: dia },
+      ],
+      { goodBand: { min: 60, max: 140 } },
+      cisStats),
+    chartCard('Diureza', 'ml',
+      [{ name: 'Diureza', color: '#7c3aed', samples: diu }],
+      {},
+      statsLine(diu.map((s) => s.value), ' ml')),
+  ].join('');
 
   return `<h2>Pomiary</h2>
     <p class="muted small">Wykresy: ostatnie 6 miesięcy.</p>
+    ${charts}
 
-    <div class="chart-card">
-      <div class="chart-title">Tętno <span class="muted">/min</span></div>
-      ${svgChart([{ name: 'Tętno', color: BRAND_RED, samples: tet }], { goodBand: { min: 60, max: 100 } })}
-      <div class="chart-stats">${statsLine(tet.map((s) => s.value))}</div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Saturacja <span class="muted">%</span></div>
-      ${svgChart([{ name: 'Saturacja', color: BRAND_BLUE, samples: sat }], { yMin: 80, yMax: 100, goodBand: { min: 95, max: 100 } })}
-      <div class="chart-stats">${statsLine(sat.map((s) => s.value), '%')}</div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Ciśnienie <span class="muted">mmHg</span></div>
-      ${svgChart(
-        [
-          { name: 'Skurczowe', color: BRAND_RED, samples: sys },
-          { name: 'Rozkurczowe', color: BRAND_BLUE, samples: dia },
-        ],
-        { goodBand: { min: 60, max: 140 } },
-      )}
-      <div class="chart-stats">${sys.length > 0 ? `sk. ${statsLine(sys.map((s) => s.value))}<br/>roz. ${statsLine(dia.map((s) => s.value))}` : '<span class="muted">brak danych</span>'}</div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Diureza <span class="muted">ml</span></div>
-      ${svgChart([{ name: 'Diureza', color: '#7c3aed', samples: diu }])}
-      <div class="chart-stats">${statsLine(diu.map((s) => s.value), ' ml')}</div>
-    </div>
-
-    <h3>Ostatnie pomiary${rest > 0 ? ` <span class="muted">(${recent.length} z ${desc.length})</span>` : ''}</h3>
+    <h3 class="page-break-before">Ostatnie pomiary${rest > 0 ? ` <span class="muted">(${recent.length} z ${desc.length})</span>` : ''}</h3>
     <table class="data">
       <thead>
         <tr>
@@ -354,7 +335,7 @@ function renderMeasurements(entries: MeasurementEntry[]): string {
                 ? `${e.cisnienie_skurczowe}/${e.cisnienie_rozkurczowe}`
                 : '';
             return `<tr>
-              <td>${esc(fmtDateTime(e.date))}</td>
+              <td>${esc(formatDateTime(e.date))}</td>
               <td>${e.tetno ?? ''}</td>
               <td>${e.saturacja ?? ''}</td>
               <td>${esc(cis)}</td>
@@ -374,26 +355,17 @@ function renderInr(entries: InrEntry[]): string {
     return `<h2>INR</h2><p class="muted">Brak zapisanych pomiarów INR.</p>`;
   }
   const desc = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const sixMonthsAgo = Date.now() - 180 * 86_400_000;
-  const samples: Sample[] = entries
-    .filter((e) => new Date(e.date).getTime() >= sixMonthsAgo)
-    .map((e) => ({
-      value: e.inr,
-      ts: new Date(e.date).getTime(),
-      label: dayjs(e.date).format('DD.MM'),
-    }))
-    .sort((a, b) => a.ts - b.ts);
+  const samples = pickInrSamples(filterByRange(entries, '6m'));
 
   const recent = desc.slice(0, 30);
   const rest = desc.length - recent.length;
 
   return `<h2>INR</h2>
     <p class="muted small">Wykres: ostatnie 6 miesięcy.</p>
-    <div class="chart-card">
-      <div class="chart-title">Pomiary INR <span class="muted">(zakres terapeutyczny 2,0 – 3,5)</span></div>
-      ${svgChart([{ name: 'INR', color: BRAND_BLUE, samples }], { yMin: 0.5, yMax: 5, goodBand: { min: 2, max: 3.5 }, height: 120 })}
-      <div class="chart-stats">${statsLine(samples.map((s) => s.value))}</div>
-    </div>
+    ${chartCard('Pomiary INR', '(zakres terapeutyczny 2,0 – 3,5)',
+      [{ name: 'INR', color: BRAND_BLUE, samples }],
+      { yMin: 0.5, yMax: 5, goodBand: { min: 2, max: 3.5 }, height: 120 },
+      statsLine(samples.map((s) => s.value)))}
 
     <h3>Ostatnie pomiary${rest > 0 ? ` <span class="muted">(${recent.length} z ${desc.length})</span>` : ''}</h3>
     <table class="data">
@@ -478,6 +450,7 @@ function buildHtml(args: {
 
   section { page-break-inside: avoid; }
   section + section { page-break-before: auto; }
+  .page-break-before { page-break-before: always; }
 </style>
 </head>
 <body>
@@ -505,28 +478,13 @@ export async function generatePatientPdf(getToken: TokenProvider): Promise<void>
     api.getInr().catch(() => ({})),
   ]);
 
-  const profile = {
-    imie_nazwisko: '',
-    grupa_krwi: '',
-    wada_serca: [],
-    zaburzenia_rytmu: false,
-    zaburzenia_rytmu_typ: '',
-    zaburzenia_rytmu_opis: '',
-    rozrusznik_serca: false,
-    rozrusznik_serca_typ: '',
-    przebyte_operacje: [],
-    powiklania: false,
-    powiklania_opis: '',
-    dodatkowe_choroby: false,
-    dodatkowe_choroby_opis: '',
-    zespoly_genetyczne: false,
-    zespoly_genetyczne_typ: '',
-    zespoly_genetyczne_opis: '',
+  const profile: PatientProfileData = {
+    ...EMPTY_PATIENT_PROFILE,
     ...(profileResp as Partial<PatientProfileData>),
-  } as PatientProfileData;
+  };
 
-  // Normalise legacy string[] history into DoseEntry[] so the renderer can
-  // treat all rows uniformly.
+  // Legacy patient records have historia_dawek as string[]; normalise so
+  // the renderer can treat every row as DoseEntry.
   const leki: Lek[] = ((medsResp as { leki?: Lek[] }).leki ?? []).map((l) => ({
     ...l,
     historia_dawek: normalizeHistory((l as { historia_dawek?: unknown }).historia_dawek),
