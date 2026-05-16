@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
-import { Text, Button, Card, ActivityIndicator, Snackbar, Banner } from 'react-native-paper';
+import { Text, Button, Card, ActivityIndicator, Banner } from 'react-native-paper';
 import { useAuth } from '../auth/AuthContext';
 import { isGoogleSignInConfigured } from '../auth/firebase';
 import { listDevUsers } from '../api/client';
 import { DevUser } from '../types/api';
+import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
 export default function LoginScreen() {
@@ -13,7 +14,7 @@ export default function LoginScreen() {
   const [loadingDev, setLoadingDev] = useState(true);
   const [devError, setDevError] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
-  const [snackbar, setSnackbar] = useState<string | null>(null);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar(4000);
 
   useEffect(() => {
     (async () => {
@@ -33,14 +34,14 @@ export default function LoginScreen() {
 
   const handleGoogleSignIn = async () => {
     if (!isGoogleSignInConfigured) {
-      setSnackbar('Brak googleWebClientId w app.json -> extra.');
+      showSnackbar('Brak googleWebClientId w app.json -> extra.');
       return;
     }
     setSigningIn(true);
     try {
       await signInWithGoogle();
     } catch (e) {
-      setSnackbar(e instanceof Error ? `Logowanie nieudane: ${e.message}` : 'Logowanie nieudane');
+      showSnackbar(e instanceof Error ? `Logowanie nieudane: ${e.message}` : 'Logowanie nieudane');
     } finally {
       setSigningIn(false);
     }
@@ -117,13 +118,7 @@ export default function LoginScreen() {
         </Card.Content>
       </Card>
 
-      <Snackbar
-        visible={snackbar !== null}
-        onDismiss={() => setSnackbar(null)}
-        duration={4000}
-      >
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </ScrollView>
   );
 }

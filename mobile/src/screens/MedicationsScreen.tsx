@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Switch,
   ActivityIndicator,
-  Snackbar,
   IconButton,
   Card,
   Divider,
@@ -21,10 +21,14 @@ import {
   formatNextDose,
   formatHistoryEntry,
   isDone,
-  frequencyLabel,
 } from '../lib/medications';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
+import { useSnackbar } from '../hooks/useSnackbar';
+import {
+  ensureNotificationPermission,
+  reconcileDoseReminders,
+} from '../lib/notifications';
 import { colors } from '../theme/colors';
 
 const CZESTOTLIWOSCI_LABELS = CZESTOTLIWOSCI.map((c) => c.label);
@@ -38,16 +42,20 @@ export default function MedicationsScreen() {
   const { getToken } = useAuth();
   const [leki, setLeki] = useState<Lek[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shortlistOpen, setShortlistOpen] = useState(true);
-  const [snackbar, setSnackbar] = useState<string | null>(null);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   const load = useCallback(async () => {
     try {
       const api = makeApi(getToken);
       const data = await api.getMedications();
       if (data && Array.isArray(data.leki)) {
-        setLeki(data.leki.map((l) => ({ ...emptyLek(), ...l })));
+        const next = data.leki.map((l) => ({ ...emptyLek(), ...l }));
+        setLeki(next);
+        // Align OS-scheduled dose reminders with the loaded state.
+        reconcileDoseReminders(next).catch(() => { /* best effort */ });
       }
     } catch {
       // first visit
@@ -58,12 +66,27 @@ export default function MedicationsScreen() {
 
   useEffect(() => { load(); }, [load]);
 
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
+
   const updateLek = <K extends keyof Lek>(index: number, field: K, value: Lek[K]) => {
     setLeki((prev) => {
       const next = [...prev];
       next[index] = { ...next[index], [field]: value };
       return next;
     });
+    // User enables tracking → prompt for notification permission so they actually
+    // get reminders once they save. No-op if already granted.
+    if (field === 'sledzenie' && value === true) {
+      ensureNotificationPermission().then((granted) => {
+        if (!granted) {
+          showSnackbar('Powiadomienia są wyłączone — włącz je w ustawieniach systemowych, aby dostawać przypomnienia.');
+        }
+      });
+    }
   };
 
   const addLek = () => setLeki((prev) => [...prev, emptyLek()]);
@@ -74,9 +97,12 @@ export default function MedicationsScreen() {
     try {
       const api = makeApi(getToken);
       await api.putMedications({ leki: updated });
-      setSnackbar(successMsg);
+      // Realign OS dose reminders to match persisted state — covers all of:
+      // mark-given, undo, override, sledzenie toggle, frequency change, delete.
+      reconcileDoseReminders(updated).catch(() => { /* best effort */ });
+      showSnackbar(successMsg);
     } catch (e) {
-      setSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
+      showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
     } finally {
       setSaving(false);
     }
@@ -131,7 +157,7 @@ export default function MedicationsScreen() {
 
   return (
     <View style={styles.page}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <PageScroll refreshing={refreshing} onRefresh={refresh}>
 
         {tracked.length > 0 && (
           <Card style={styles.shortlist} mode="elevated">
@@ -197,11 +223,9 @@ export default function MedicationsScreen() {
         <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving} style={styles.saveBtn}>
           Zapisz leki
         </Button>
-      </ScrollView>
+      </PageScroll>
 
-      <Snackbar visible={snackbar !== null} onDismiss={() => setSnackbar(null)} duration={3000}>
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </View>
   );
 }
@@ -420,7 +444,6 @@ function markGivenNowOrShowPicker(
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
-  scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
 
   shortlist: { marginBottom: 16, backgroundColor: colors.cardBg },

@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Pressable, Share } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Pressable, Share } from 'react-native';
+import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Switch,
   ActivityIndicator,
-  Snackbar,
   IconButton,
   Card,
-  Dialog,
-  Portal,
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { WrappedChip } from '../components/WrappedChip';
@@ -32,24 +30,32 @@ import {
 import { SectionCard } from '../components/SectionCard';
 import { MultiSelectModal } from '../components/MultiSelectModal';
 import { SelectMenu } from '../components/SelectMenu';
+import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
 const emptyOp: Operacja = { typ: '', data: '', czas_it: '' };
+
+type SaveStatus = 'idle' | 'saving' | 'saved';
 
 export default function PatientProfileScreen() {
   const { getToken } = useAuth();
   const navigation = useNavigation();
   const [profile, setProfile] = useState<PatientProfileData>(EMPTY_PATIENT_PROFILE);
   const [fetching, setFetching] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [wadyOpen, setWadyOpen] = useState(false);
-  const [snackbar, setSnackbar] = useState<string | null>(null);
-
-  const [shareDialog, setShareDialog] = useState<{ open: boolean; link: string; loading: boolean }>({
-    open: false,
-    link: '',
-    loading: false,
-  });
+  const creatingInviteRef = useRef(false);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
+  const showSnackbarRef = useRef(showSnackbar);
+  showSnackbarRef.current = showSnackbar;
+  const getTokenRef = useRef(getToken);
+  getTokenRef.current = getToken;
+  // Track the most-recently-edited profile so we can detect "user typed while
+  // save was in flight" and avoid clearing the dirty flag in that case.
+  const profileRef = useRef(profile);
+  profileRef.current = profile;
 
   const load = useCallback(async () => {
     try {
@@ -71,56 +77,72 @@ export default function PatientProfileScreen() {
 
   useEffect(() => { load(); }, [load]);
 
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
+
+  const updateProfile = (updater: (p: PatientProfileData) => PatientProfileData) => {
+    setDirty(true);
+    setProfile(updater);
+  };
+
   const set = <K extends keyof PatientProfileData>(key: K, value: PatientProfileData[K]) =>
-    setProfile((p) => ({ ...p, [key]: value }));
+    updateProfile((p) => ({ ...p, [key]: value }));
 
   const updateOp = (index: number, field: keyof Operacja, value: string) =>
-    setProfile((p) => {
+    updateProfile((p) => {
       const ops = [...p.przebyte_operacje];
       ops[index] = { ...ops[index], [field]: value };
       return { ...p, przebyte_operacje: ops };
     });
 
   const addOp = () =>
-    setProfile((p) => ({ ...p, przebyte_operacje: [...p.przebyte_operacje, { ...emptyOp }] }));
+    updateProfile((p) => ({ ...p, przebyte_operacje: [...p.przebyte_operacje, { ...emptyOp }] }));
 
   const removeOp = (index: number) =>
-    setProfile((p) => ({ ...p, przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index) }));
+    updateProfile((p) => ({ ...p, przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index) }));
 
-  const save = async () => {
-    setSaving(true);
-    try {
-      const api = makeApi(getToken);
-      await api.putPatientProfile(profile);
-      setSnackbar('Profil zapisany.');
-    } catch (e) {
-      setSnackbar(e instanceof Error ? `Błąd: ${e.message}` : 'Błąd podczas zapisywania.');
-    } finally {
-      setSaving(false);
-    }
-  };
+  // Debounced autosave: 1s after last edit. Snapshots profile at save start;
+  // only clears dirty if no further edits happened during the round-trip.
+  useEffect(() => {
+    if (!dirty) return;
+    const t = setTimeout(async () => {
+      const snapshot = profile;
+      setSaveStatus('saving');
+      try {
+        const api = makeApi(getToken);
+        await api.putPatientProfile(snapshot);
+        if (profileRef.current === snapshot) setDirty(false);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 1500);
+      } catch (e) {
+        showSnackbar(e instanceof Error ? `Błąd zapisu: ${e.message}` : 'Błąd zapisu');
+        setSaveStatus('idle');
+      }
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [dirty, profile, getToken, showSnackbar]);
 
-  const createShareLink = async () => {
-    setShareDialog({ open: true, link: '', loading: true });
+  // Stable callback captured via refs so the header IconButton sees the latest
+  // showSnackbar / getToken without re-running setOptions on every render.
+  const shareInviteLink = useCallback(async () => {
+    if (creatingInviteRef.current) return;
+    creatingInviteRef.current = true;
     try {
-      const api = makeApi(getToken);
+      const api = makeApi(getTokenRef.current);
       const { token } = await api.createInvite();
       const link = `https://wyjatkoweserca.pl/app/accept?token=${token}`;
-      setShareDialog({ open: true, link, loading: false });
+      await Share.share({
+        message: `Dołącz do mojego profilu w aplikacji Wyjątkowe Serca: ${link}\n\nLink wygasa po 7 dniach.`,
+      });
     } catch (e) {
-      setShareDialog({ open: false, link: '', loading: false });
-      setSnackbar(e instanceof Error ? e.message : 'Nie udało się wygenerować linku');
+      showSnackbarRef.current(e instanceof Error ? e.message : 'Nie udało się wygenerować linku');
+    } finally {
+      creatingInviteRef.current = false;
     }
-  };
-
-  const shareLink = async () => {
-    if (!shareDialog.link) return;
-    try {
-      await Share.share({ message: shareDialog.link });
-    } catch {
-      // ignore
-    }
-  };
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -129,7 +151,7 @@ export default function PatientProfileScreen() {
           <IconButton
             icon="account-plus"
             iconColor={colors.red}
-            onPress={createShareLink}
+            onPress={shareInviteLink}
             accessibilityLabel="Dołącz opiekuna"
             size={22}
           />
@@ -137,7 +159,7 @@ export default function PatientProfileScreen() {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, shareInviteLink]);
 
   if (fetching) {
     return (
@@ -149,7 +171,11 @@ export default function PatientProfileScreen() {
 
   return (
     <View style={styles.page}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <PageScroll refreshing={refreshing} onRefresh={refresh}>
+        <View style={styles.statusBar}>
+          {saveStatus === 'saving' && <Text style={styles.statusSaving}>Zapisywanie…</Text>}
+          {saveStatus === 'saved' && <Text style={styles.statusSaved}>Zapisane ✓</Text>}
+        </View>
         <SectionCard title="Podstawowe informacje">
           <TextInput
             mode="outlined"
@@ -329,11 +355,7 @@ export default function PatientProfileScreen() {
             </>
           )}
         </SectionCard>
-
-        <Button mode="contained" onPress={save} loading={saving} disabled={saving} style={styles.saveBtn}>
-          Zapisz profil
-        </Button>
-      </ScrollView>
+      </PageScroll>
 
       <MultiSelectModal
         visible={wadyOpen}
@@ -344,36 +366,7 @@ export default function PatientProfileScreen() {
         title="Wady serca"
       />
 
-      <Portal>
-        <Dialog visible={shareDialog.open} onDismiss={() => setShareDialog({ open: false, link: '', loading: false })}>
-          <Dialog.Title>Dołącz opiekuna</Dialog.Title>
-          <Dialog.Content>
-            {shareDialog.loading ? (
-              <ActivityIndicator color={colors.red} />
-            ) : (
-              <>
-                <Text style={{ marginBottom: 12, color: colors.grey2, fontSize: 13 }}>
-                  Wyślij ten link nowemu opiekunowi. Po zalogowaniu uzyska pełny dostęp do
-                  profilu. Link wygaśnie po 7 dniach.
-                </Text>
-                <View style={styles.linkBox}>
-                  <Text selectable style={styles.linkText}>{shareDialog.link}</Text>
-                </View>
-              </>
-            )}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setShareDialog({ open: false, link: '', loading: false })}>Zamknij</Button>
-            <Button mode="contained" onPress={shareLink} disabled={!shareDialog.link}>
-              Udostępnij
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-
-      <Snackbar visible={snackbar !== null} onDismiss={() => setSnackbar(null)} duration={3000}>
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </View>
   );
 }
@@ -389,7 +382,6 @@ function SwitchRow({ value, onChange }: { value: boolean; onChange: (v: boolean)
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
-  scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
   headerRight: { flexDirection: 'row', alignItems: 'center' },
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -399,7 +391,7 @@ const styles = StyleSheet.create({
   opHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   opNum: { fontWeight: '600', color: colors.grey1 },
   opField: { marginBottom: 12 },
-  saveBtn: { marginTop: 8, paddingVertical: 6 },
-  linkBox: { backgroundColor: '#f5f5f5', padding: 12, borderRadius: 8 },
-  linkText: { fontFamily: 'monospace', fontSize: 12, color: colors.grey1 },
+  statusBar: { minHeight: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  statusSaving: { color: colors.grey2, fontSize: 12 },
+  statusSaved: { color: colors.successFg, fontSize: 12, fontWeight: '600' },
 });

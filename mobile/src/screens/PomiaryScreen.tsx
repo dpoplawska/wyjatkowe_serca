@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Card,
   ActivityIndicator,
-  Snackbar,
   IconButton,
   Divider,
 } from 'react-native-paper';
@@ -33,6 +33,7 @@ import { MetricChip } from '../components/MetricChip';
 import { MiniLineChart } from '../components/MiniLineChart';
 import { DateTimePickerField } from '../components/DateTimePickerField';
 import { TabScreenNav } from '../navigation/types';
+import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
 export default function PomiaryScreen() {
@@ -41,6 +42,7 @@ export default function PomiaryScreen() {
   const [entries, setEntries] = useState<MeasurementEntry[]>([]);
   const [inrEntries, setInrEntries] = useState<InrEntry[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [saturacja, setSaturacja] = useState('');
@@ -57,7 +59,7 @@ export default function PomiaryScreen() {
   const [historyOpen, setHistoryOpen] = useState(true);
   const [inrOpen, setInrOpen] = useState(true);
 
-  const [snackbar, setSnackbar] = useState<string | null>(null);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   const load = useCallback(async () => {
     try {
@@ -74,14 +76,20 @@ export default function PomiaryScreen() {
 
   useEffect(() => { load(); }, [load]);
 
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
+
   const persist = async (updated: MeasurementEntry[], successMsg: string) => {
     setSaving(true);
     try {
       const api = makeApi(getToken);
       await api.putMeasurements({ entries: updated });
-      setSnackbar(successMsg);
+      showSnackbar(successMsg);
     } catch (e) {
-      setSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
+      showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
     } finally {
       setSaving(false);
     }
@@ -137,7 +145,7 @@ export default function PomiaryScreen() {
 
   return (
     <View style={styles.page}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <PageScroll refreshing={refreshing} onRefresh={refresh}>
 
         <Card style={styles.card} mode="elevated">
           <Card.Content>
@@ -342,11 +350,9 @@ export default function PomiaryScreen() {
             </>
           )}
         </View>
-      </ScrollView>
+      </PageScroll>
 
-      <Snackbar visible={snackbar !== null} onDismiss={() => setSnackbar(null)} duration={3000}>
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </View>
   );
 }
@@ -381,7 +387,6 @@ function RangePicker({ range, onChange }: { range: ChartRange; onChange: (r: Cha
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
-  scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
 
   card: { marginBottom: 12, backgroundColor: colors.cardBg },

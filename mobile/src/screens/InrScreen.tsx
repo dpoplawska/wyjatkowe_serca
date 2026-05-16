@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { PageScroll } from '../components/PageScroll';
 import {
   Text,
   TextInput,
   Button,
   Card,
   ActivityIndicator,
-  Snackbar,
   IconButton,
   Divider,
 } from 'react-native-paper';
@@ -14,6 +14,7 @@ import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { InrEntry } from '../types/api';
 import { calculateInr, getInterpretation, formatInrDate } from '../lib/inr';
+import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
 const REFERENCE_RANGES = [
@@ -31,6 +32,7 @@ export default function InrScreen() {
   const { getToken } = useAuth();
   const [history, setHistory] = useState<InrEntry[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [pt, setPt] = useState('');
@@ -39,7 +41,7 @@ export default function InrScreen() {
   const [note, setNote] = useState('');
   const [result, setResult] = useState<number | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [snackbar, setSnackbar] = useState<string | null>(null);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   const load = useCallback(async () => {
     try {
@@ -54,6 +56,12 @@ export default function InrScreen() {
   }, [getToken]);
 
   useEffect(() => { load(); }, [load]);
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
 
   const ptVal = parseFloat(pt);
   const ptNormalVal = parseFloat(ptNormal);
@@ -70,9 +78,9 @@ export default function InrScreen() {
     try {
       const api = makeApi(getToken);
       await api.putInr({ entries });
-      setSnackbar(successMsg);
+      showSnackbar(successMsg);
     } catch (e) {
-      setSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
+      showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
     } finally {
       setSaving(false);
     }
@@ -115,7 +123,7 @@ export default function InrScreen() {
 
   return (
     <View style={styles.page}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <PageScroll refreshing={refreshing} onRefresh={refresh}>
 
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
@@ -249,18 +257,15 @@ export default function InrScreen() {
             })}
           </View>
         )}
-      </ScrollView>
+      </PageScroll>
 
-      <Snackbar visible={snackbar !== null} onDismiss={() => setSnackbar(null)} duration={3000}>
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
-  scroll: { padding: 16, paddingBottom: 48 },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
 
   infoBox: { backgroundColor: colors.infoBg, borderRadius: 10, padding: 14, marginBottom: 12 },

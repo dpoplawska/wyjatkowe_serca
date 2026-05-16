@@ -35,7 +35,14 @@
       "expo-font",
       "@react-native-google-signin/google-signin",
       "@react-native-firebase/app",
-      "@react-native-firebase/auth"
+      "@react-native-firebase/auth",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#EC1A3B"
+        }
+      ]
     ],
     "extra": {
       "apiUrl": "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app",

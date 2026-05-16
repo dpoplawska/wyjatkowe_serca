@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Button, Card, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { Text, Button, Card, ActivityIndicator } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { RootStackParamList, RootStackNav } from '../navigation/types';
+import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
 type R = RouteProp<RootStackParamList, 'AcceptInvite'>;
@@ -19,7 +20,7 @@ export default function AcceptInviteScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [snackbar, setSnackbar] = useState<string | null>(null);
+  const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   useEffect(() => {
     if (!user || !token) return;
@@ -57,10 +58,10 @@ export default function AcceptInviteScreen() {
     try {
       const api = makeApi(getToken);
       await api.acceptInvite(token);
-      setSnackbar('Dostęp przyznany');
+      showSnackbar('Dostęp przyznany');
       setTimeout(() => navigation.replace('Main'), 800);
     } catch (e) {
-      setSnackbar(e instanceof Error ? e.message : 'Błąd');
+      showSnackbar(e instanceof Error ? e.message : 'Błąd');
     } finally {
       setSubmitting(false);
     }
@@ -95,9 +96,7 @@ export default function AcceptInviteScreen() {
         </Card>
       ) : null}
 
-      <Snackbar visible={snackbar !== null} onDismiss={() => setSnackbar(null)} duration={3000}>
-        {snackbar ?? ''}
-      </Snackbar>
+      {snackbarEl}
     </View>
   );
 }
