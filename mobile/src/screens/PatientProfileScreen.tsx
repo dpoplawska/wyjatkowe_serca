@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Pressable, Share, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Share } from 'react-native';
 import { PageScroll } from '../components/PageScroll';
+import { confirmDelete } from '../lib/confirm';
 import {
   Text,
   TextInput,
@@ -32,20 +33,10 @@ import { MultiSelectModal } from '../components/MultiSelectModal';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { parseIsoDate, toIsoDate, newId } from '../lib/format';
 import { colors } from '../theme/colors';
 
-function parseIsoDate(s: string): Date | null {
-  if (!s) return null;
-  const d = new Date(`${s}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function toIsoDate(d: Date): string {
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-
-const emptyOp: Operacja = { typ: '', data: '', czas_it: '' };
+const emptyOp = (): Operacja => ({ id: newId(), typ: '', data: '', czas_it: '' });
 
 type SaveStatus = 'idle' | 'saving' | 'saved';
 
@@ -78,10 +69,15 @@ export default function PatientProfileScreen() {
         if (typeof normalized.wada_serca === 'string') {
           normalized.wada_serca = normalized.wada_serca ? [normalized.wada_serca] : [];
         }
+        if (Array.isArray(normalized.przebyte_operacje)) {
+          normalized.przebyte_operacje = normalized.przebyte_operacje.map(
+            (op) => ({ ...op, id: op.id ?? newId() }),
+          );
+        }
         setProfile({ ...EMPTY_PATIENT_PROFILE, ...(normalized as Partial<PatientProfileData>) });
       }
     } catch {
-      // first visit — leave defaults
+      // First-visit empty response or transient network blip — keep defaults.
     } finally {
       setFetching(false);
     }
@@ -111,21 +107,17 @@ export default function PatientProfileScreen() {
     });
 
   const addOp = () =>
-    updateProfile((p) => ({ ...p, przebyte_operacje: [...p.przebyte_operacje, { ...emptyOp }] }));
+    updateProfile((p) => ({ ...p, przebyte_operacje: [...p.przebyte_operacje, emptyOp()] }));
 
   const removeOp = (index: number) => {
-    Alert.alert('Usunąć operację?', 'Tej operacji nie można cofnąć.', [
-      { text: 'Anuluj', style: 'cancel' },
-      {
-        text: 'Usuń',
-        style: 'destructive',
-        onPress: () =>
-          updateProfile((p) => ({
-            ...p,
-            przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index),
-          })),
-      },
-    ]);
+    confirmDelete({
+      title: 'Usunąć operację?',
+      onConfirm: () =>
+        updateProfile((p) => ({
+          ...p,
+          przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index),
+        })),
+    });
   };
 
   // Debounced autosave: 1s after last edit. Snapshots profile at save start;
@@ -174,7 +166,7 @@ export default function PatientProfileScreen() {
         <View style={styles.headerRight}>
           <IconButton
             icon="account-plus"
-            iconColor={colors.red}
+            iconColor={colors.blue}
             onPress={shareInviteLink}
             accessibilityLabel="Dołącz opiekuna"
             size={22}
@@ -202,6 +194,7 @@ export default function PatientProfileScreen() {
             label="Imię i nazwisko"
             value={profile.imie_nazwisko}
             onChangeText={(v) => set('imie_nazwisko', v)}
+            multiline
           />
 
           <SelectMenu
@@ -278,7 +271,7 @@ export default function PatientProfileScreen() {
 
         <SectionCard title="Przebyte operacje">
           {profile.przebyte_operacje.map((op, i) => (
-            <Card key={i} style={styles.opCard} mode="outlined">
+            <Card key={op.id ?? i} style={styles.opCard} mode="outlined">
               <Card.Content>
                 <View style={styles.opHeader}>
                   <Text style={styles.opNum}>Operacja {i + 1}</Text>
@@ -311,7 +304,7 @@ export default function PatientProfileScreen() {
               </Card.Content>
             </Card>
           ))}
-          <Button mode="outlined" icon="plus-circle-outline" onPress={addOp} textColor={colors.red} style={{ borderColor: colors.red, borderStyle: 'dashed', alignSelf: 'flex-start' }}>
+          <Button mode="outlined" icon="plus-circle-outline" onPress={addOp} textColor={colors.blue} style={{ borderColor: colors.blue, borderStyle: 'dashed', alignSelf: 'flex-start' }}>
             Dodaj operację
           </Button>
         </SectionCard>
@@ -396,7 +389,7 @@ function SwitchRow({ value, onChange }: { value: boolean; onChange: (v: boolean)
   return (
     <Pressable style={styles.switchRow} onPress={() => onChange(!value)}>
       <Text style={styles.switchLabel}>{value ? 'Tak' : 'Nie'}</Text>
-      <Switch value={value} onValueChange={onChange} color={colors.red} />
+      <Switch value={value} onValueChange={onChange} />
     </Pressable>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Pressable, Alert, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { PageScroll } from '../components/PageScroll';
+import { confirmDelete } from '../lib/confirm';
 import {
   Text,
   TextInput,
@@ -153,18 +154,14 @@ export default function PomiaryScreen() {
   };
 
   const handleDelete = (id: string) => {
-    Alert.alert('Usunąć pomiar?', 'Tej operacji nie można cofnąć.', [
-      { text: 'Anuluj', style: 'cancel' },
-      {
-        text: 'Usuń',
-        style: 'destructive',
-        onPress: () => {
-          const updated = entries.filter((e) => e.id !== id);
-          setEntries(updated);
-          persist(updated, 'Wpis usunięty.');
-        },
+    confirmDelete({
+      title: 'Usunąć pomiar?',
+      onConfirm: () => {
+        const updated = entries.filter((e) => e.id !== id);
+        setEntries(updated);
+        persist(updated, 'Wpis usunięty.');
       },
-    ]);
+    });
   };
 
   const filteredEntries = useMemo(() => filterByRange(entries, chartRange), [entries, chartRange]);
@@ -299,7 +296,6 @@ export default function PomiaryScreen() {
                   const [h, m] = reminderTime.split(':').map((n) => parseInt(n, 10));
                   const d = new Date();
                   d.setHours(h, m, 0, 0);
-                  // Reuse the field's time-picker plumbing: tap edits time.
                   openTimePicker(d, handleReminderTimeChange);
                 }}
               >
@@ -309,7 +305,6 @@ export default function PomiaryScreen() {
             <Switch
               value={reminderTime !== null}
               onValueChange={toggleReminder}
-              color={colors.blue}
             />
           </Card.Content>
         </Card>
@@ -487,12 +482,12 @@ const styles = StyleSheet.create({
   reminderSub: { fontSize: 12, color: colors.grey2, marginTop: 2 },
 
   metricsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
-  metricBox: { flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 },
-  metricBoxFull: { backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10, marginBottom: 12 },
+  metricBox: { flex: 1, backgroundColor: colors.greyBg, borderRadius: 10, padding: 10 },
+  metricBoxFull: { backgroundColor: colors.greyBg, borderRadius: 10, padding: 10, marginBottom: 12 },
   metricLabel: { fontWeight: '700', fontSize: 13, color: colors.grey1 },
-  metricUnit: { fontSize: 11, color: '#aaa', fontWeight: '600', marginBottom: 6 },
+  metricUnit: { fontSize: 11, color: colors.grey3, fontWeight: '600', marginBottom: 6 },
   bpRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  bpSlash: { fontSize: 20, fontWeight: '700', color: '#bbb' },
+  bpSlash: { fontSize: 20, fontWeight: '700', color: colors.grey3 },
 
   section: { marginBottom: 8 },
   collapseHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 4, marginBottom: 8 },
@@ -506,7 +501,7 @@ const styles = StyleSheet.create({
 
   rangeRow: { flexDirection: 'row', gap: 6, marginBottom: 12, flexWrap: 'wrap' },
   rangeBtn: { borderWidth: 1.5, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 4 },
-  rangeBtnActive: { backgroundColor: colors.red, borderColor: colors.red },
+  rangeBtnActive: { backgroundColor: colors.blue, borderColor: colors.blue },
   rangeBtnText: { fontSize: 12, fontWeight: '600', color: colors.grey2 },
   rangeBtnTextActive: { color: 'white' },
 

@@ -14,7 +14,7 @@ export function WrappedChip({ label, onClose }: Props) {
       <Text style={styles.text}>{label}</Text>
       {onClose && (
         <Pressable onPress={onClose} style={styles.close} hitSlop={8}>
-          <MaterialCommunityIcons name="close-circle" size={18} color={colors.red} />
+          <MaterialCommunityIcons name="close-circle" size={18} color={colors.grey2} />
         </Pressable>
       )}
     </View>
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.redTint,
+    backgroundColor: colors.blueTint,
     borderRadius: 12,
     paddingLeft: 12,
     paddingRight: 6,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    color: colors.red,
+    color: colors.blue,
     fontSize: 13,
     lineHeight: 17,
     marginRight: 6,

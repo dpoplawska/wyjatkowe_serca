@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   search: { marginBottom: 8 },
   list: { maxHeight: 480, marginBottom: 8 },
   row: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 6, borderBottomWidth: 1, borderBottomColor: colors.borderLighter },
-  rowSelected: { backgroundColor: colors.redTint },
+  rowSelected: { backgroundColor: colors.blueTint },
   rowText: { color: colors.grey1, fontSize: 14, lineHeight: 19 },
-  rowTextSelected: { color: colors.red, fontWeight: '700' },
+  rowTextSelected: { color: colors.blue, fontWeight: '700' },
 });

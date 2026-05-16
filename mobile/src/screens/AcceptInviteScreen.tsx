@@ -70,7 +70,7 @@ export default function AcceptInviteScreen() {
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator color={colors.red} />
+        <ActivityIndicator />
       ) : error ? (
         <Card><Card.Content><Text>{error}</Text></Card.Content></Card>
       ) : info ? (
@@ -83,7 +83,7 @@ export default function AcceptInviteScreen() {
                 : 'Otrzymujesz dostęp do profilu pacjenta.'}
             </Text>
             {info.hasExistingData && (
-              <Text style={{ color: colors.red, marginBottom: 12 }}>
+              <Text style={{ color: colors.warningFg, marginBottom: 12 }}>
                 Uwaga: masz już własne dane w aplikacji. Zaakceptowanie zaproszenia
                 spowoduje wyświetlanie danych właściciela zaproszenia. Twoje obecne
                 dane zostaną zachowane, ale niewidoczne.

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Snackbar } from 'react-native-paper';
 
 interface UseSnackbarResult {
@@ -13,13 +13,17 @@ export function useSnackbar(durationMs = 3000): UseSnackbarResult {
   const [message, setMessage] = useState<string | null>(null);
 
   const show = useCallback((msg: string) => setMessage(msg), []);
+  const onDismiss = useCallback(() => setMessage(null), []);
 
-  const element = React.createElement(Snackbar, {
-    visible: message !== null,
-    onDismiss: () => setMessage(null),
-    duration: durationMs,
-    children: message ?? '',
-  });
+  const element = useMemo(
+    () => React.createElement(Snackbar, {
+      visible: message !== null,
+      onDismiss,
+      duration: durationMs,
+      children: message ?? '',
+    }),
+    [message, durationMs, onDismiss],
+  );
 
   return { show, element };
 }

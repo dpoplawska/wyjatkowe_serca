@@ -1,4 +1,6 @@
 import { Lek } from '../types/api';
+import { formatDateTime, newId } from './format';
+import dayjs from 'dayjs';
 
 export const CZESTOTLIWOSCI = [
   { label: 'Co 4 godziny', value: 'co_4h' },
@@ -32,7 +34,7 @@ export function frequencyLabel(value: string): string {
 
 export function emptyLek(): Lek {
   return {
-    id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+    id: newId(),
     nazwa: '',
     data_pierwszej_dawki: '',
     godzina_pierwszej_dawki: '',
@@ -66,22 +68,16 @@ export function getNextDoseTime(lek: Lek): Date | null {
 }
 
 export function formatNextDose(next: Date): string {
-  const now = new Date();
-  const hh = next.getHours().toString().padStart(2, '0');
-  const mm = next.getMinutes().toString().padStart(2, '0');
-  const time = `${hh}:${mm}`;
-  const today = now.toDateString();
-  const nextStr = next.toDateString();
-  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toDateString();
-  if (nextStr === today) return `dziś o ${time}`;
-  if (nextStr === tomorrow) return `jutro o ${time}`;
-  const day = next.getDate().toString().padStart(2, '0');
-  const month = (next.getMonth() + 1).toString().padStart(2, '0');
-  return `${day}.${month} o ${time}`;
+  const d = dayjs(next);
+  const time = d.format('HH:mm');
+  const today = dayjs().startOf('day');
+  const tomorrow = today.add(1, 'day');
+  const dayOf = d.startOf('day');
+  if (dayOf.isSame(today)) return `dziś o ${time}`;
+  if (dayOf.isSame(tomorrow)) return `jutro o ${time}`;
+  return `${d.format('DD.MM')} o ${time}`;
 }
 
 export function formatHistoryEntry(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return formatDateTime(iso);
 }

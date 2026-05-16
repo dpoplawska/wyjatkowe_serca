@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { confirmDelete } from '../lib/confirm';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
@@ -127,14 +128,13 @@ export default function MedicationsScreen() {
 
   const removeLek = (index: number) => {
     const target = leki[index];
-    Alert.alert(
-      'Usunąć lek?',
-      target?.nazwa ? `"${target.nazwa}" zostanie usunięty wraz z historią podań.` : 'Lek wraz z historią podań zostanie usunięty.',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        { text: 'Usuń', style: 'destructive', onPress: () => update(leki.filter((_, i) => i !== index)) },
-      ],
-    );
+    confirmDelete({
+      title: 'Usunąć lek?',
+      message: target?.nazwa
+        ? `"${target.nazwa}" zostanie usunięty wraz z historią podań.`
+        : 'Lek wraz z historią podań zostanie usunięty.',
+      onConfirm: () => update(leki.filter((_, i) => i !== index)),
+    });
   };
 
   const markGiven = (index: number, at?: Date) => {
@@ -160,10 +160,13 @@ export default function MedicationsScreen() {
   };
 
   // Filter to tracked meds, then push finished courses to the bottom so the
-  // user's eye lands on the active reminders first.
+  // user's eye lands on the active reminders first. Carry the original index
+  // so per-row callbacks don't need an O(n) indexOf at render time.
   const tracked = useMemo(() => {
-    const filtered = leki.filter((l) => l.sledzenie);
-    return [...filtered].sort((a, b) => Number(isDone(a)) - Number(isDone(b)));
+    return leki
+      .map((lek, globalIndex) => ({ lek, globalIndex }))
+      .filter(({ lek }) => lek.sledzenie)
+      .sort((a, b) => Number(isDone(a.lek)) - Number(isDone(b.lek)));
   }, [leki]);
 
   if (fetching) {
@@ -187,8 +190,7 @@ export default function MedicationsScreen() {
             </Pressable>
             {shortlistOpen && (
               <View style={styles.shortlistBody}>
-                {tracked.map((lek, i) => {
-                  const globalIndex = leki.indexOf(lek);
+                {tracked.map(({ lek, globalIndex }, i) => {
                   const done = isDone(lek);
                   const next = getNextDoseTime(lek);
                   return (
@@ -305,7 +307,9 @@ function LekCard({
       <Card.Content>
         <View style={styles.lekHeader}>
           <Pressable onPress={() => setCollapsed((v) => !v)} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={styles.lekTitle}>{lek.nazwa || `Lek ${index + 1}`}</Text>
+            <Text style={[styles.lekTitle, { flex: 1 }]} numberOfLines={2}>
+              {lek.nazwa || `Lek ${index + 1}`}
+            </Text>
             <Text style={styles.chevron}>{collapsed ? '▼' : '▲'}</Text>
           </Pressable>
           <IconButton icon="delete-outline" iconColor={colors.red} onPress={onRemove} />
@@ -320,6 +324,7 @@ function LekCard({
                 label="Nazwa leku"
                 value={lek.nazwa}
                 onChangeText={(v) => onChange('nazwa', v)}
+                multiline
               />
 
               <SelectMenu
@@ -358,7 +363,7 @@ function LekCard({
 
               <Pressable style={styles.switchRow} onPress={() => onChange('sledzenie', !lek.sledzenie)}>
                 <Text style={{ color: colors.grey1 }}>Śledzenie harmonogramu</Text>
-                <Switch value={lek.sledzenie} onValueChange={(v) => onChange('sledzenie', v)} color={colors.red} />
+                <Switch value={lek.sledzenie} onValueChange={(v) => onChange('sledzenie', v)} />
               </Pressable>
 
               {lek.sledzenie && done && (
@@ -400,7 +405,7 @@ function LekCard({
                     <Button
                       mode="outlined"
                       icon="pill"
-                      onPress={() => markGivenNowOrShowPicker(setGivenEditing, setGivenDate)}
+                      onPress={() => { setGivenDate(new Date()); setGivenEditing(true); }}
                       textColor={colors.blue}
                       style={{ borderColor: colors.blue }}
                     >
@@ -462,15 +467,6 @@ function LekCard({
   );
 }
 
-// Toggle helper: open the picker pre-filled with "now"
-function markGivenNowOrShowPicker(
-  setOpen: (v: boolean) => void,
-  setDate: (d: Date) => void,
-) {
-  setDate(new Date());
-  setOpen(true);
-}
-
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.greyBg },
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
@@ -481,20 +477,20 @@ const styles = StyleSheet.create({
   chevron: { fontSize: 11, color: colors.grey2 },
   shortlistBody: { borderTopWidth: 1, borderTopColor: colors.borderLight },
   shortlistRow: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, flexWrap: 'wrap' },
-  shortlistRowBorder: { borderTopWidth: 1, borderTopColor: '#f7f7f7' },
+  shortlistRowBorder: { borderTopWidth: 1, borderTopColor: colors.borderLight },
   shortlistName: { flex: 1, fontWeight: '600', color: colors.grey1 },
   shortlistNext: { fontSize: 12, color: colors.grey2 },
   doneLabel: { fontSize: 12, fontWeight: '600', color: colors.successFgAlt, backgroundColor: colors.successBgAlt, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
 
   lekCard: { marginBottom: 12, backgroundColor: colors.cardBg },
   lekHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  lekTitle: { fontWeight: '700', color: colors.red, fontSize: 15 },
+  lekTitle: { fontWeight: '700', color: colors.grey1, fontSize: 15 },
 
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
   doneBox: { backgroundColor: colors.successBgAlt, borderRadius: 8, padding: 10 },
   nextDoseBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.infoBgSoft, borderRadius: 8, padding: 12 },
-  editBox: { backgroundColor: '#f9f9f9', borderRadius: 8, padding: 12, borderWidth: 1, borderColor: '#eee' },
+  editBox: { backgroundColor: colors.surfaceTint, borderRadius: 8, padding: 12, borderWidth: 1, borderColor: colors.borderLight },
 
   historyBox: { borderTopWidth: 1, borderTopColor: colors.borderLight, paddingTop: 12 },
   historyLabel: { fontSize: 13, fontWeight: '600', color: colors.grey2, marginBottom: 4 },
@@ -508,6 +504,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     bottom: 24,
-    backgroundColor: colors.red,
+    backgroundColor: colors.blue,
   },
 });

@@ -15,7 +15,7 @@ export default function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: colors.red,
+        tabBarActiveTintColor: colors.blue,
         tabBarInactiveTintColor: colors.grey2,
         headerTitleStyle: { color: colors.grey1 },
         headerRight: () => <LogoutButton />,

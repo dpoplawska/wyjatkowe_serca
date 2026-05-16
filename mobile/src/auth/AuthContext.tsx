@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
   getAuth,
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [devUser, firebaseUser]);
 
-  const signInAsDevUser = async (uid: string, name: string) => {
+  const signInAsDevUser = useCallback(async (uid: string, name: string) => {
     const newUser: AppUser = {
       uid,
       email: name,
@@ -82,9 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
     setDevUser(newUser);
     await SecureStore.setItemAsync(DEV_USER_KEY, JSON.stringify({ uid, email: name }));
-  };
+  }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     if (!isGoogleSignInConfigured) {
       throw new Error('Brak googleWebClientId w app.json');
     }
@@ -105,34 +105,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (code === statusCodes.IN_PROGRESS) return;
       throw err;
     }
-  };
+  }, []);
 
-  const signOutUser = async () => {
+  const signOutUser = useCallback(async () => {
     setDevUser(null);
     await SecureStore.deleteItemAsync(DEV_USER_KEY);
     try {
       const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
       await GoogleSignin.signOut();
     } catch {
-      // ignore
+      // GoogleSignin module unavailable (Expo Go) — skip.
     }
     try {
       await signOut(getAuth());
     } catch {
-      // not signed in
+      // User wasn't Firebase-signed-in (dev user only) — skip.
     }
-  };
+  }, []);
 
-  const getToken = async () => {
+  // Stable across renders while `user` is unchanged. Consumers depend on
+  // identity equality (autosave debounce effects, useCallback deps).
+  const getToken = useCallback(async () => {
     if (!user) throw new Error('Brak zalogowanego użytkownika');
     return user.getIdToken();
-  };
+  }, [user]);
 
-  return (
-    <AuthContext.Provider value={{ user, loading, signInAsDevUser, signInWithGoogle, signOutUser, getToken }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, loading, signInAsDevUser, signInWithGoogle, signOutUser, getToken }),
+    [user, loading, signInAsDevUser, signInWithGoogle, signOutUser, getToken],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

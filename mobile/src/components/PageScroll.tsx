@@ -39,7 +39,7 @@ export function PageScroll({ children, contentContainerStyle, refreshing, onRefr
         keyboardShouldPersistTaps="handled"
         refreshControl={
           onRefresh
-            ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.red} colors={[colors.red]} />
+            ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} colors={[colors.blue]} />
             : undefined
         }
       >

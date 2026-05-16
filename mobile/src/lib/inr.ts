@@ -15,9 +15,3 @@ export function getInterpretation(inr: number): InrInterpretation {
   if (inr <= 4.0) return { label: 'Powyżej zakresu — skontaktuj się z lekarzem', color: colors.amberFg, bg: colors.amberBg };
   return { label: 'Bardzo wysokie — ryzyko krwawienia, pilny kontakt z lekarzem', color: colors.dangerFg, bg: colors.dangerBg };
 }
-
-export function formatInrDate(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}

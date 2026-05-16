@@ -43,6 +43,7 @@ export const colors = {
   amberBg: '#ffedd5',
 
   infoFg: '#1e40af',
+  infoFgStrong: '#1a3a5c',
   infoBg: '#dbeafe',
   infoBgSoft: '#e3f0fb',
 

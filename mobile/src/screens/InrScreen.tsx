@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { confirmDelete } from '../lib/confirm';
 import { PageScroll } from '../components/PageScroll';
 import {
   Text,
@@ -13,7 +14,8 @@ import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { InrEntry } from '../types/api';
-import { calculateInr, getInterpretation, formatInrDate } from '../lib/inr';
+import { calculateInr, getInterpretation } from '../lib/inr';
+import { formatDateTime, newId } from '../lib/format';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { colors } from '../theme/colors';
 
@@ -23,10 +25,6 @@ const REFERENCE_RANGES = [
   { range: '2,5 – 3,5', label: 'Protezy zastawkowe mechaniczne', color: colors.successFg, bg: colors.successBg },
   { range: '> 4,0', label: 'Ryzyko krwawienia — konsultacja lekarska', color: colors.dangerFg, bg: colors.dangerBg },
 ];
-
-function newId(): string {
-  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
 
 export default function InrScreen() {
   const { getToken } = useAuth();
@@ -106,18 +104,14 @@ export default function InrScreen() {
   };
 
   const handleDelete = (id: string) => {
-    Alert.alert('Usunąć wpis?', 'Tej operacji nie można cofnąć.', [
-      { text: 'Anuluj', style: 'cancel' },
-      {
-        text: 'Usuń',
-        style: 'destructive',
-        onPress: () => {
-          const updated = history.filter((e) => e.id !== id);
-          setHistory(updated);
-          persist(updated, 'Wpis usunięty.');
-        },
+    confirmDelete({
+      title: 'Usunąć wpis?',
+      onConfirm: () => {
+        const updated = history.filter((e) => e.id !== id);
+        setHistory(updated);
+        persist(updated, 'Wpis usunięty.');
       },
-    ]);
+    });
   };
 
   const interpretation = result !== null ? getInterpretation(result) : null;
@@ -182,7 +176,6 @@ export default function InrScreen() {
               mode="contained"
               onPress={handleCalculate}
               disabled={!canCalculate}
-              buttonColor={colors.blue}
               style={{ marginTop: 12 }}
             >
               Oblicz INR
@@ -216,7 +209,6 @@ export default function InrScreen() {
                   onPress={handleSave}
                   loading={saving}
                   disabled={saving}
-                  buttonColor={colors.blue}
                   style={{ marginTop: 12 }}
                 >
                   Zapisz wynik w historii
@@ -251,7 +243,7 @@ export default function InrScreen() {
                       <Text style={[styles.inrBigText, { color: interp.color }]}>{entry.inr.toFixed(2)}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.historyDate}>{formatInrDate(entry.date)}</Text>
+                      <Text style={styles.historyDate}>{formatDateTime(entry.date)}</Text>
                       {entry.note ? <Text style={styles.historyNote}>„{entry.note}"</Text> : null}
                       <Text style={styles.historyDetails}>PT: {entry.pt} s · norma: {entry.pt_normal} s · ISI: {entry.isi}</Text>
                     </View>
@@ -274,7 +266,7 @@ const styles = StyleSheet.create({
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.greyBg },
 
   infoBox: { backgroundColor: colors.infoBg, borderRadius: 10, padding: 14, marginBottom: 12 },
-  infoText: { fontSize: 13, color: '#1a3a5c', lineHeight: 18 },
+  infoText: { fontSize: 13, color: colors.infoFgStrong, lineHeight: 18 },
 
   card: { marginBottom: 12, backgroundColor: colors.cardBg },
   cardTitle: { fontWeight: '700', color: colors.grey1, marginBottom: 8, fontSize: 16 },
@@ -298,5 +290,5 @@ const styles = StyleSheet.create({
   inrBigText: { fontSize: 18, fontWeight: '800' },
   historyDate: { fontSize: 13, fontWeight: '700', color: colors.grey1 },
   historyNote: { fontSize: 12, color: colors.grey2, fontStyle: 'italic', marginTop: 2 },
-  historyDetails: { fontSize: 11, color: '#bbb', marginTop: 2 },
+  historyDetails: { fontSize: 11, color: colors.grey3, marginTop: 2 },
 });

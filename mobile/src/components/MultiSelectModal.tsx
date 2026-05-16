@@ -54,7 +54,7 @@ export function MultiSelectModal({ visible, options, value, onChange, onClose, t
             const checked = value.includes(item);
             return (
               <Pressable onPress={() => toggle(item)} style={styles.row}>
-                <Checkbox status={checked ? 'checked' : 'unchecked'} color={colors.red} />
+                <Checkbox status={checked ? 'checked' : 'unchecked'} />
                 <Text style={styles.rowText}>{item}</Text>
               </Pressable>
             );

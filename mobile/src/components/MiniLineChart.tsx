@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { Sample, MIN_CHART_POINTS } from '../lib/measurements';
 import { colors } from '../theme/colors';
@@ -13,18 +13,30 @@ interface Props {
   yMax?: number;
 }
 
-// Small trend chart with tap-to-inspect. gifted-charts' pointerConfig renders
-// a vertical guideline + label when the user touches a data point.
-export function MiniLineChart({ title, samples, color, unit, yMin, yMax }: Props) {
-  if (samples.length < MIN_CHART_POINTS) return null;
-
-  const data = samples.map((s) => ({
-    value: s.value,
-    label: s.label,
-  }));
-
-  const screenWidth = Dimensions.get('window').width;
+function MiniLineChartImpl({ title, samples, color, unit, yMin, yMax }: Props) {
+  const { width: screenWidth } = useWindowDimensions();
   const chartWidth = Math.max(200, screenWidth - 72);
+
+  const data = useMemo(
+    () => samples.map((s) => ({ value: s.value, label: s.label })),
+    [samples],
+  );
+
+  const pointerLabelComponent = useCallback(
+    (items: { value: number; label?: string }[]) => {
+      const item = items[0];
+      if (!item) return null;
+      return (
+        <View style={styles.tooltip}>
+          <Text style={styles.tooltipValue}>{item.value} {unit}</Text>
+          {item.label ? <Text style={styles.tooltipLabel}>{item.label}</Text> : null}
+        </View>
+      );
+    },
+    [unit],
+  );
+
+  if (samples.length < MIN_CHART_POINTS) return null;
 
   return (
     <View style={styles.wrap}>
@@ -62,22 +74,15 @@ export function MiniLineChart({ title, samples, color, unit, yMin, yMax }: Props
           radius: 5,
           activatePointersOnLongPress: false,
           autoAdjustPointerLabelPosition: true,
-          pointerLabelComponent: (items: { value: number; label?: string }[]) => {
-            const item = items[0];
-            if (!item) return null;
-            return (
-              <View style={styles.tooltip}>
-                <Text style={styles.tooltipValue}>{item.value} {unit}</Text>
-                {item.label ? <Text style={styles.tooltipLabel}>{item.label}</Text> : null}
-              </View>
-            );
-          },
+          pointerLabelComponent,
         }}
       />
       <Text style={styles.unit}>{unit}</Text>
     </View>
   );
 }
+
+export const MiniLineChart = React.memo(MiniLineChartImpl);
 
 const styles = StyleSheet.create({
   wrap: { marginBottom: 16 },

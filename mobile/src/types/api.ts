@@ -1,6 +1,9 @@
 // Mirrors backend/app/models.py — keep field names identical.
 
 export interface Operacja {
+  // Client-side stable key for list rendering. Generated on add or on load
+  // if missing. Backend doesn't persist it (Pydantic drops unknown fields).
+  id?: string;
   typ: string;
   data: string;
   czas_it: string;

@@ -86,7 +86,7 @@ export default function LoginScreen() {
 
           {loadingDev && (
             <View style={styles.loader}>
-              <ActivityIndicator color={colors.red} />
+              <ActivityIndicator />
             </View>
           )}
 

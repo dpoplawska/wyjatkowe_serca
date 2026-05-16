@@ -1,5 +1,6 @@
 import { MeasurementEntry, InrEntry } from '../types/api';
 import { colors } from '../theme/colors';
+import { formatDateShort, newId } from './format';
 
 export interface StatusColor { color: string; bg: string }
 
@@ -52,22 +53,9 @@ export function inrStatus(v: number): StatusColor {
 
 export const diurezaStatus: StatusColor = { color: colors.infoFg, bg: colors.infoBg };
 
-// Polish convention: DD.MM.YYYY HH:mm (24h).
-export function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-export function formatDateShort(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}`;
-}
-
-export function newId(): string {
-  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
+// Re-export so legacy importers (PomiaryScreen, MetricChip) still resolve.
+export { formatDateTime as formatDate } from './format';
+export { formatDateShort, newId } from './format';
 
 export function makeMeasurement(input: {
   date: string;
