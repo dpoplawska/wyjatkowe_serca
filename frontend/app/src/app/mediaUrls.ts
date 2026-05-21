@@ -35,4 +35,6 @@ export const BENEFICIARIES = {
   ws8_1: u('beneficiaries/WS8-2-AgnieszkaPtaszek.JPG'),
   ws8_2: u('beneficiaries/WS8-1-AgnieszkaPtaszek.JPG'),
   ws8_3: u('beneficiaries/WS8-3-AgnieszkaPtaszek.JPG'),
+  ws9: u('beneficiaries/WS9-AlicjaWilk.png'),
+  ws10: u('beneficiaries/WS10-BasiaMroz.JPG'),
 };

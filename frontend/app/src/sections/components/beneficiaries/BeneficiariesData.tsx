@@ -1,5 +1,6 @@
 import { BENEFICIARIES } from "../../../app/mediaUrls.ts";
-const { ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8_1, ws8_2, ws8_3 } = BENEFICIARIES;
+const { ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8_1, ws8_2, ws8_3, ws9, ws10 } =
+	BENEFICIARIES;
 
 export const beneficiaries = [
 	{
@@ -329,6 +330,69 @@ Każda złotówka, każde udostępnienie, każda modlitwa to dla nas nadzieja.
 Nie potrafimy sobie wyobrazić świata bez jej uśmiechu.</p>
 <p>❤️ Dziękujemy, że jesteście z nami w tej walce.
 Rodzice Agnieszki ❤️
+</p>`,
+	},
+	{
+		id: "alicja_wilk",
+		name: "Alicja Wilk",
+		disorder: "",
+		sectionsImageUrl: [ws9],
+		moreInfoLink: "/zbiorka/alicja_wilk",
+		transferTitle: "WS9 - Alicja Wilk",
+		description: `
+		<p><b>Alicja przyszła na świat w 30. tygodniu trojaczej ciąży jako skrajny wcześniak. Już w trakcie ciąży wiedzieliśmy, że będzie zmagała się z wieloma poważnymi wadami. Urodziła się przez cięcie cesarskie, ważąc zaledwie 990 gramów – od pierwszych dni musiała walczyć o swoje kruche życie! </b> </p>
+<p>
+W drugiej dobie życia córeczka przeszła pilną operację <b>z powodu atrezji przełyku z przetoką tchawiczo-przełykową</b>. Podczas zabiegu założono jej PEG-a, aby podawać pokarm bezpośrednio do żołądka. U Alicji stwierdzono również dekstrokardię, hipoplazję prawego płuca oraz wcześniaczą retinopatię. </p>
+<p>
+Po trzech miesiącach przeprowadzono operację złączenia przewodu pokarmowego. Po zabiegu  stan Alicji był bardzo ciężki. <b>Wykryto wiotkość dróg oddechowych, co wymagało założenia tracheostomii i rozpoczęcia wentylacji mechanicznej przy użyciu respiratora</b>. Swoje pierwsze 14 miesięcy życia córeczka spędziła w szpitalu na Oddziale Intensywnej Terapii. W tym czasie przeszła liczne poszerzania przełyku oraz próby karmienia doustnego.</p>
+<p>
+W czerwcu przłeszła kolejną poważną operację usunięcia ziarniny, która całkowicie blokowała jej oddech. Dopiero po tym zabiegu jej stan zaczął się stopniowo stabilizować. We wrześniu mogliśmy zabrać Alicję po raz pierwszy do domu. Dziś, dzięki intensywnej rehabilitacji, potrafi samodzielnie siadać i wciąż robi postępy. <b>Jej rozwój psychoruchowy pozostaje jednak opóźniony</b>, a ona nadal wymaga stałej opieki, regularnych wizyt u wielu specjalistów, leczenia, rehabilitacji oraz wsparcia specjalistycznego sprzętu.
+</p>`,
+	},
+	{
+		id: "basia_mroz",
+		name: "Basia Mróz",
+		disorder: "",
+		sectionsImageUrl: [ws10],
+		moreInfoLink: "/zbiorka/basia_mroz",
+		transferTitle: "WS10 - Basia Mróz",
+		description: `
+		<p>
+	Basia nasza dzielna mała wojowniczka która połowę swojego życia spędziła w szpitalu. Przeszła trzy skomplikowane operacje na otwartym serduszku, wiele zabiegów interwencyjnych i obecnie oczekuje na pilnej liście do transplantacji serca. </p>
+<p>
+W 12 tygodniu ciąży dowiedzieliśmy się, że nasza córeczka urodzi się z krytyczna wada serca pod postacią HLHS czyli zespołem niedorozwoju lewej części serca, wrodzona wadą rozwoju zastawki aorty i zastawki dwudzielnej. W tamtym momencie nasz świat rozsypał się na milion małych kawałków. Kolejnym ciosem był fakt, że w przypadku HLHS nie istnieje możliwość wyleczenia wady serca, a nasza córka będzie  potrzebowała wieloetapowego leczenia polegającego na wykonaniu trzech skomplikowanych operacji, które są operacjami "paliatywnymi", mającymi na celu zapewnienia jej zdolności do życia. Trudno było pogodzić się z tym, że nasze maleństwo będzie od pierwszych swoich dni walczyć o życie.
+</p>
+
+<p>
+Basia urodziła się 11 marca 2023 przez cesarskie cięcie . Niestety nie mogłam jej przytulić i ukoić jej pierwszych łez. Została od razu zabrana do inkubatora i podłączono jej lek, który umożliwiał zachowanie krążenia płodowego i pozwolił jej dotrwać do pierwszej operacji.
+</p>
+
+<p>
+W 9 dobie życia Basia przeszła pierwsza operację na otwartym sercu, która trwała kilka godzin. Pomimo tego, że bardzo dzielnie ją zniosła, jej stan po operacji był ciężki i lekarze musieli go ustabilizować. Wymagała tlenoterapii, a w kolejnych dniach okazało się, że ma porażoną przeponę po lewej stronie i niedodmę na obu płucach. Przez ciągłe spadki saturacji musiała mieć wykonane cewnikowanie serca. Po 2 miesiącach walki o Jej życie i zdrowie Basia mogła wrócić do domu i poznać swoją starszą siostrę.
+</p>
+
+<p>
+ Kolejna operacja odbyła się szybciej niż spodziewaliśmy, bo w czwartym miesiącu Jej życia. Planowa kontrola na oddziale kardiologii zmieniła się w kolejną walkę o życie Basi. Poważne zwężenia zespolenia Sano, które zostało wykonane przy pierwszej operacji, spowodowały kwalifikacje do cewnikowania serca. Niestety nie był to koniec dramatycznych zdarzeń: NZK - nagłe zatrzymanie krążenia, pilne cewnikowanie serca, druga operacja (zespolenie GLENA),pooperacyjna terapia ECMO, kolejne cewnikowanie serca, dysfunkcja prawej kopuły przepony,ropień około mostkowy i rewizja mostka.
+ </p>
+
+<p>
+Był to dla nas czas pełen strachu, łez i niepewności, ale Basia kolejny raz udowodniła, że jest niesamowicie dzielną i silną dziewczynką i nic Jej nie złamie. Po 2 miesiącach traumatycznych przeżyć i ciężkiej walki mogła opuścić szpital.</p>
+<p>
+Dzięki intensywnej rehabilitacji, która trwała 1,5 roku,  Basia nauczyła się najpierw przekręcać na boki, zaakceptowała leżenie na brzuchu, nauczyła się siadać, raczkować i wreszcie stawiać pierwsze kroki.</p>
+
+<p>
+  21 maja 2025 r. Basia przeszła 3 ostatnią planową operację. Mieliśmy ogromną nadzieję, że tym razem przejdzie ją bez komplikacji. Niestety życie napisało dla Niej inny scenariusz. W krótkim czasie po operacji Basia musiała mieć kolejne cewnikowanie serca i kolejny raz musiała zmagać się z komplikacjami pooperacyjnymi: porażona przepona po prawej stronie, zabieg plikacji przepony, przewlekły płyn w opłucnych, niewydolność krążenia, reoperacja polegająca na wytworzeniu fenestracji. Basia spędziła ponad 7 miesięcy w szpitalu, który stawał się dla niej domem. Pomimo starań lekarzy i ogromnej woli walki naszego dziecka, niestety serce Basi nie zaakceptowało nowego krążenia wytworzonego w czasie operacji. Lekarze zdecydowali zakwalifikować ją do przeszczepu serca.</p>
+
+	<p>
+Basia pomimo ciężkiej drogi, którą przeszła, jest bardzo pogodną i dzielną dziewczynką. Bardzo chciałaby pójść do przedszkola, rozwijać się jak jej rówieśnicy i spełniać swoje dziecięce marzenia. Ma szansę to wszystko osiągnąć dzięki intensywnej rehabilitacji, dużej ilości leków, które musi przyjmować każdego dnia, częstych kontroli i wizyt u specjalistów.
+</p>
+
+<p>
+Prosimy Was o wsparcie, które umożliwi nam walkę o lepsze jutro dla naszej córki. 
+</p>
+
+<p>
+Wdzięczni Rodzice.
 </p>`,
 	},
 ];

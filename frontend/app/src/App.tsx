@@ -38,7 +38,9 @@ function AppContent() {
           <Route path="/zbiorka/mikolaj_wegierski" element={<CharityFundraser specialFundraiser={true} beneficiary='mikolaj_wegierski'/>} />
           <Route path="/zbiorka/cecylia_suchocka" element={<CharityFundraser specialFundraiser={true} beneficiary='cecylia_suchocka' />} />
           <Route path="/zbiorka/nikodem_kochel" element={<CharityFundraser specialFundraiser={true} beneficiary='nikodem_kochel'/>} />
-          <Route path="/zbiorka/agnieszka_ptaszek" element={<CharityFundraser specialFundraiser={true} beneficiary='agnieszka_ptaszek'/>} />
+          <Route path="/zbiorka/agnieszka_ptaszek" element={<CharityFundraser specialFundraiser={true} beneficiary='agnieszka_ptaszek' />} />
+            <Route path="/zbiorka/alicja_wilk" element={<CharityFundraser specialFundraiser={true} beneficiary='alicja_wilk'/>} />
+          <Route path="/zbiorka/basia_mroz" element={<CharityFundraser specialFundraiser={true} beneficiary='basia_mroz' />} />
           <Route path="polaczeni_w_kryzysie" element={<ConnectedInCrisisPage/>}/>
           <Route path="/podopieczni" element={<BeneficiariesPage />} />
           <Route path="/sklep" element={<Shop />} />
