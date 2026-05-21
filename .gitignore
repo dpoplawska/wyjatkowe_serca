@@ -3,6 +3,7 @@
 .claude
 .firebase/
 Pipfile
+Pipfile.lock
 REVIEW.md
 backend/Untitled.ipynb
 prompts
