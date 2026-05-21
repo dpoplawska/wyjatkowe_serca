@@ -52,7 +52,8 @@
           "icon": "./assets/icon.png",
           "color": "#EC1A3B"
         }
-      ]
+      ],
+      "./plugins/withPdfQueries.js"
     ],
     "extra": {
       "apiUrl": "https://wyjatkowe-serca-f74jtttkrq-lm.a.run.app",

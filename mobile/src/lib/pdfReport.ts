@@ -504,8 +504,12 @@ export async function generatePatientPdf(getToken: TokenProvider): Promise<void>
 // Default UX is "open in viewer" so the user can review the report before
 // sending it anywhere — they can still share from inside the viewer.
 // Android: ACTION_VIEW intent on a FileProvider content:// URI.
+//   Requires the <queries> entry for application/pdf in AndroidManifest
+//   (see plugins/withPdfQueries.js); without it, Android 11+ on some OEMs
+//   (Samsung A34 in particular) silently no-ops instead of throwing, and
+//   the share-sheet fallback never fires.
 // iOS: share sheet (canonical "open or send" surface; iOS has no direct
-// "open in Files" intent equivalent).
+//   "open in Files" intent equivalent).
 async function openOrShare(fileUri: string): Promise<void> {
   if (Platform.OS === 'android') {
     try {
