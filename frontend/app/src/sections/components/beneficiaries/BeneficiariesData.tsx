@@ -335,7 +335,7 @@ Rodzice Agnieszki ❤️
 	{
 		id: "alicja_wilk",
 		name: "Alicja Wilk",
-		disorder: "",
+		disorder: "Dekstrokardia, hipoplazja prawego płuca oraz wcześniacza retinopatia, atrezja przełyku z przetoką tchawiczo-przełykową",
 		sectionsImageUrl: [ws9],
 		moreInfoLink: "/zbiorka/alicja_wilk",
 		transferTitle: "WS9 - Alicja Wilk",
@@ -352,7 +352,7 @@ W czerwcu przłeszła kolejną poważną operację usunięcia ziarniny, która c
 	{
 		id: "basia_mroz",
 		name: "Basia Mróz",
-		disorder: "",
+		disorder: "HLHS oczekuje na transplantację serca, wrodzona wada rozwoju zastawki aorty i zastawki dwudzielnej",
 		sectionsImageUrl: [ws10],
 		moreInfoLink: "/zbiorka/basia_mroz",
 		transferTitle: "WS10 - Basia Mróz",
