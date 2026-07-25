@@ -17,19 +17,25 @@ function MiniLineChartImpl({ title, samples, color, unit, yMin, yMax }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = Math.max(200, screenWidth - 72);
 
-  const data = useMemo(
-    () => samples.map((s) => ({ value: s.value, label: s.label })),
-    [samples],
-  );
+  // Etykieta osi X tylko co N-ty punkt — przy 30+ pomiarach etykieta przy każdym
+  // punkcie dostaje kilka px szerokości i RN ucina wszystkie do "…".
+  const data = useMemo(() => {
+    const step = Math.max(1, Math.ceil(samples.length / 6));
+    return samples.map((s, i) => ({
+      value: s.value,
+      dateLabel: s.label,
+      ...(i % step === 0 ? { label: s.label, labelTextStyle: styles.axisLabel } : {}),
+    }));
+  }, [samples]);
 
   const pointerLabelComponent = useCallback(
-    (items: { value: number; label?: string }[]) => {
+    (items: { value: number; dateLabel?: string }[]) => {
       const item = items[0];
       if (!item) return null;
       return (
         <View style={styles.tooltip}>
           <Text style={styles.tooltipValue}>{item.value} {unit}</Text>
-          {item.label ? <Text style={styles.tooltipLabel}>{item.label}</Text> : null}
+          {item.dateLabel ? <Text style={styles.tooltipLabel}>{item.dateLabel}</Text> : null}
         </View>
       );
     },
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
   wrap: { marginBottom: 16 },
   title: { fontSize: 12, fontWeight: '700', color: colors.grey2, marginBottom: 4 },
   unit: { fontSize: 10, color: colors.grey2, marginTop: 4 },
+  axisLabel: { color: colors.grey2, fontSize: 9, width: 44 },
   tooltip: {
     backgroundColor: colors.grey1,
     paddingHorizontal: 8,

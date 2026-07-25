@@ -93,19 +93,12 @@ Poprawki danych demo: Operacja Fontana; op.2 → Wszczepienie CRT-D; op.3 → Op
 
 ---
 
-## Runda 3 (2026-07-25, Claude)
+## Runda 3 — NIEAKTUALNA (zadanie wykonane inaczej)
 
-Jedno zadanie: **`pomiary.png` — zrób od nowa, tym razem KARTY HISTORII zamiast
-wykresów.** Powód: na wykresach etykiety osi X renderują się jako "…" (bug
-w aplikacji — etykieta przy każdym z 30+ punktów; naprawa osobno, poza PDF).
-
-Kadr: zakładka Pomiary przescrollowana tak, żeby **u góry kadru był nagłówek
-"Historia pomiarów (…)"**, a pod nim 3–4 pełne karty wpisów (data + kolorowe chipy:
-Saturacja / Tętno / Ciśnienie / Diureza). **Bez** formularza "Dodaj pomiar" i **bez**
-sekcji Wykresy w kadrze (sekcję Wykresy można zwinąć tapnięciem w jej nagłówek,
-jeśli wystaje). Dane są już czyste (bez 80/120 i duplikatów) — niczego nie edytuj.
-
-`profil.png`, `leki.png`, `inr.png` — nie ruszaj.
+Bug etykiet osi X został naprawiony w aplikacji (`MiniLineChart.tsx` — etykieta
+co N-ty punkt), zbudowano i zainstalowano release 0.2.0 z fixem, a `pomiary.png`
+został podmieniony na kadr z wykresami i czytelnymi datami (Claude, 2026-07-25).
+Karty historii nie są już potrzebne. Wszystkie 4 pliki finalne — nic do zrobienia.
 
 ---
 

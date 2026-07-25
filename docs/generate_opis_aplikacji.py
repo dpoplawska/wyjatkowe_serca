@@ -52,7 +52,7 @@ SHOTS_DIR = Path(__file__).resolve().parent / "screenshots"
 APP_SHOTS = [
     ("profil.png", 140, "Profil pacjenta"),
     ("leki.png", 140, "Leki i przypomnienia dawek"),
-    ("pomiary.png", 320, "Pomiary — wykresy trendów"),
+    ("pomiary.png", 300, "Pomiary — wykresy trendów"),
     ("inr.png", 985, "INR — rejestr wyników"),
 ]
 
