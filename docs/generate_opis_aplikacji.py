@@ -898,14 +898,15 @@ def build_story(styles: dict) -> list:
         ],
         [
             "F5 — Utrzymanie",
-            "Miesiące 1–12 (zaplecze od startu; opublikowana aplikacja — od publikacji)",
-            "Aktualizacje systemów, poprawki, monitoring hostingu, wsparcie fundacji, drobne usprawnienia interfejsu.",
+            "Miesiące 1–12",
+            "Utrzymanie zaplecza od startu projektu, opublikowanej aplikacji — od publikacji; "
+            "aktualizacje systemów, poprawki, monitoring hostingu, wsparcie fundacji.",
         ],
     ]
     story.append(make_table(harm_rows, [38 * mm, 28 * mm, usable - 66 * mm], styles))
     story.append(Spacer(1, 4))
 
-    story.append(p("<b>Ryzyka i ich ograniczanie</b>", styles["h2"]))
+    risk_head = p("<b>Ryzyka i ich ograniczanie</b>", styles["h2"])
     risk_rows = [
         ["Ryzyko", "Sposób ograniczania"],
         [
@@ -929,7 +930,9 @@ def build_story(styles: dict) -> list:
             "Dwunastomiesięczne utrzymanie obejmuje aktualizacje zgodnościowe.",
         ],
     ]
-    story.append(make_table(risk_rows, [usable * 0.42, usable * 0.58], styles))
+    story.append(
+        KeepTogether([risk_head, make_table(risk_rows, [usable * 0.42, usable * 0.58], styles)])
+    )
 
     # ========== 8. BUDŻET ==========
     story.extend(section_title("8", "Powiązanie z budżetem projektu", styles))
@@ -943,22 +946,6 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
-    story.append(
-        info_box(
-            "<b>Wkład własny fundacji — prace wykonane przed projektem.</b> Robocza wersja aplikacji "
-            "pacjenta — sekcja webowa, aplikacja mobilna oraz obsługujący je backend/API (profil medyczny, "
-            "leki z przypomnieniami, pomiary z wykresami, historia INR, udostępnianie w rodzinie, eksport "
-            "raportu PDF, uwierzytelnianie i przechowywanie danych) — powstała w całości "
-            "<b>nieodpłatnie</b>. Na podstawie historii repozytorium kodu wkład ten szacujemy ostrożnie "
-            "na <b>ok. 180 godzin</b> pracy programistycznej o wartości <b>ok. 38 tys. zł</b> "
-            "(wg stawki referencyjnej 210 zł/h). Prace dotychczasowe wykonał programista współpracujący "
-            "z fundacją — ta sama osoba zrealizuje prace objęte kosztorysem, co ogranicza ryzyko "
-            "wdrożenia. Kosztorys poniżej obejmuje wyłącznie prace przyszłe.",
-            styles,
-        )
-    )
-    story.append(Spacer(1, 6))
-
     bud_rows = [
         ["Lp.", "Pozycja", "Godz.", "Kwota (zł)"],
         ["", "«b»A. Wytworzenie aplikacji", "", ""],
@@ -1056,7 +1043,7 @@ def build_story(styles: dict) -> list:
         ("BACKGROUND", (0, 0), (-1, 0), BRAND_BLUE),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [WHITE, GREY_BG]),
         ("LINEBELOW", (0, 1), (-1, -2), 0.3, GREY_LINE),
-        ("BACKGROUND", (0, n - 1), (-1, n - 1), BRAND_RED),
+        ("BACKGROUND", (0, n - 1), (-1, n - 1), colors.HexColor("#1A5F8F")),
         ("LINEBELOW", (0, -1), (-1, -1), 0.8, GREY_LINE),
     ]
     # Emphasize section header / suma rows
@@ -1066,6 +1053,21 @@ def build_story(styles: dict) -> list:
             cmds.append(("BACKGROUND", (0, idx), (-1, idx), colors.HexColor("#E7EFF6")))
     bt.setStyle(TableStyle(cmds))
     story.append(bt)
+    story.append(Spacer(1, 6))
+    story.append(
+        info_box(
+            "<b>Wkład własny fundacji — prace wykonane przed projektem.</b> Robocza wersja aplikacji "
+            "pacjenta — sekcja webowa, aplikacja mobilna oraz obsługujący je backend/API (profil medyczny, "
+            "leki z przypomnieniami, pomiary z wykresami, historia INR, udostępnianie w rodzinie, eksport "
+            "raportu PDF, uwierzytelnianie i przechowywanie danych) — powstała w całości "
+            "<b>nieodpłatnie</b>. Na podstawie historii repozytorium kodu wkład ten szacujemy ostrożnie "
+            "na <b>ok. 180 godzin</b> pracy programistycznej o wartości <b>ok. 38 tys. zł</b> "
+            "(wg stawki referencyjnej 210 zł/h). Prace dotychczasowe wykonał programista współpracujący "
+            "z fundacją — ta sama osoba zrealizuje prace objęte kosztorysem, co ogranicza ryzyko "
+            "wdrożenia. Kosztorys powyżej obejmuje wyłącznie prace przyszłe.",
+            styles,
+        )
+    )
     story.append(Spacer(1, 6))
 
     story.append(p("<b>Mapowanie opisu → budżet</b>", styles["h2"]))
@@ -1165,7 +1167,6 @@ def build_story(styles: dict) -> list:
     )
 
     # ========== 11. PODSUMOWANIE ==========
-    story.append(PageBreak())
     story.extend(section_title("11", "Podsumowanie", styles))
     story.append(
         p(
