@@ -277,7 +277,7 @@ def section_title(num: str, title: str, styles: dict) -> list:
     chip = Table(
         [[p(num, styles["chip"]), p(title, styles["h1"])]],
         colWidths=[9 * mm, usable - 9 * mm],
-        rowHeights=[8 * mm],
+        rowHeights=[7 * mm],
     )
     chip.setStyle(
         TableStyle(
@@ -290,7 +290,7 @@ def section_title(num: str, title: str, styles: dict) -> list:
             ]
         )
     )
-    return [Spacer(1, 10), chip, hr()]
+    return [Spacer(1, 8), chip, hr()]
 
 
 def bullets(items: list[str], styles: dict) -> ListFlowable:
@@ -535,7 +535,8 @@ def build_story(styles: dict) -> list:
             "Dane o zdrowiu (RODO art. 9) · Publikacja w Google Play i App Store · "
             "Koszt roku 1: <b>131 500 zł</b> (600 h × 210 zł/h + koszty stałe) · "
             "Utrzymanie 12 miesięcy w budżecie · Charakter: dokończenie, publikacja, zgodność, utrzymanie "
-            "(na bazie istniejącego zaplecza cyfrowego fundacji).",
+            "(na bazie istniejącego zaplecza cyfrowego fundacji) · Wkład własny: robocza wersja aplikacji "
+            "wytworzona nieodpłatnie (ok. 150 h ≈ 31 tys. zł).",
             styles,
         )
     )
@@ -929,6 +930,18 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
+    story.append(
+        info_box(
+            "<b>Wkład własny fundacji — prace wykonane przed projektem.</b> Robocza wersja aplikacji "
+            "pacjenta (sekcja webowa oraz aplikacja mobilna: profil medyczny, leki z przypomnieniami, "
+            "pomiary z wykresami, historia INR, udostępnianie w rodzinie, eksport raportu PDF) powstała "
+            "w całości <b>nieodpłatnie</b>. Na podstawie historii repozytorium kodu wkład ten szacujemy "
+            "ostrożnie na <b>ok. 150 godzin</b> pracy programistycznej o wartości <b>ok. 31 tys. zł</b> "
+            "(wg stawki referencyjnej 210 zł/h). Kosztorys poniżej obejmuje wyłącznie prace przyszłe.",
+            styles,
+        )
+    )
+    story.append(Spacer(1, 6))
 
     bud_rows = [
         ["Lp.", "Pozycja", "Godz.", "Kwota (zł)"],
@@ -1155,26 +1168,29 @@ def build_story(styles: dict) -> list:
         p(
             "Całkowity koszt roku 1 według kosztorysu spójnego z niniejszym opisem wynosi "
             "<b>131 500 zł</b> (600 godzin prac programistycznych w stawkach 210 zł/h oraz koszty "
-            "stałe: prawnik RODO, hosting, Google Play). Inwestycja wzmacnia misję fundacji "
-            "w obszarze codziennego wsparcia rodziców — w sposób mierzalny, odpowiedzialny "
-            "i możliwy do kontynuacji po zakończeniu dofinansowania.",
+            "stałe: prawnik RODO, hosting, Google Play). Dotychczasowa robocza wersja aplikacji "
+            "powstała w całości nieodpłatnie — to wkład własny fundacji szacowany na ok. 150 godzin "
+            "pracy (ok. 31 tys. zł); dotacja finansuje wyłącznie prace przyszłe. Inwestycja wzmacnia "
+            "misję fundacji w obszarze codziennego wsparcia rodziców — w sposób mierzalny, "
+            "odpowiedzialny i możliwy do kontynuacji po zakończeniu dofinansowania.",
             styles["body"],
         )
     )
-    story.append(Spacer(1, 8))
-    story.append(hr())
     story.append(
-        p(
-            "Dokument przygotowany jako załącznik merytoryczny do wniosku o dofinansowanie. "
-            "Nie stanowi pełnej dokumentacji prawnej (DPIA, umowy powierzenia, polityka prywatności "
-            "— jako odrębne dokumenty fundacji) ani dokumentacji technicznej dla zespołu deweloperskiego.",
-            styles["note"],
-        )
-    )
-    story.append(
-        p(
-            "Fundacja Wyjątkowe Serca · aplikacja pacjenta · opis projektu pod wniosek o dotację",
-            styles["note"],
+        KeepTogether(
+            [
+                HRFlowable(width="100%", thickness=0.6, color=GREY_LINE, spaceBefore=4, spaceAfter=4),
+                p(
+                    "Dokument przygotowany jako załącznik merytoryczny do wniosku o dofinansowanie. "
+                    "Nie stanowi pełnej dokumentacji prawnej (DPIA, umowy powierzenia, polityka prywatności "
+                    "— jako odrębne dokumenty fundacji) ani dokumentacji technicznej dla zespołu deweloperskiego.",
+                    styles["note"],
+                ),
+                p(
+                    "Fundacja Wyjątkowe Serca · aplikacja pacjenta · opis projektu pod wniosek o dotację",
+                    styles["note"],
+                ),
+            ]
         )
     )
 

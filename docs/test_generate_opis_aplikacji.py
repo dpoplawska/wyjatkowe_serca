@@ -64,6 +64,8 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
             "App Store",
             "usunięcie konta",
             "dokończenia",
+            "wkład własny",
+            "150 godzin",
         ]
         low = self.text.lower()
         missing = [k for k in required if k.lower() not in low]
