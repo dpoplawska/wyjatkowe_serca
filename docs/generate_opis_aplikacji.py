@@ -553,7 +553,24 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 4))
+    story.append(p("<b>O fundacji</b>", styles["h2"]))
+    story.append(
+        p(
+            "Fundacja Wyjątkowe Serca (KRS 0001072904, NIP 7011177987; siedziba: "
+            "Aleje Jerozolimskie 123A, 02-017 Warszawa) działa od grudnia 2023 r. i została "
+            "założona przez rodziców dzieci z wrodzonymi wadami serca. Fundacja wspiera rodziny "
+            "od diagnozy, przez leczenie, po rehabilitację: prowadzi zbiórki na rzecz podopiecznych, "
+            "organizuje wydarzenia charytatywne dla małych pacjentów oraz dzieli się praktyczną "
+            "wiedzą wynikającą z doświadczeń własnych rodziców. Merytorycznie fundację wspiera "
+            "Rada Naukowa złożona z lekarzy. Statut i sprawozdania finansowe są publikowane "
+            "w serwisie internetowym fundacji. Aplikacja pacjenta, której dotyczy niniejszy "
+            "dokument, jest rozszerzeniem tej działalności statutowej o narzędzie cyfrowe.",
+            styles["body"],
+        )
+    )
+
+    story.append(Spacer(1, 4))
     story.append(p("<b>Dokument w skrócie</b>", styles["h2"]))
     story.append(
         summary_box(
@@ -594,23 +611,6 @@ def build_story(styles: dict) -> list:
     for item in toc:
         story.append(p(item, styles["toc_item"]))
 
-    story.append(Spacer(1, 6))
-    story.append(p("<b>O fundacji</b>", styles["h2"]))
-    story.append(
-        p(
-            "Fundacja Wyjątkowe Serca (KRS 0001072904, NIP 7011177987; siedziba: "
-            "Aleje Jerozolimskie 123A, 02-017 Warszawa) działa od grudnia 2023 r. i została "
-            "założona przez rodziców dzieci z wrodzonymi wadami serca. Fundacja wspiera rodziny "
-            "od diagnozy, przez leczenie, po rehabilitację: prowadzi zbiórki na rzecz podopiecznych "
-            "(obecnie dziesięcioro dzieci), organizuje wydarzenia charytatywne dla małych pacjentów "
-            "oraz dzieli się praktyczną wiedzą wynikającą z doświadczeń własnych rodziców. "
-            "Merytorycznie fundację wspiera Rada Naukowa złożona z lekarzy. Statut i sprawozdania "
-            "finansowe są publikowane w serwisie internetowym fundacji. Aplikacja pacjenta, której "
-            "dotyczy niniejszy dokument, jest rozszerzeniem tej działalności statutowej "
-            "o narzędzie cyfrowe.",
-            styles["body"],
-        )
-    )
 
     # ========== 1. CEL ==========
     story.append(PageBreak())
