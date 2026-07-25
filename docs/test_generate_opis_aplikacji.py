@@ -65,6 +65,7 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
             "usunięcie konta",
             "dokończenia",
             "wkład własny",
+            "KRS 0001072904",
         ]
         low = self.text.lower()
         missing = [k for k in required if k.lower() not in low]
