@@ -15,7 +15,9 @@ interface Props {
 
 function MiniLineChartImpl({ title, samples, color, unit, yMin, yMax }: Props) {
   const { width: screenWidth } = useWindowDimensions();
-  const chartWidth = Math.max(200, screenWidth - 72);
+  // Insety: padding ekranu (16+16) + padding Card.Content (16+16) = 64 dp,
+  // a gifted-charts dokłada do `width` kolumnę etykiet osi Y (~35 dp).
+  const chartWidth = Math.max(200, screenWidth - 110);
 
   // Etykieta osi X tylko co N-ty punkt — przy 30+ pomiarach etykieta przy każdym
   // punkcie dostaje kilka px szerokości i RN ucina wszystkie do "…".
