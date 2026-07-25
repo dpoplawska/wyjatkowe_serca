@@ -652,8 +652,8 @@ def build_story(styles: dict) -> list:
         ],
         [
             "INR",
-            "Historia wyników INR / parametrów powiązanych, etykiety interpretacyjne o charakterze "
-            "informacyjnym (rejestr wyników, nie narzędzie diagnostyczne), przegląd trendów.",
+            "Historia wyników INR / parametrów powiązanych, etykiety informacyjne "
+            "(rejestr wyników, nie narzędzie diagnostyczne), przegląd trendów.",
         ],
         [
             "Raport PDF",
@@ -673,7 +673,7 @@ def build_story(styles: dict) -> list:
         [
             "RODO / dane o zdrowiu",
             "Wyraźne zgody (w tym na dane o zdrowiu), aktualizacja dokumentacji pod aplikację pacjenta, "
-            "prawo do usunięcia konta i danych, wzmocnienie zabezpieczeń API, podstawowy dziennik dostępu, uproszczona DPIA.",
+            "prawo do usunięcia konta i danych, wzmocnienie zabezpieczeń API, podstawowy dziennik dostępu, ocena skutków (DPIA).",
         ],
         [
             "Utrzymanie 12 mies.",
@@ -720,43 +720,33 @@ def build_story(styles: dict) -> list:
         ["Krok", "Działanie użytkownika", "Wynik"],
         [
             "1",
-            "Pobranie aplikacji ze sklepu (Google Play / App Store) i uruchomienie",
-            "Ekran powitalny / logowania",
-        ],
-        [
-            "2",
             "Logowanie (Google lub Apple — zależnie od platformy); akceptacja regulaminu / zgód RODO (w tym na dane o zdrowiu)",
             "Utworzenie lub odtworzenie sesji; wejście do aplikacji",
         ],
         [
-            "3",
+            "2",
             "Uzupełnienie profilu pacjenta (dane medyczne istotne dla opieki)",
             "Zapis w bezpiecznym magazynie danych powiązanym z kontem",
         ],
         [
-            "4",
+            "3",
             "Dodawanie leków, oznaczanie dawek; włączenie przypomnień (opcjonalnie)",
             "Lokalne powiadomienia systemowe; historia podań",
         ],
         [
-            "5",
+            "4",
             "Wprowadzanie pomiarów i wyników INR",
             "Historia, wykresy, etykiety informacyjne",
         ],
         [
-            "6",
+            "5",
             "Eksport raportu PDF na wizytę lub do drugiego opiekuna",
             "Plik PDF do udostępnienia z urządzenia",
         ],
         [
-            "7",
+            "6",
             "Utworzenie zaproszenia dla współopiekuna; druga osoba akceptuje link z zaproszenia",
             "Wspólny dostęp do danych; możliwość odwołania dostępu przez właściciela",
-        ],
-        [
-            "8",
-            "Wylogowanie, zarządzanie dostępami, w razie potrzeby — usunięcie konta i danych",
-            "Kontrola użytkownika nad danymi zgodnie z RODO",
         ],
     ]
     story.append(
@@ -787,7 +777,7 @@ def build_story(styles: dict) -> list:
     plat_rows = [
         ["Element", "Założenie"],
         ["Android", "Aplikacja pacjenta w Google Play; pakiet aplikacji fundacji; opłata deweloperska sklepu — jednorazowa."],
-        ["iOS", "Ta sama baza funkcjonalna; logowanie Apple; testy przedpremierowe i publikacja w App Store. Konto deweloperskie Apple fundacji — dążenie do zwolnienia z opłaty rocznej (dla organizacji non-profit publikującej wyłącznie darmowe aplikacje)."],
+        ["iOS", "Ta sama baza funkcjonalna; logowanie Apple; testy przedpremierowe i publikacja w App Store z konta deweloperskiego fundacji."],
         ["Cena dla użytkownika", "Aplikacja bezpłatna; brak zakupów w aplikacji i subskrypcji."],
         ["Język sklepów", "Opisy i materiały po polsku; polityka prywatności i zastrzeżenie medyczne dostępne przed pobraniem."],
     ]
@@ -820,9 +810,8 @@ def build_story(styles: dict) -> list:
         p(
             "Technicznie aplikacja mobilna jest rozwijana w podejściu wieloplatformowym "
             "(wspólna logika biznesowa dla Android i iOS), co pozwala utrzymać spójność funkcji "
-            "przy rozsądnym koszcie drugiej platformy. Szczegóły stosu technologicznego nie są "
-            "przedmiotem oceny merytorycznej dotacji; istotne są: bezpieczeństwo, utrzymywalność "
-            "i dopasowanie do misji fundacji.",
+            "przy rozsądnym koszcie drugiej platformy oraz zachować bezpieczeństwo "
+            "i utrzymywalność rozwiązania.",
             styles["body"],
         )
     )
@@ -860,7 +849,7 @@ def build_story(styles: dict) -> list:
         ["Zabezpieczenia API", "Ograniczenie publicznie zbędnej dokumentacji API, ochrona sekretów, limity zapytań, zawężenie uprawnień kont serwisowych."],
         ["Rozliczalność", "Podstawowy dziennik zdarzeń dostępu (kto / kiedy / jaki zasób — bez zbędnego logowania treści klinicznej)."],
         ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; <b>usunięcie konta i powiązanych danych medycznych</b> jako funkcja docelowa v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
-        ["Ocena ryzyka", "Uproszczona DPIA (ocena skutków) dla przetwarzania danych o zdrowiu w aplikacji pacjenta."],
+        ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) dla przetwarzania danych o zdrowiu w aplikacji pacjenta."],
         ["Podmioty przetwarzające", "Umowy / warunki powierzenia z dostawcami chmury i tożsamości (dostawcy infrastruktury w UE) — po stronie fundacji."],
     ]
     story.append(make_table(rodo_rows, [32 * mm, usable - 32 * mm], styles))
@@ -1008,7 +997,7 @@ def build_story(styles: dict) -> list:
             "»30",
             "»6 300",
         ],
-        ["9", "Dziennik dostępu, uproszczona ocena skutków (DPIA), testy zgodności", "»30", "»6 300"],
+        ["9", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»30", "»6 300"],
         ["10", "Konsultacja / przegląd dokumentacji RODO (prawnik)", "»—", "»3 000"],
         ["", "«b»Suma B", "»125", "»29 250"],
         ["", "«b»C. Utrzymanie i infrastruktura (12 miesięcy)", "", ""],
@@ -1104,20 +1093,12 @@ def build_story(styles: dict) -> list:
     maintain.append(
         p(
             "Publikacja w sklepach nie kończy odpowiedzialności za narzędzie przetwarzające dane "
-            "o zdrowiu. W ramach 12 miesięcy projektu przewidziano:",
+            "o zdrowiu. W ramach 12 miesięcy projektu przewidziano aktualizacje pod nowe wersje "
+            "systemów Android i iOS, usuwanie zgłaszanych błędów, utrzymanie hostingu API i bazy "
+            "wraz z kopiami zapasowymi, drobne zmiany interfejsu i treści (w tym komunikaty RODO) "
+            "oraz wsparcie fundacji w komunikacji z rodzinami — zgodnie z zakresem z rozdz. 3 "
+            "i pozycjami 11–12 kosztorysu.",
             styles["body"],
-        )
-    )
-    maintain.append(
-        bullets(
-            [
-                "aktualizacje pod nowe wersje systemów Android i iOS oraz zależności aplikacji;",
-                "usuwanie błędów zgłaszanych przez użytkowników i fundację;",
-                "utrzymanie hostingu API i bazy, monitoring dostępności, kopie zapasowe;",
-                "drobne zmiany interfejsu i treści (w tym komunikaty RODO), bez rozbudowy o nowe duże moduły medyczne;",
-                "wsparcie fundacji w komunikacji z rodzinami (pytania i odpowiedzi, opisy sklepowe).",
-            ],
-            styles,
         )
     )
     maintain.append(
@@ -1162,11 +1143,6 @@ def build_story(styles: dict) -> list:
             "Wdrożone zgody, usuwanie konta, zaktualizowana polityka, DPIA",
             "Lista kontrolna ukończenia fazy F3",
         ],
-        [
-            "Wsparcie misji",
-            "Narzędzie spójne z działalnością statutową; materiały informacyjne dla rodziców",
-            "Jakościowo — komunikacja fundacji",
-        ],
     ]
     story.append(make_table(eff_rows, [28 * mm, usable * 0.42, usable * 0.58 - 28 * mm], styles))
     story.append(Spacer(1, 6))
@@ -1189,6 +1165,7 @@ def build_story(styles: dict) -> list:
     )
 
     # ========== 11. PODSUMOWANIE ==========
+    story.append(PageBreak())
     story.extend(section_title("11", "Podsumowanie", styles))
     story.append(
         p(
