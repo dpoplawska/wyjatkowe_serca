@@ -16,6 +16,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.pdfmetrics import registerFontFamily
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
     Image,
@@ -50,6 +51,8 @@ LOGO_PNG = ROOT / "frontend" / "app" / "public" / "logo.png"
 # --- Fonts (Polish glyphs) ---
 pdfmetrics.registerFont(TTFont("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
 pdfmetrics.registerFont(TTFont("DejaVu-Bold", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"))
+# Bez rejestracji rodziny znaczniki <b> w Paragraph są po cichu ignorowane
+registerFontFamily("DejaVu", normal="DejaVu", bold="DejaVu-Bold", italic="DejaVu", boldItalic="DejaVu-Bold")
 
 _LATO_DIR = Path("/usr/share/fonts/truetype/lato")
 if (_LATO_DIR / "Lato-Regular.ttf").is_file():
@@ -57,6 +60,7 @@ if (_LATO_DIR / "Lato-Regular.ttf").is_file():
     pdfmetrics.registerFont(TTFont("Lato-Bold", str(_LATO_DIR / "Lato-Bold.ttf")))
     pdfmetrics.registerFont(TTFont("Lato-Semibold", str(_LATO_DIR / "Lato-Semibold.ttf")))
     pdfmetrics.registerFont(TTFont("Lato-Black", str(_LATO_DIR / "Lato-Black.ttf")))
+    registerFontFamily("Lato", normal="Lato", bold="Lato-Bold", italic="Lato", boldItalic="Lato-Bold")
     FONT_REG, FONT_BOLD = "Lato", "Lato-Bold"
     FONT_SEMI, FONT_BLACK = "Lato-Semibold", "Lato-Black"
 else:
@@ -111,6 +115,13 @@ def make_styles() -> dict:
         leading=13,
         textColor=GREY_MUTED,
         alignment=TA_CENTER,
+    )
+    styles["sum_label"] = ParagraphStyle(
+        "sum_label",
+        fontName=FONT_SEMI,
+        fontSize=8.5,
+        leading=12,
+        textColor=BRAND_BLUE,
     )
     styles["fact_label"] = ParagraphStyle(
         "fact_label",
@@ -482,6 +493,38 @@ def _accent_box(text: str, styles: dict, bar: colors.Color, bg: colors.Color) ->
     return t
 
 
+def summary_box(rows: list[tuple[str, str]], styles: dict) -> Table:
+    """Ramka „w skrócie”: lista etykieta–wartość na jasnoniebieskim tle z paskiem akcentu."""
+    bg = colors.HexColor("#F0F7FC")
+    data = [
+        ["", p(label, styles["sum_label"]), p(value, styles["callout"])]
+        for label, value in rows
+    ]
+    t = Table(
+        data,
+        colWidths=[1.6 * mm, 30 * mm, PAGE_W - 2 * MARGIN - 1.6 * mm - 30 * mm],
+    )
+    t.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (0, -1), BRAND_BLUE),
+                ("BACKGROUND", (1, 0), (-1, -1), bg),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (0, -1), 0),
+                ("RIGHTPADDING", (0, 0), (0, -1), 0),
+                ("LEFTPADDING", (1, 0), (1, -1), 10),
+                ("LEFTPADDING", (2, 0), (2, -1), 4),
+                ("RIGHTPADDING", (2, 0), (2, -1), 10),
+                ("TOPPADDING", (0, 0), (-1, -1), 2.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5),
+                ("TOPPADDING", (0, 0), (-1, 0), 8),
+                ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
+            ]
+        )
+    )
+    return t
+
+
 def callout_box(text: str, styles: dict) -> Table:
     return _accent_box(text, styles, BRAND_RED, colors.HexColor("#FFF5F6"))
 
@@ -510,7 +553,30 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
-    story.append(Spacer(1, 4))
+    story.append(Spacer(1, 6))
+    story.append(p("<b>Dokument w skrócie</b>", styles["h2"]))
+    story.append(
+        summary_box(
+            [
+                ("Produkt", "Bezpłatna aplikacja mobilna (Android + iOS) dla rodziców i opiekunów dzieci z WWS."),
+                (
+                    "Zakres projektu",
+                    "Dokończenie aplikacji, publikacja w Google Play i App Store, zgodność z RODO, utrzymanie przez 12 miesięcy.",
+                ),
+                ("Koszt roku 1", "<b>131 500 zł</b> (600 h × 210 zł/h + koszty stałe)."),
+                (
+                    "Dane o zdrowiu",
+                    "Art. 9 RODO — wyraźne zgody, ocena skutków (DPIA), przetwarzanie w UE.",
+                ),
+                (
+                    "Wkład własny",
+                    "Robocza wersja aplikacji wraz z backendem wytworzona nieodpłatnie (<b>ok. 180 h ≈ 38 tys. zł</b>).",
+                ),
+            ],
+            styles,
+        )
+    )
+    story.append(Spacer(1, 6))
     story.append(p("<b>Spis treści</b>", styles["h2"]))
     toc = [
         "1. Cel projektu i grupa docelowa",
@@ -527,19 +593,6 @@ def build_story(styles: dict) -> list:
     ]
     for item in toc:
         story.append(p(item, styles["toc_item"]))
-
-    story.append(Spacer(1, 10))
-    story.append(
-        info_box(
-            "<b>Dokument w skrócie.</b> Platformy: Android + iOS · Aplikacja bezpłatna · "
-            "Dane o zdrowiu (RODO art. 9) · Publikacja w Google Play i App Store · "
-            "Koszt roku 1: <b>131 500 zł</b> (600 h × 210 zł/h + koszty stałe) · "
-            "Utrzymanie 12 miesięcy w budżecie · Charakter: dokończenie, publikacja, zgodność, utrzymanie "
-            "(na bazie istniejącego zaplecza cyfrowego fundacji) · Wkład własny: robocza wersja aplikacji "
-            "wraz z backendem wytworzona nieodpłatnie (ok. 180 h ≈ 38 tys. zł).",
-            styles,
-        )
-    )
 
     # ========== 1. CEL ==========
     story.extend(section_title("1", "Cel projektu i grupa docelowa", styles))
@@ -1057,14 +1110,11 @@ def build_story(styles: dict) -> list:
     story.append(
         info_box(
             "<b>Wkład własny fundacji — prace wykonane przed projektem.</b> Robocza wersja aplikacji "
-            "pacjenta — sekcja webowa, aplikacja mobilna oraz obsługujący je backend/API (profil medyczny, "
-            "leki z przypomnieniami, pomiary z wykresami, historia INR, udostępnianie w rodzinie, eksport "
-            "raportu PDF, uwierzytelnianie i przechowywanie danych) — powstała w całości "
-            "<b>nieodpłatnie</b>. Na podstawie historii repozytorium kodu wkład ten szacujemy ostrożnie "
-            "na <b>ok. 180 godzin</b> pracy programistycznej o wartości <b>ok. 38 tys. zł</b> "
-            "(wg stawki referencyjnej 210 zł/h). Prace dotychczasowe wykonał programista współpracujący "
-            "z fundacją — ta sama osoba zrealizuje prace objęte kosztorysem, co ogranicza ryzyko "
-            "wdrożenia. Kosztorys powyżej obejmuje wyłącznie prace przyszłe.",
+            "pacjenta (sekcja webowa, aplikacja mobilna i backend/API — zakres opisany w rozdz. 3) "
+            "powstała w całości <b>nieodpłatnie</b>; na podstawie historii repozytorium kodu szacujemy "
+            "ten wkład ostrożnie na <b>ok. 180 godzin</b> pracy o wartości <b>ok. 38 tys. zł</b> "
+            "(wg stawki referencyjnej 210 zł/h). Autor wersji roboczej zrealizuje także prace objęte "
+            "kosztorysem, co ogranicza ryzyko wdrożenia — kosztorys powyżej obejmuje wyłącznie prace przyszłe.",
             styles,
         )
     )
