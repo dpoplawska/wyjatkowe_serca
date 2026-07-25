@@ -433,14 +433,14 @@ def cover_page(styles: dict) -> list:
             [
                 p("PLATFORMY", styles["fact_label"]),
                 p("CENA DLA RODZIN", styles["fact_label"]),
-                p("KOSZT ROKU 1", styles["fact_label"]),
-                p("UTRZYMANIE", styles["fact_label"]),
+                p("DLA KOGO", styles["fact_label"]),
+                p("STATUS", styles["fact_label"]),
             ],
             [
                 p("Android + iOS", styles["fact_value"]),
                 p("aplikacja bezpłatna", styles["fact_value"]),
-                p("131 500 zł", styles["fact_value"]),
-                p("12 miesięcy", styles["fact_value"]),
+                p("rodziny dzieci z WWS", styles["fact_value"]),
+                p("wersja robocza gotowa", styles["fact_value"]),
             ],
         ],
         colWidths=[usable / 4.0] * 4,
