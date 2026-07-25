@@ -1025,52 +1025,66 @@ def build_story(styles: dict) -> list:
         ["1", "Analiza i projekt aplikacji mobilnej pacjenta", "»25", "»5 250"],
         [
             "2",
-            "Implementacja Android (profil, leki, pomiary, INR, uwierzytelnianie, PDF, udostępnianie)",
-            "»160",
-            "»33 600",
+            "Dokończenie i stabilizacja aplikacji Android: obsługa błędów, testy na urządzeniach, "
+            "dopracowanie interfejsu (profil, leki, pomiary, INR, PDF, udostępnianie)",
+            "»130",
+            "»27 300",
         ],
-        ["3", "Implementacja i testy iOS + logowanie Apple", "»60", "»12 600"],
-        ["4", "Integracja z API i usługami chmurowymi, stabilizacja", "»40", "»8 400"],
         [
-            "5",
-            "Publikacja Google Play + App Store (karty sklepowe, materiały, zastrzeżenie medyczne)",
+            "3",
+            "Testy z rodzinami-testerami przed publikacją; poprawki po testach",
+            "»20",
+            "»4 200",
+        ],
+        ["4", "Implementacja i testy iOS + logowanie Apple", "»60", "»12 600"],
+        ["5", "Integracja z API i usługami chmurowymi, stabilizacja", "»40", "»8 400"],
+        [
+            "6",
+            "Publikacja Google Play + App Store (karty sklepowe, zastrzeżenie medyczne) "
+            "oraz materiały informacyjne dla rodzin",
             "»40",
             "»8 400",
         ],
-        ["", "«b»Suma A", "»325", "»68 250"],
+        ["", "«b»Suma A", "»315", "»66 150"],
         ["", "«b»B. Zgodność RODO / dane o zdrowiu", "", ""],
         [
-            "6",
+            "7",
             "Zgody art. 9, opiekun, polityka prywatności pod aplikację, komunikaty przy zaproszeniach",
             "»40",
             "»8 400",
         ],
         [
-            "7",
-            "Usunięcie konta i danych w całym systemie (API, web, aplikacja mobilna)",
-            "»25",
-            "»5 250",
+            "8",
+            "Usunięcie konta i danych w całym systemie (API, web, aplikacja mobilna) "
+            "wraz z testami kasowania kaskadowego",
+            "»35",
+            "»7 350",
         ],
         [
-            "8",
+            "9",
             "Wzmocnienie zabezpieczeń API (sekrety, dokumentacja, limity zapytań, konta serwisowe)",
             "»30",
             "»6 300",
         ],
-        ["9", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»30", "»6 300"],
-        ["10", "Konsultacja / przegląd dokumentacji RODO (prawnik)", "»—", "»3 000"],
-        ["", "«b»Suma B", "»125", "»29 250"],
+        ["10", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»30", "»6 300"],
+        ["11", "Konsultacja / przegląd dokumentacji RODO (prawnik)", "»—", "»3 000"],
+        ["", "«b»Suma B", "»135", "»31 350"],
         ["", "«b»C. Utrzymanie i infrastruktura (12 miesięcy)", "", ""],
         [
-            "11",
+            "12",
             "Praca programisty — utrzymanie, poprawki, aktualizacje platform",
             "»150",
             "»31 500",
         ],
-        ["12", "Hosting i chmura (API, baza, uwierzytelnianie, kopie zapasowe)", "»—", "»2 400"],
-        ["13", "Google Play Console (opłata jednorazowa w roku 1)", "»—", "»100"],
         [
-            "14",
+            "13",
+            "Hosting i chmura (API, baza, uwierzytelnianie, kopie zapasowe) — z buforem wzrostu",
+            "»—",
+            "»2 400",
+        ],
+        ["14", "Google Play Console (opłata jednorazowa w roku 1)", "»—", "»100"],
+        [
+            "15",
             "Apple Developer Program (zwolnienie z opłaty dla organizacji non-profit — założenie)",
             "»—",
             "»0",
@@ -1144,10 +1158,10 @@ def build_story(styles: dict) -> list:
     map_rows = [
         ["Część opisu projektu", "Pozycje kosztorysu"],
         ["Niniejszy dokument / analiza i projekt (rozdz. 1–5, 7)", "Lp. 1"],
-        ["Zakres v1 Android, przepływ, funkcje medyczne", "Lp. 2, 4"],
-        ["iOS, sklepy, zastrzeżenie medyczne, materiały", "Lp. 3, 5"],
-        ["Ochrona danych (rozdz. 6)", "Lp. 6–10"],
-        ["Utrzymanie i hosting (rozdz. 9)", "Lp. 11–14"],
+        ["Zakres v1 Android, przepływ, funkcje medyczne, testy z rodzinami", "Lp. 2, 3, 5"],
+        ["iOS, sklepy, zastrzeżenie medyczne, materiały dla rodzin (rozdz. 10)", "Lp. 4, 6"],
+        ["Ochrona danych (rozdz. 6)", "Lp. 7–11"],
+        ["Utrzymanie i hosting (rozdz. 9)", "Lp. 12–15"],
     ]
     story.append(make_table(map_rows, [usable * 0.55, usable * 0.45], styles))
     story.append(
@@ -1169,7 +1183,7 @@ def build_story(styles: dict) -> list:
             "systemów Android i iOS, usuwanie zgłaszanych błędów, utrzymanie hostingu API i bazy "
             "wraz z kopiami zapasowymi, drobne zmiany interfejsu i treści (w tym komunikaty RODO) "
             "oraz wsparcie fundacji w komunikacji z rodzinami — zgodnie z zakresem z rozdz. 3 "
-            "i pozycjami 11–12 kosztorysu.",
+            "i pozycjami 12–13 kosztorysu.",
             styles["body"],
         )
     )

@@ -74,3 +74,46 @@ Checklist przed każdym zrzutem:
 Zapisz PNG w `docs/screenshots/`, NIE commituj — właściciel repo zweryfikuje
 zawartość (brak danych rzeczywistych) i zdecyduje o osadzeniu w PDF
 (`docs/generate_opis_aplikacji.py` zostanie rozszerzony o stronę z podglądem).
+
+---
+
+## Status (2026-07-25, Grok)
+
+Pliki w `docs/screenshots/` (1080×2400 PNG, z Pixel 8 / `37211FDJH0067Z`):
+
+| Plik | Status | Uwagi |
+|---|---|---|
+| `profil.png` | OK | Jan Testowy, wady serca, rytm, rozrusznik |
+| `leki.png` | OK z zastrzeżeniem | Główny lek: **Warfarin 2.5 mg**; w harmonogramie mogą zostać szare wpisy zakończone (`whoa`) / `bez nazwy` — nie usunęły się w pełni przez UI; karta Warfarin jest czytelna |
+| `pomiary.png` | OK | Historia pomiarów (m.in. saturacja, tętno, ciśnienie, diureza) |
+| `inr.png` | OK | Kalkulator INR + zakresy terapeutyczne (brak osobnej historii wpisów na zrzucie) |
+
+Poprawki danych demo: Operacja Fontana; op.2 → Wszczepienie CRT-D; op.3 → Operacja Norwood; opis powikłań → Chylothorax; usunięto część śmieciowych leków; Warfarin 2.5 mg.  
+**Nie commituj** — weryfikacja właściciela przed PDF.
+
+---
+
+## Runda 2 (2026-07-25, Claude — po weryfikacji rundy 1)
+
+`profil.png` i `leki.png` — **zaakceptowane, nie ruszaj**. Dwa zadania:
+
+1. **`pomiary.png` — zrób od nowa.** Powód: na starym zrzucie pierwszy wpis to
+   "Ciśnienie 80/120" (wartości zamienione miejscami, czerwony alert) — dane już
+   naprawiłem od środka aplikacji (usunięte: wpis 80/120 z 16.05 oraz dwa duplikaty
+   wpisów testowych z 25.07; historia ma teraz 30 sensownych wpisów).
+   Kadr: sekcja **Wykresy** z zakresem **"Wszystko"** (chip już zaznaczony) — tak, aby
+   u góry kadru był tytuł "Saturacja (SpO₂ %)" z chipami zakresów, a niżej wykres
+   saturacji i tętna. Telefon zostawiony na zakładce Pomiary, "stay awake" włączone
+   (`settings put global stay_on_while_plugged_in 7`).
+
+2. **`inr.png` — zamień.** Stary zrzut pokazuje "Kalkulator INR" (wzór, Oblicz INR,
+   zakresy terapeutyczne) — dokument dotacyjny celowo opisuje moduł INR jako
+   *rejestr wyników, nie narzędzie diagnostyczne*, więc kalkulator w PDF podważa tę
+   narrację. Przescrolluj ekran INR w dół: jeśli istnieje sekcja **historii wyników
+   INR** (lista wpisów z datami), skadruj zrzut na nią (bez kalkulatora w kadrze).
+   Jeśli historia nie istnieje lub jest pusta i nie da się jej sensownie zapełnić
+   2–3 wpisami demo (INR 2,4–3,1, daty z ostatnich tygodni) — **nie rób zrzutu**
+   i odnotuj to w statusie; ekran INR po prostu wypadnie z PDF-a.
+
+Zasady bez zmian: tylko dane demo, ASCII w `input text`, klawiatura schowana,
+pliki do `docs/screenshots/`, bez commitów.
