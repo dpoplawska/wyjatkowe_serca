@@ -1,0 +1,76 @@
+# Zadanie: screenshoty aplikacji mobilnej do PDF-a dotacyjnego
+
+Cel: 4 zrzuty ekranu aplikacji pacjenta (pakiet `pl.wyjatkoweserca.pacjent`,
+Pixel 8 podpięty przez USB) do osadzenia w `docs/Opis_aplikacji_pacjenta_Wyjatkowe_Serca.pdf`
+jako strona "Podgląd aplikacji (wersja robocza)".
+
+## Połączenie z telefonem
+
+Pełny przewodnik: sekcja *"Testing the mobile app on a physical device"* w głównym
+`README.md`. Skrót:
+
+1. Windows: `usbipd attach --wsl --busid <X>` (USB debugging włączone, port USB 2.0,
+   Phone Link zamknięty).
+2. WSL: serwer adb musi działać jako root: `sudo adb kill-server; sudo adb start-server`.
+3. `adb devices` ma pokazać urządzenie (serial `37211FDJH0067Z`).
+4. Ekran nie gaśnie przy zasilaniu: `adb shell settings put global stay_on_while_plugged_in 7`.
+   Jeśli ekran zgaśnie: `input keyevent KEYCODE_WAKEUP`, potem `input keyevent 82`
+   (telefon nie ma PIN-u — odblokowanie swipe'em).
+5. Start aplikacji: `adb shell monkey -p pl.wyjatkoweserca.pacjent 1` (konto Google
+   jest już zalogowane, dane wczytują się ~3 s).
+
+## Sterowanie UI (headless)
+
+- Zrzut: `adb exec-out screencap -p > plik.png` (koniecznie `exec-out`).
+- Współrzędne elementów: `adb shell uiautomator dump /sdcard/ui.xml && adb shell cat /sdcard/ui.xml`
+  → `bounds="[x1,y1][x2,y2]"`, tapnij środek: `adb shell input tap X Y`.
+- Tekst: `adb shell input text "Jan%sTestowy"` — **tylko ASCII** (bez polskich znaków!),
+  spacja jako `%s`. Czyszczenie pola: tap → `input keyevent KEYCODE_MOVE_END` →
+  seria `input keyevent KEYCODE_DEL`. Po wpisaniu `KEYCODE_BACK` zamyka klawiaturę,
+  a tap w inne pole wymusza zapis (autosave).
+- Nawigacja dolna (taby, środki przycisków): Profil (134,2280) · Leki (404,2280) ·
+  Pomiary (674,2280) · INR (944,2280).
+
+## Stan danych demo (co już zrobione, co zostało)
+
+Zasada nadrzędna: **na ekranach wyłącznie fikcyjne dane** — żadnych prawdziwych danych
+dziecka (RODO). Dane mają wyglądać realistycznie i schludnie.
+
+Zrobione:
+- Imię i nazwisko: `Jan Testowy` (było "Test test").
+- Operacja 1, typ: `Operacja Fontana` (było "Mocna"); data 20.03.2026 i 10 dni IT — OK.
+
+Do zrobienia:
+1. **Operacja 2, typ = "ee"** — pole EditText, bounds `[126,2157][954,2208]`
+   (środek ~`540 2182`; po scrollu współrzędne się zmienią — zrób świeży dump).
+   Zamień na np. `Wszczepienie%sCRT-D` (spójne z rozrusznikiem CRT-D w profilu).
+2. Przescrolluj profil do końca (`input swipe 540 1800 540 700 400`) i sprawdź
+   pozostałe pola (powikłania, choroby współistniejące, zespoły genetyczne itd.) —
+   popraw wartości typu "asdf"/"ee"/"123" na realistyczne lub usuń.
+3. Zakładki **Leki / Pomiary / INR**: przejrzyj wpisy; głupie wartości popraw
+   (np. lek `Warfaryna`, dawka `2,5 mg`, 1×dziennie; pomiary: saturacja 92–97%,
+   tętno 80–110; INR 2,0–3,5). Jeśli list jest pusta, dodaj 2–3 wpisy, żeby ekran
+   nie świecił pustką (wykres w Pomiarach potrzebuje kilku punktów).
+   UWAGA przy dawkach/textach: bez polskich znaków (ograniczenie `input text`).
+
+## Screenshoty do dostarczenia
+
+Katalog docelowy: `docs/screenshots/` (utwórz). Rozdzielczość natywna 1080×2400, PNG:
+
+| Plik | Ekran | Uwagi |
+|---|---|---|
+| `profil.png` | Profil pacjenta od góry | widoczne "Jan Testowy", wady serca |
+| `leki.png` | Leki | lista leków z dawkami |
+| `pomiary.png` | Pomiary | najlepiej fragment z wykresem |
+| `inr.png` | INR | historia wyników |
+
+Checklist przed każdym zrzutem:
+- klawiatura schowana (`KEYCODE_BACK`), żaden dropdown nie jest otwarty;
+- brak dialogów/toastów; treść wczytana (nie "Wczytywanie…");
+- pasek statusu wygląda zwyczajnie (godzina, bateria — OK, to nie przeszkadza).
+
+## Po zrobieniu
+
+Zapisz PNG w `docs/screenshots/`, NIE commituj — właściciel repo zweryfikuje
+zawartość (brak danych rzeczywistych) i zdecyduje o osadzeniu w PDF
+(`docs/generate_opis_aplikacji.py` zostanie rozszerzony o stronę z podglądem).
