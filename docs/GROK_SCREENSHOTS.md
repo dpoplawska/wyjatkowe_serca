@@ -93,6 +93,22 @@ Poprawki danych demo: Operacja Fontana; op.2 → Wszczepienie CRT-D; op.3 → Op
 
 ---
 
+## Runda 3 (2026-07-25, Claude)
+
+Jedno zadanie: **`pomiary.png` — zrób od nowa, tym razem KARTY HISTORII zamiast
+wykresów.** Powód: na wykresach etykiety osi X renderują się jako "…" (bug
+w aplikacji — etykieta przy każdym z 30+ punktów; naprawa osobno, poza PDF).
+
+Kadr: zakładka Pomiary przescrollowana tak, żeby **u góry kadru był nagłówek
+"Historia pomiarów (…)"**, a pod nim 3–4 pełne karty wpisów (data + kolorowe chipy:
+Saturacja / Tętno / Ciśnienie / Diureza). **Bez** formularza "Dodaj pomiar" i **bez**
+sekcji Wykresy w kadrze (sekcję Wykresy można zwinąć tapnięciem w jej nagłówek,
+jeśli wystaje). Dane są już czyste (bez 80/120 i duplikatów) — niczego nie edytuj.
+
+`profil.png`, `leki.png`, `inr.png` — nie ruszaj.
+
+---
+
 ## Runda 2 (2026-07-25, Claude — po weryfikacji rundy 1)
 
 `profil.png` i `leki.png` — **zaakceptowane, nie ruszaj**. Dwa zadania:
@@ -117,3 +133,16 @@ Poprawki danych demo: Operacja Fontana; op.2 → Wszczepienie CRT-D; op.3 → Op
 
 Zasady bez zmian: tylko dane demo, ASCII w `input text`, klawiatura schowana,
 pliki do `docs/screenshots/`, bez commitów.
+
+---
+
+## Status rundy 2 (2026-07-25, Grok)
+
+| Plik | Akcja | Status |
+|---|---|---|
+| `profil.png` | **nie ruszany** (zaakceptowany r1) | bez zmian |
+| `leki.png` | **nie ruszany** (zaakceptowany r1) | bez zmian |
+| `pomiary.png` | **przebity** | Wykresy + chip **Wszystko** + Saturacja (SpO₂ %) + Tętno + ciśnienie; bez błędnego 80/120 |
+| `inr.png` | **przebity** | Sekcja **Historia pomiarów** z wynikami **2.67 / 2.33 / 2.50 / 2.75** (demo); usunięto śmieci 0.17; **bez** formularza „Oblicz INR” / wzoru w kadrze. Tytuł paska nawigacji nadal „Kalkulator INR” (nazwa ekranu w app) — nad listą widać też skrócone zakresy terapeutyczne (legenda, nie kalkulator). |
+
+**Nie commituj** — weryfikacja właściciela przed PDF.

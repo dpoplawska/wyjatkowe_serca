@@ -78,3 +78,10 @@ Duplicated between `PomiaryScreen` and `MedicationsScreen`. Extract when a third
 
 ### Move reminder-time `HH:MM` helpers to `lib/notifications.ts`
 Right now `PomiaryScreen` hand-rolls `split(':').map(parseInt)` and pad-to-`HH:MM` inline. Belongs next to `setPomiaryReminderTime` and `getPomiaryReminderTime`. Better still: change the persisted type to `{ hour: number; minute: number }` and ditch the string format.
+
+### `MiniLineChart`: x-axis labels render as "…" with many points
+`samples.map((s) => ({ value, label }))` attaches a label to every point; with 30+
+measurements each label gets a few px of width and RN ellipsizes all of them.
+Fix: thin the labels — only every Nth point gets one (`step = Math.ceil(n / 6)`,
+`label: i % step === 0 ? s.label : undefined`), or use `xAxisLabelTexts` with a
+fixed count. Spotted while screenshotting for the grant PDF (2026-07-25).
