@@ -301,7 +301,7 @@ def section_title(num: str, title: str, styles: dict) -> list:
             ]
         )
     )
-    return [Spacer(1, 8), chip, hr()]
+    return [Spacer(1, 14), chip, hr()]
 
 
 def bullets(items: list[str], styles: dict) -> ListFlowable:
@@ -595,6 +595,7 @@ def build_story(styles: dict) -> list:
         story.append(p(item, styles["toc_item"]))
 
     # ========== 1. CEL ==========
+    story.append(PageBreak())
     story.extend(section_title("1", "Cel projektu i grupa docelowa", styles))
     story.append(
         p(
@@ -988,6 +989,7 @@ def build_story(styles: dict) -> list:
     )
 
     # ========== 8. BUDŻET ==========
+    story.append(PageBreak())
     story.extend(section_title("8", "Powiązanie z budżetem projektu", styles))
     story.append(
         p(
@@ -1217,6 +1219,7 @@ def build_story(styles: dict) -> list:
     )
 
     # ========== 11. PODSUMOWANIE ==========
+    story.append(PageBreak())
     story.extend(section_title("11", "Podsumowanie", styles))
     story.append(
         p(
