@@ -47,6 +47,14 @@ WHITE = colors.white
 
 # --- Assets ---
 LOGO_PNG = ROOT / "frontend" / "app" / "public" / "logo.png"
+SHOTS_DIR = Path(__file__).resolve().parent / "screenshots"
+# (plik, przycięcie od góry w px — pasek statusu / zbędny nagłówek, podpis)
+APP_SHOTS = [
+    ("profil.png", 140, "Profil pacjenta"),
+    ("leki.png", 140, "Leki i przypomnienia dawek"),
+    ("pomiary.png", 320, "Pomiary — wykresy trendów"),
+    ("inr.png", 985, "INR — rejestr wyników"),
+]
 
 # --- Fonts (Polish glyphs) ---
 pdfmetrics.registerFont(TTFont("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
@@ -525,6 +533,58 @@ def summary_box(rows: list[tuple[str, str]], styles: dict) -> Table:
     return t
 
 
+def phone_shot(path: Path, crop_top: int, width: float) -> Image:
+    """Zrzut ekranu telefonu przycięty od góry (pasek statusu itp.)."""
+    from io import BytesIO
+
+    from PIL import Image as PILImage
+
+    im = PILImage.open(path)
+    if crop_top:
+        im = im.crop((0, crop_top, im.width, im.height))
+    buf = BytesIO()
+    im.save(buf, "PNG")
+    buf.seek(0)
+    return Image(buf, width=width, height=width * im.height / im.width)
+
+
+def annex_screens(styles: dict) -> list:
+    """Strona załącznika ze zrzutami aplikacji — pomijana, gdy brak plików."""
+    if not all((SHOTS_DIR / f).is_file() for f, _, _ in APP_SHOTS):
+        return []
+    usable = PAGE_W - 2 * MARGIN
+    col_w = usable / len(APP_SHOTS)
+    img_w = col_w - 5 * mm
+    imgs = [phone_shot(SHOTS_DIR / f, crop, img_w) for f, crop, _ in APP_SHOTS]
+    caps = [p(cap, styles["fact_label"]) for _, _, cap in APP_SHOTS]
+    grid = Table([imgs, caps], colWidths=[col_w] * len(APP_SHOTS))
+    grid.setStyle(
+        TableStyle(
+            [
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, 0), "TOP"),
+                ("TOPPADDING", (0, 0), (-1, 0), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
+                ("TOPPADDING", (0, 1), (-1, 1), 0),
+            ]
+        )
+    )
+    flow: list = [PageBreak()]
+    flow.extend(section_title("A", "Załącznik — podgląd aplikacji (wersja robocza)", styles))
+    flow.append(
+        p(
+            "Poniższe zrzuty ekranu pochodzą z roboczej wersji aplikacji (Android) przed "
+            "publikacją w sklepach. Wszystkie widoczne dane są <b>fikcyjne</b> — pochodzą "
+            "z profilu demonstracyjnego.",
+            styles["body"],
+        )
+    )
+    flow.append(Spacer(1, 4))
+    flow.append(grid)
+    flow.append(Spacer(1, 6))
+    return flow
+
+
 def callout_box(text: str, styles: dict) -> Table:
     return _accent_box(text, styles, BRAND_RED, colors.HexColor("#FFF5F6"))
 
@@ -608,6 +668,8 @@ def build_story(styles: dict) -> list:
         "10. Oczekiwane efekty i mierniki — ostrożne szacunki",
         "11. Podsumowanie",
     ]
+    if all((SHOTS_DIR / f).is_file() for f, _, _ in APP_SHOTS):
+        toc.append("Załącznik A. Podgląd aplikacji (wersja robocza)")
     for item in toc:
         story.append(p(item, styles["toc_item"]))
 
@@ -1276,6 +1338,9 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
+    # ========== ZAŁĄCZNIK: SCREENSHOTY ==========
+    story.extend(annex_screens(styles))
+
     story.append(
         KeepTogether(
             [
