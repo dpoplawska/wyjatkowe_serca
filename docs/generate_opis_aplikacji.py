@@ -660,7 +660,7 @@ def build_story(styles: dict) -> list:
                 ),
                 (
                     "Wnioskowana kwota",
-                    "<b>253 100 zł</b> — rozwój aplikacji (900 h × 200 zł/h), koszty stałe "
+                    "<b>253 500 zł</b> — rozwój aplikacji (820 h × 220 zł/h), koszty stałe "
                     "i 12 miesięcy utrzymania po wdrożeniu.",
                 ),
                 (
@@ -670,7 +670,7 @@ def build_story(styles: dict) -> list:
                 (
                     "Wkład własny",
                     "Ok. 40% zakresu aplikacji wytworzone nieodpłatnie — wkład własny fundacji "
-                    "o wartości <b>120 000 zł</b> (docelowa wartość produktu: 300 000 zł).",
+                    "o wartości <b>121 000 zł</b> (docelowa wartość produktu: ok. 300 000 zł).",
                 ),
             ],
             styles,
@@ -1097,7 +1097,7 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "Poniższa tabela łączy bloki merytoryczne z kosztorysem wniosku. "
-            "<b>Stawka referencyjna prac programistycznych: 200 zł/h.</b> "
+            "<b>Stawka referencyjna prac programistycznych: 220 zł/h.</b> "
             "W budżecie <b>nie ujęto</b> kosztów narzędzi warsztatu wykonawcy (środowisko programistyczne, "
             "oprogramowanie wspomagające prace deweloperskie itp.) — są wliczone w stawkę. Ujęto koszty "
             "bezpośrednio związane z produktem fundacji: prace, RODO, hosting, opłaty sklepowe.",
@@ -1107,71 +1107,71 @@ def build_story(styles: dict) -> list:
     bud_rows = [
         ["Lp.", "Pozycja", "Godz.", "Kwota (zł)"],
         ["", "«b»A. Rozwój aplikacji — pozostałe 60% zakresu", "", ""],
-        ["1", "Analiza i projekt rozszerzonego zakresu funkcjonalnego", "»40", "»8 000"],
+        ["1", "Analiza i projekt rozszerzonego zakresu funkcjonalnego", "»35", "»7 700"],
         [
             "2",
             "Dokończenie i stabilizacja aplikacji Android: obsługa błędów, testy na urządzeniach, "
             "dopracowanie interfejsu (profil, leki, pomiary, INR, raport PDF, udostępnianie)",
-            "»200",
-            "»40 000",
+            "»180",
+            "»39 600",
         ],
         [
             "3",
             "Dokumentacja medyczna: wgrywanie plików PDF z datą dokumentu, limity wielkości, "
             "zatwierdzanie użytkowników, bezpieczne przechowywanie",
-            "»80",
-            "»16 000",
+            "»75",
+            "»16 500",
         ],
         [
             "4",
             "Panel danych opiekunów oraz historia leczenia i hospitalizacji",
-            "»90",
-            "»18 000",
+            "»80",
+            "»17 600",
         ],
         [
             "5",
             "Usamodzielnienie pacjenta po 18. roku życia (przejęcie konta, zgody na dostęp rodziców)",
-            "»50",
-            "»10 000",
+            "»45",
+            "»9 900",
         ],
         [
             "6",
             "Testy z rodzinami-testerami przed publikacją; poprawki po testach",
             "»30",
-            "»6 000",
+            "»6 600",
         ],
-        ["7", "Implementacja i testy iOS", "»120", "»24 000"],
-        ["8", "Integracja z API i usługami chmurowymi, stabilizacja", "»60", "»12 000"],
+        ["7", "Implementacja i testy iOS", "»110", "»24 200"],
+        ["8", "Integracja z API i usługami chmurowymi, stabilizacja", "»55", "»12 100"],
         [
             "9",
             "Publikacja w Google Play i App Store (materiały, zastrzeżenie medyczne) "
             "oraz materiały informacyjne dla rodzin",
             "»50",
-            "»10 000",
+            "»11 000",
         ],
-        ["", "«b»Suma A", "»720", "»144 000"],
+        ["", "«b»Suma A", "»660", "»145 200"],
         ["", "«b»B. Zgodność RODO / dane o zdrowiu", "", ""],
         [
             "10",
             "Zgody art. 9, dane opiekunów, polityka prywatności pod aplikację, komunikaty przy zaproszeniach",
-            "»50",
-            "»10 000",
+            "»45",
+            "»9 900",
         ],
         [
             "11",
             "Usunięcie konta i danych w całym systemie (API, web, aplikacja mobilna) "
             "wraz z testami kasowania kaskadowego",
-            "»45",
-            "»9 000",
+            "»40",
+            "»8 800",
         ],
         [
             "12",
             "Wzmocnienie zabezpieczeń API (sekrety, limity zapytań i uploadu, konta serwisowe)",
-            "»40",
-            "»8 000",
+            "»35",
+            "»7 700",
         ],
-        ["13", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»45", "»9 000"],
-        ["", "«b»Suma B", "»180", "»36 000"],
+        ["13", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»40", "»8 800"],
+        ["", "«b»Suma B", "»160", "»35 200"],
         ["", "«b»C. Koszty stałe w okresie prac", "", ""],
         ["14", "Konsultacja / przegląd dokumentacji RODO (prawnik)", "»—", "»3 000"],
         ["15", "Hosting i chmura w okresie prac nad aplikacją", "»—", "»4 000"],
@@ -1199,7 +1199,7 @@ def build_story(styles: dict) -> list:
             "»0",
         ],
         ["", "«b»Suma D", "»—", "»66 100"],
-        ["", "«b»RAZEM — WNIOSKOWANA DOTACJA", "»900", "»253 100"],
+        ["", "«b»RAZEM — WNIOSKOWANA DOTACJA", "»820", "»253 500"],
     ]
     # Custom table with stronger total row
     data = []
@@ -1253,11 +1253,11 @@ def build_story(styles: dict) -> list:
     story.append(
         info_box(
             "<b>Model finansowania i wkład własny fundacji.</b> Docelowa wartość aplikacji pacjenta "
-            "to <b>300 000 zł</b> (1 500 h × 200 zł/h). Działająca wersja robocza — sekcja webowa, "
-            "aplikacja mobilna i backend/API (wykaz funkcji w rozdz. 3) — powstała w całości "
-            "<b>nieodpłatnie</b> i odpowiada <b>ok. 40% docelowego zakresu</b>, czyli ok. 600 h pracy "
-            "o wartości <b>120 000 zł</b>. To wkład własny fundacji. Kosztorys powyżej obejmuje "
-            "wyłącznie prace przyszłe: pozostałe <b>60% rozwoju (180 000 zł)</b>, koszty stałe okresu "
+            "to <b>ok. 300 000 zł</b> (ok. 1 370 h × 220 zł/h). Działająca wersja robocza — sekcja "
+            "webowa, aplikacja mobilna i backend/API (wykaz funkcji w rozdz. 3) — powstała w całości "
+            "<b>nieodpłatnie</b> i odpowiada <b>ok. 40% docelowego zakresu</b>, czyli ok. 550 h pracy "
+            "o wartości <b>121 000 zł</b>. To wkład własny fundacji. Kosztorys powyżej obejmuje "
+            "wyłącznie prace przyszłe: pozostałe <b>60% rozwoju (180 400 zł)</b>, koszty stałe okresu "
             "budowy i 12 miesięcy utrzymania. Autor wersji roboczej zrealizuje także prace objęte "
             "kosztorysem, co ogranicza ryzyko wdrożenia.",
             styles,
@@ -1387,9 +1387,9 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "Całkowity koszt roku 1 według kosztorysu spójnego z niniejszym opisem wynosi "
-            "<b>253 100 zł</b>: 900 godzin prac programistycznych w stawce 200 zł/h, koszty stałe "
+            "<b>253 500 zł</b>: 820 godzin prac programistycznych w stawce 220 zł/h, koszty stałe "
             "okresu budowy (prawnik RODO, hosting) oraz 12 miesięcy utrzymania po wdrożeniu. "
-            "Docelowa wartość aplikacji to 300 000 zł, z czego <b>ok. 40% (120 000 zł) fundacja "
+            "Docelowa wartość aplikacji to ok. 300 000 zł, z czego <b>ok. 40% (121 000 zł) fundacja "
             "wniosła już nieodpłatnie</b> w postaci działającej wersji roboczej; dotacja finansuje "
             "wyłącznie prace przyszłe. Inwestycja wzmacnia "
             "misję fundacji w obszarze codziennego wsparcia rodziców — w sposób mierzalny, "

@@ -56,9 +56,9 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
             "budżet",
             "Utrzymanie",
             "efekty",
-            "253 100",
+            "253 500",
             "Analiza i projekt",
-            "120 000",
+            "121 000",
             "dane o zdrowiu",
             "Google Play",
             "App Store",
@@ -89,7 +89,7 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
     def test_polish_and_budget_totals(self) -> None:
         self.assertIn("ł", self.text)
         self.assertIn("ę", self.text)
-        for amount in ("144 000", "36 000", "7 000", "66 100", "253 100", "300 000"):
+        for amount in ("145 200", "35 200", "7 000", "66 100", "253 500", "300 000"):
             self.assertIn(amount, self.text)
 
     def test_metadata(self) -> None:
