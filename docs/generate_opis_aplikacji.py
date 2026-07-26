@@ -346,7 +346,11 @@ def make_table(
                 # right-align numeric-looking last columns when marked with »
                 s = str(cell)
                 if s.startswith("»"):
-                    line.append(p(s[1:], styles["cell_b_right"] if s.endswith("**") else styles["cell_right"]))
+                    content = s[1:]
+                    if content.endswith("**"):
+                        line.append(p(content[:-2], styles["cell_b_right"]))
+                    else:
+                        line.append(p(content, styles["cell_right"]))
                 elif s.startswith("«b»"):
                     line.append(p(s[3:], styles["cell_b"]))
                 else:
@@ -653,8 +657,9 @@ def build_story(styles: dict) -> list:
                 ),
                 (
                     "Wnioskowana kwota",
-                    "<b>228 400 zł</b> na rozwój aplikacji (705 h × 220 zł/h), koszty stałe "
-                    "i 12 miesięcy utrzymania po wdrożeniu.",
+                    "<b>228 400 zł</b>, w tym: rozwój aplikacji 155 100 zł (705 h × 220 zł/h), "
+                    "koszty stałe okresu prac 7 000 zł oraz utrzymanie przez 12 miesięcy "
+                    "po wdrożeniu 66 300 zł.",
                 ),
                 (
                     "Dane o zdrowiu",
@@ -662,8 +667,9 @@ def build_story(styles: dict) -> list:
                 ),
                 (
                     "Wkład własny",
-                    "Ok. 44% zakresu aplikacji wytworzone nieodpłatnie, jako wkład własny fundacji "
-                    "o wartości <b>121 000 zł</b> (docelowa wartość produktu: ok. 276 000 zł).",
+                    "Prace wykonane nieodpłatnie przed projektem: <b>121 000 zł</b> (ok. 44% zakresu). "
+                    "Wartość gotowej aplikacji to 276 100 zł = 121 000 zł wkładu własnego "
+                    "+ 155 100 zł rozwoju z dotacji; utrzymanie i koszty stałe liczone są osobno.",
                 ),
             ],
             styles,
@@ -1319,16 +1325,27 @@ def build_story(styles: dict) -> list:
     bt.setStyle(TableStyle(cmds))
     story.append(bt)
     story.append(Spacer(1, 6))
+    fin_head = p("<b>Jak czytać powyższe kwoty</b>", styles["h2"])
+    fin_rows = [
+        ["Składnik", "Kwota"],
+        ["Prace rozwojowe (bloki A i B) — finansowane z dotacji", "»155 100 zł"],
+        ["Koszty stałe okresu prac (blok C) — finansowane z dotacji", "»7 000 zł"],
+        ["Utrzymanie przez 12 miesięcy po wdrożeniu (blok D) — z dotacji", "»66 300 zł"],
+        ["«b»Razem: wnioskowana dotacja", "»228 400 zł**"],
+        ["Wkład własny fundacji: prace wykonane przed projektem, poza dotacją", "»121 000 zł"],
+        ["«b»Wartość gotowej aplikacji (prace rozwojowe + wkład własny)", "»276 100 zł**"],
+    ]
+    story.append(
+        KeepTogether([fin_head, make_table(fin_rows, [usable - 32 * mm, 32 * mm], styles)])
+    )
+    story.append(Spacer(1, 6))
     story.append(
         info_box(
-            "<b>Model finansowania i wkład własny fundacji.</b> Docelowa wartość aplikacji pacjenta "
-            "to <b>ok. 276 000 zł</b> (ok. 1 255 h × 220 zł/h). Działająca wersja robocza, na którą składa się sekcja "
-            "webowa, aplikacja mobilna i backend/API (wykaz funkcji w rozdz. 3), powstała w całości "
-            "<b>nieodpłatnie</b> i odpowiada <b>ok. 44% docelowego zakresu</b>, czyli ok. 550 h pracy "
-            "o wartości <b>121 000 zł</b>. To wkład własny fundacji. Kosztorys powyżej obejmuje "
-            "wyłącznie prace przyszłe: pozostałe 56% rozwoju (155 100 zł), koszty stałe okresu "
-            "budowy i 12 miesięcy utrzymania. Autor wersji roboczej zrealizuje także prace objęte "
-            "kosztorysem, co ogranicza ryzyko wdrożenia.",
+            "Wartość gotowej aplikacji obejmuje wyłącznie prace nad produktem: 121 000 zł, które "
+            "fundacja wniosła nieodpłatnie (ok. 550 h, ok. 44% zakresu — wykaz funkcji w rozdz. 3), "
+            "oraz 155 100 zł prac pozostałych do wykonania. Utrzymanie i koszty stałe okresu prac "
+            "są kosztem eksploatacji, dlatego nie wchodzą do wartości produktu. Autor wersji roboczej "
+            "zrealizuje także prace objęte kosztorysem, co ogranicza ryzyko wdrożenia.",
             styles,
         )
     )
@@ -1482,11 +1499,12 @@ def build_story(styles: dict) -> list:
     )
     story.append(
         p(
-            "Całkowity koszt projektu według kosztorysu spójnego z niniejszym opisem wynosi "
-            "<b>228 400 zł</b>: 705 godzin prac rozwojowych w stawce 220 zł/h, koszty stałe "
-            "okresu budowy (prawnik RODO, hosting) oraz 12 miesięcy utrzymania po wdrożeniu. "
-            "Docelowa wartość aplikacji to ok. 276 000 zł, z czego <b>ok. 44% (121 000 zł) fundacja "
-            "wniosła już nieodpłatnie</b> w postaci działającej wersji roboczej; dotacja finansuje "
+            "Wnioskowana kwota to <b>228 400 zł</b> i składa się z trzech części: 155 100 zł "
+            "na prace rozwojowe (705 godzin w stawce 220 zł/h), 7 000 zł kosztów stałych okresu "
+            "prac (prawnik RODO, hosting) oraz 66 300 zł na dwanaście miesięcy utrzymania po "
+            "wdrożeniu. Sama aplikacja po ukończeniu będzie warta 276 100 zł: 155 100 zł prac "
+            "z dotacji powiększone o <b>121 000 zł, które fundacja wniosła już nieodpłatnie</b> "
+            "w postaci działającej wersji roboczej (ok. 44% zakresu). Dotacja finansuje "
             "wyłącznie prace przyszłe. Inwestycja wzmacnia "
             "misję fundacji w obszarze codziennego wsparcia rodziców, w sposób mierzalny, "
             "odpowiedzialny i możliwy do kontynuacji po zakończeniu dofinansowania.",
