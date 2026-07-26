@@ -790,128 +790,111 @@ def build_story(styles: dict) -> list:
 
     # ========== 3. ZAKRES ==========
     story.extend(section_title("3", "Zakres funkcjonalny wersji 1 (v1) i poza zakresem", styles))
-    story.append(p("<b>3.1. W zakresie v1 (przedmiot projektu)</b>", styles["h2"]))
-
-    scope_rows = [
-        ["Obszar", "Opis funkcjonalny"],
-        [
-            "Logowanie",
-            "Bezpieczne logowanie kontem Google, zgodne z istniejącym API fundacji, bez zakładania "
-            "i pamiętania osobnego hasła. Na iOS zakres obejmuje dostosowanie logowania do wymagań "
-            "App Store oraz jednolity model sesji na obu platformach.",
-        ],
-        [
-            "Profil pacjenta",
-            "Dane identyfikacyjne i medyczne istotne dla WWS: m.in. imię i nazwisko dziecka, grupa krwi, "
-            "wady serca, zaburzenia rytmu, rozrusznik, przebyte operacje, powikłania, choroby współistniejące, "
-            "zespoły genetyczne, z automatycznym zapisem. Osobny panel z danymi opiekunów "
-            "lub rodziców (kontakt do osób sprawujących opiekę).",
-        ],
-        [
-            "Historia leczenia i hospitalizacji",
-            "Rejestr pobytów szpitalnych i etapów leczenia (daty, placówka, powód, przebieg); "
-            "uporządkowana oś czasu choroby dostępna na wizycie i przy zmianie ośrodka.",
-        ],
-        [
-            "Dokumentacja medyczna",
-            "Dodawanie dokumentów PDF (wypisy, wyniki, konsultacje) z datą dokumentu, "
-            "z limitem wielkości pliku; wgrywanie dostępne dla kont zatwierdzonych przez fundację.",
-        ],
-        [
-            "Leki",
-            "Lista leków, dawki, częstotliwość, historia podań, śledzenie kolejnej dawki, "
-            "lokalne przypomnienia na urządzeniu (za zgodą użytkownika na powiadomienia systemowe).",
-        ],
-        [
-            "Pomiary",
-            "Rejestr pomiarów domowych (m.in. saturacja, tętno, ciśnienie, diureza), notatki, "
-            "przegląd historii i uproszczone wykresy, opcjonalne przypomnienie o pomiarach.",
-        ],
-        [
-            "INR",
-            "Historia wyników INR / parametrów powiązanych, etykiety informacyjne "
-            "(rejestr wyników, nie narzędzie diagnostyczne), przegląd trendów.",
-        ],
-        [
-            "Raport PDF",
-            "Eksport czytelnej karty pacjenta (profil, leki, pomiary, INR) do udostępnienia "
-            "np. na wizycie; generowany na żądanie użytkownika.",
-        ],
-        [
-            "Udostępnianie w rodzinie",
-            "Właściciel konta tworzy zaproszenie (token z terminem ważności); druga osoba po zalogowaniu "
-            "może dołączyć do tych samych danych. Właściciel widzi listę osób z dostępem i może go odwołać.",
-        ],
-        [
-            "Publikacja",
-            "Przygotowanie i złożenie aplikacji w sklepach z aplikacjami (Google Play, App Store): materiały informacyjne, "
-            "polityka prywatności, zastrzeżenie medyczne, proces weryfikacji aplikacji w sklepach.",
-        ],
-        [
-            "RODO / dane o zdrowiu",
-            "Wyraźne zgody (w tym na dane o zdrowiu), aktualizacja dokumentacji pod aplikację pacjenta, "
-            "prawo do usunięcia konta i danych, wzmocnienie zabezpieczeń API, podstawowy dziennik dostępu, ocena skutków (DPIA).",
-        ],
-        [
-            "Pełnoletność pacjenta",
-            "Po ukończeniu 18 lat pacjent przejmuje konto: dostęp rodziców zostaje wstrzymany, "
-            "a ich dalszy wgląd wymaga wyraźnej zgody pacjenta.",
-        ],
-        [
-            "Utrzymanie 12 mies.",
-            "Aktualizacje systemów (Android/iOS), poprawki błędów, drobne dostosowania interfejsu, "
-            "utrzymanie hostingu w UE, wsparcie merytoryczne dla fundacji.",
-        ],
-    ]
-    story.append(make_table(scope_rows, [28 * mm, usable - 28 * mm], styles))
-    story.append(Spacer(1, 6))
-
-    story.append(p("<b>3.2. Co już działa (stan na dziś)</b>", styles["h2"]))
+    story.append(p("<b>3.1. Zakres v1: co już działa, a co powstanie w projekcie</b>", styles["h2"]))
     story.append(
         p(
-            "Poniższe funkcje są gotowe i przetestowane w roboczej wersji aplikacji "
-            "(zrzuty ekranu w załączniku A). Stanowią one podstawę szacunku wkładu własnego "
-            "fundacji (ok. 40% docelowego zakresu, rozdz. 8):",
+            "Tabela rozdziela dwie rzeczy: funkcje gotowe i przetestowane w roboczej wersji "
+            "aplikacji (zrzuty ekranu w załączniku A), wytworzone nieodpłatnie jako wkład własny "
+            "fundacji, oraz prace, które zostaną wykonane ze środków dotacji. Kolumna środkowa "
+            "odpowiada ok. 40% docelowego zakresu produktu i podstawie wyceny wkładu własnego "
+            "(rozdz. 8).",
             styles["body"],
         )
     )
-    done_rows = [
-        ["Obszar", "Stan"],
-        ["Logowanie", "Działa: konto Google, sesja weryfikowana po stronie API."],
+
+    scope_rows = [
+        ["Obszar", "Co już działa (wkład własny fundacji)", "Co powstanie ze środków dotacji"],
+        [
+            "Logowanie i konta",
+            "Logowanie kontem Google bez osobnego hasła; token sesji weryfikowany po stronie API.",
+            "Dostosowanie logowania do wymagań App Store, jednolity model sesji na Androidzie i iOS.",
+        ],
         [
             "Profil pacjenta",
-            "Działa: wady serca ze słownikiem i wyszukiwaniem, grupa krwi, zaburzenia rytmu, "
-            "rozrusznik, przebyte operacje, powikłania, choroby współistniejące; autozapis.",
+            "Imię i nazwisko, grupa krwi; słownik 51 wad serca z wyszukiwaniem i wielokrotnym wyborem; "
+            "zaburzenia rytmu (9 typów z opisem), rozrusznik (7 rodzajów), przebyte operacje "
+            "(typ, data, liczba dni na intensywnej terapii), powikłania, choroby współistniejące, "
+            "zespoły genetyczne; zapis automatyczny.",
+            "Panel danych opiekunów i rodziców, uzupełnienie słownika wad serca, "
+            "przejęcie konta przez pacjenta po 18. roku życia.",
+        ],
+        [
+            "Historia leczenia i hospitalizacji",
+            "Funkcja nie istnieje.",
+            "Rejestr pobytów szpitalnych i etapów leczenia (daty, placówka, powód, przebieg) "
+            "jako oś czasu dostępna na wizycie i przy zmianie ośrodka.",
+        ],
+        [
+            "Dokumentacja medyczna",
+            "Funkcja nie istnieje.",
+            "Wgrywanie dokumentów PDF (wypisy, wyniki, konsultacje) z datą dokumentu, limit wielkości "
+            "pliku, wgrywanie dostępne dla kont zatwierdzonych przez fundację, bezpieczne przechowywanie.",
         ],
         [
             "Leki",
-            "Działa: lista leków, dawki, częstotliwość, harmonogram i historia podań, "
-            "lokalne przypomnienia o kolejnej dawce.",
+            "Lista leków z dawką, częstotliwością (od co 4 godziny do co 2 dni) i czasem trwania; "
+            "harmonogram i historia podań, śledzenie kolejnej dawki, lokalne przypomnienia na urządzeniu.",
+            "Przypomnienia na iOS, obsługa sytuacji brzegowych, testy na urządzeniach.",
         ],
         [
             "Pomiary",
-            "Działa: saturacja, tętno, ciśnienie, diureza; historia wpisów, wykresy trendów "
-            "z zakresami czasowymi, przypomnienia.",
+            "Saturacja, tętno, ciśnienie skurczowe i rozkurczowe, diureza dobowa, notatki; historia "
+            "wpisów z oznaczeniem wartości odbiegających od normy, wykresy trendów (od 7 dni "
+            "do całego okresu), codzienne przypomnienie o pomiarze.",
+            "Dopracowanie wykresów i interfejsu, testy na urządzeniach.",
         ],
-        ["INR", "Działa: rejestr wyników z parametrami badania i zakresami odniesienia."],
-        ["Raport PDF", "Działa: eksport karty pacjenta z urządzenia."],
+        [
+            "INR",
+            "Rejestr wyników z czasem protrombinowym, normą laboratorium i wskaźnikiem ISI; "
+            "historia wyników, zakresy odniesienia o charakterze informacyjnym.",
+            "Stabilizacja modułu i ujednolicenie opisów (rejestr wyników, nie narzędzie diagnostyczne).",
+        ],
+        [
+            "Raport PDF",
+            "Eksport karty pacjenta z urządzenia: profil, leki, pomiary z wykresami oraz INR "
+            "z tabelą parametrów badania.",
+            "Uzupełnienie raportu o hospitalizacje i dokumentację, dopracowanie wydruku.",
+        ],
         [
             "Udostępnianie w rodzinie",
-            "Działa: zaproszenie dla współopiekuna, wspólny dostęp do danych, odwoływanie dostępu.",
+            "Zaproszenie dla współopiekuna (token z terminem ważności), akceptacja zaproszenia, "
+            "lista osób z dostępem, odwoływanie dostępu.",
+            "Komunikaty informacyjne przy zaproszeniu (zakres udostępnianych danych), testy.",
         ],
         [
-            "Zaplecze (API, baza, chmura)",
-            "Działa: API fundacji, baza danych w UE, uwierzytelnianie, kopie zapasowe.",
+            "Zaplecze: API, baza, chmura",
+            "API fundacji obsługujące profil, leki, pomiary, INR oraz dostępy; baza danych "
+            "w regionie UE, uwierzytelnianie, kopie zapasowe; ta sama logika w wersji webowej.",
+            "Wzmocnienie zabezpieczeń, limity zapytań i wgrywanych plików, dziennik dostępu, "
+            "usuwanie konta i danych w całym systemie.",
         ],
         [
-            "Aplikacja mobilna",
-            "Działa w wersji roboczej na Androida (React Native), przed publikacją w sklepie.",
+            "Ochrona danych (RODO)",
+            "Dostęp do danych wyłącznie po zalogowaniu, połączenia szyfrowane, przetwarzanie "
+            "w infrastrukturze w UE.",
+            "Wyraźne zgody na dane o zdrowiu (art. 9), aktualizacja polityki prywatności, prawo "
+            "do usunięcia konta, ocena skutków (DPIA), dziennik dostępu.",
+        ],
+        [
+            "Aplikacja mobilna i publikacja",
+            "Wersja robocza na Androida (React Native) z kompletem powyższych ekranów, "
+            "przed publikacją w sklepie.",
+            "Stabilizacja, wersja iOS, testy z rodzinami, złożenie i weryfikacja w Google Play "
+            "oraz App Store, materiały informacyjne.",
+        ],
+        [
+            "Utrzymanie",
+            "Prowadzone doraźnie, bez wynagrodzenia.",
+            "Dwanaście miesięcy utrzymania po wdrożeniu: aktualizacje systemów, poprawki, "
+            "monitoring, wsparcie fundacji (rozdz. 9).",
         ],
     ]
-    story.append(make_table(done_rows, [34 * mm, usable - 34 * mm], styles))
+    story.append(
+        make_table(scope_rows, [26 * mm, (usable - 26 * mm) * 0.5, (usable - 26 * mm) * 0.5], styles)
+    )
     story.append(Spacer(1, 6))
 
-    story.append(p("<b>3.3. Poza zakresem v1</b>", styles["h2"]))
+    story.append(p("<b>3.2. Poza zakresem v1</b>", styles["h2"]))
     story.append(
         bullets(
             [
@@ -1106,9 +1089,9 @@ def build_story(styles: dict) -> list:
         p(
             "Poniższy harmonogram ma charakter roboczy (miesiące od startu finansowania). "
             "Część prac produktowych jest już zaawansowana; projekt koncentruje się na ukończeniu prac, "
-            "zgodności, publikacji i utrzymaniu. Prace rozwojowe zamykają się w pierwszych "
-            "pięciu miesiącach, a dwunastomiesięczny okres utrzymania zaczyna się dopiero "
-            "po ich zakończeniu i publikacji aplikacji.",
+            "zgodności, publikacji i utrzymaniu. Prace rozwojowe rozłożone są na osiem miesięcy "
+            "(ok. 100 godzin miesięcznie, czyli ok. 5 godzin dziennie), a dwunastomiesięczny "
+            "okres utrzymania zaczyna się dopiero po ich zakończeniu i publikacji aplikacji.",
             styles["body"],
         )
     )
@@ -1121,22 +1104,22 @@ def build_story(styles: dict) -> list:
         ],
         [
             "F2. Produkt Android + iOS",
-            "Miesiące 1–3",
+            "Miesiące 1–5",
             "Ukończenie funkcji v1, logowanie Apple, testy na urządzeniach, stabilizacja.",
         ],
         [
             "F3. RODO i bezpieczeństwo",
-            "Miesiące 2–4",
+            "Miesiące 3–6",
             "Zgody art. 9, usuwanie konta, wzmocnienie zabezpieczeń API, dziennik dostępu, ocena skutków (DPIA), aktualizacja polityki.",
         ],
         [
             "F4. Publikacja w sklepach",
-            "Miesiące 3–5",
+            "Miesiące 6–8",
             "Konta deweloperskie fundacji, karty sklepowe PL, weryfikacja w Google Play i App Store, poprawki po weryfikacji.",
         ],
         [
             "F5. Utrzymanie po wdrożeniu",
-            "Miesiące 6–17",
+            "Miesiące 9–20",
             "Dwanaście miesięcy liczonych od zakończenia prac i publikacji: aktualizacje systemów, "
             "poprawki, monitoring hostingu, wsparcie fundacji (rozdz. 9).",
         ],
@@ -1500,7 +1483,7 @@ def build_story(styles: dict) -> list:
     )
     story.append(
         p(
-            "Całkowity koszt roku 1 według kosztorysu spójnego z niniejszym opisem wynosi "
+            "Całkowity koszt projektu według kosztorysu spójnego z niniejszym opisem wynosi "
             "<b>253 700 zł</b>: 820 godzin prac rozwojowych w stawce 220 zł/h, koszty stałe "
             "okresu budowy (prawnik RODO, hosting) oraz 12 miesięcy utrzymania po wdrożeniu. "
             "Docelowa wartość aplikacji to ok. 300 000 zł, z czego <b>ok. 40% (121 000 zł) fundacja "
