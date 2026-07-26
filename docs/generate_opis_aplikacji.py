@@ -1362,10 +1362,7 @@ def build_story(styles: dict) -> list:
     story.append(make_table(map_rows, [usable * 0.55, usable * 0.45], styles))
     story.append(
         p(
-            "Szczegółowy kosztorys w formularzu wniosku powinien być tożsamy z powyższymi kwotami. "
-            "Po zakończeniu dofinansowanego okresu utrzymania szacowany koszt kolejnego roku "
-            "(bez ponownego wytworzenia) wynosi ok. <b>66 000 zł</b> — ryczałt on-call, pula godzin "
-            "oraz hosting.",
+            "Szczegółowy kosztorys w formularzu wniosku powinien być tożsamy z powyższymi kwotami.",
             styles["body"],
         )
     )
@@ -1416,7 +1413,7 @@ def build_story(styles: dict) -> list:
         p(
             "Model długoterminowy: fundacja pozostaje właścicielem kont sklepowych, polityk "
             "i relacji z użytkownikami; prace programistyczne mogą być kontynuowane w trybie "
-            "utrzymaniowym po zakończeniu okresu dotacji (szacunek — patrz rozdz. 8).",
+            "utrzymaniowym po zakończeniu okresu dotacji.",
             styles["body"],
         )
     )
