@@ -790,6 +790,16 @@ def build_story(styles: dict) -> list:
         )
     )
     story.append(
+        callout_box(
+            "<b>Dlaczego aplikacja mobilna?</b> Opiekunowie korzystają ze smartfona w szpitalu, "
+            "w domu i w drodze. Aplikacja mobilna umożliwia m.in. lokalne przypomnienia o dawkach "
+            "i pomiarach, wygodne wprowadzanie danych oraz udostępnianie raportu PDF lekarzowi "
+            "wprost z telefonu, bez szukania komputera w trudnych warunkach.",
+            styles,
+        )
+    )
+
+    story.append(
         p(
             "Istnieją ogólne aplikacje zdrowotne i notatniki, jednak nie są one dopasowane "
             "do specyfiki opieki nad dzieckiem z wadą serca (INR, leki z przypomnieniami, historia "
@@ -801,16 +811,6 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
-    story.append(
-        callout_box(
-            "<b>Dlaczego aplikacja mobilna?</b> Opiekunowie korzystają ze smartfona w szpitalu, "
-            "w domu i w drodze. Aplikacja mobilna umożliwia m.in. lokalne przypomnienia o dawkach "
-            "i pomiarach, wygodne wprowadzanie danych oraz udostępnianie raportu PDF lekarzowi "
-            "wprost z telefonu, bez szukania komputera w trudnych warunkach.",
-            styles,
-        )
-    )
-
     # ========== 3. ZAKRES ==========
     story.extend(section_title("3", "Zakres funkcjonalny wersji 1 (v1) i poza zakresem", styles))
     story.append(p("<b>3.1. Zakres v1: co już działa, a co powstanie w projekcie</b>", styles["h2"]))
@@ -904,12 +904,6 @@ def build_story(styles: dict) -> list:
             "przed publikacją w sklepie.",
             "Stabilizacja, wersja iOS, testy z rodzinami, złożenie i weryfikacja w Google Play "
             "oraz App Store, materiały informacyjne.",
-        ],
-        [
-            "Utrzymanie",
-            "Prowadzone doraźnie, bez wynagrodzenia.",
-            "Dwanaście miesięcy utrzymania po wdrożeniu: aktualizacje systemów, poprawki, "
-            "monitoring, wsparcie fundacji (rozdz. 9).",
         ],
     ]
     story.append(
@@ -1021,8 +1015,8 @@ def build_story(styles: dict) -> list:
         )
     )
     story.append(Spacer(1, 6))
-    story.append(p("<b>Główne obszary nawigacji (zakładki)</b>", styles["h2"]))
-    story.append(
+    nav_head = p("<b>Główne obszary nawigacji (zakładki)</b>", styles["h2"])
+    nav_list = (
         bullets(
             [
                 "<b>Profil pacjenta</b> – dane stałe, historia operacji / wad, panel opiekunów;",
@@ -1036,6 +1030,7 @@ def build_story(styles: dict) -> list:
             styles,
         )
     )
+    story.append(KeepTogether([nav_head, nav_list]))
 
     # ========== 5. PLATFORMY ==========
     story.extend(section_title("5", "Platformy, sklepy i architektura", styles))
