@@ -736,9 +736,14 @@ def build_story(styles: dict) -> list:
         p(
             "Aplikacja pomaga wyrobić dobre nawyki u nastolatków: uczy pilnowania dawek leków, "
             "regularnych pomiarów i prowadzenia własnej historii leczenia. Celem jest przygotowanie "
-            "pacjenta do samodzielnej opieki nad swoim zdrowiem po ukończeniu 18 lat, w momencie "
-            "przejścia spod opieki pediatrycznej do placówki dla dorosłych, który dla wielu rodzin "
-            "z WWS bywa trudny. Po osiągnięciu pełnoletności pacjent przejmuje kontrolę nad kontem "
+            "pacjenta do samodzielnej opieki nad swoim zdrowiem po ukończeniu 18 lat, gdy przechodzi "
+            "spod opieki pediatrycznej pod opiekę placówki dla dorosłych. Środowisko kardiologii "
+            "dziecięcej nazywa ten moment najsłabszym punktem systemu: rodziny bywają zagubione, "
+            "nie wiedzą, kto odpowiada za dalsze leczenie, jakie obowiązują procedury i gdzie szukać "
+            "pomocy, a część pacjentów wypada wtedy z regularnej obserwacji kardiologicznej. "
+            "Prowadzona w aplikacji historia leczenia, hospitalizacji i dokumentacji jest w takiej "
+            "sytuacji kompletem informacji, który pacjent zabiera ze sobą do nowego ośrodka. "
+            "Po osiągnięciu pełnoletności przejmuje on kontrolę nad kontem "
             "i sam decyduje, czy zachować rodzicom dostęp do swoich danych (rozdz. 6).",
             styles["body"],
         )
