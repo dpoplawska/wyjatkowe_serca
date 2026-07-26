@@ -383,9 +383,7 @@ def footer_canvas(canvas, doc):
     canvas.setLineWidth(0.5)
     y = 12 * mm
     canvas.line(MARGIN, y + 7, PAGE_W - MARGIN, y + 7)
-    canvas.setFont(FONT_HEART, 7.5)
-    canvas.setFillColor(BRAND_RED)
-    canvas.drawString(MARGIN, y, "♥")
+    draw_brand_heart(canvas, MARGIN, y, 7.5)
     canvas.setFont(FONT_REG, 7.5)
     canvas.setFillColor(GREY_MUTED)
     canvas.drawString(
@@ -393,6 +391,26 @@ def footer_canvas(canvas, doc):
     )
     canvas.drawRightString(PAGE_W - MARGIN, y, f"Strona {doc.page}")
     canvas.restoreState()
+
+
+def draw_brand_heart(canvas, x: float, y: float, size: float) -> None:
+    """Serce jak w logo fundacji: lewa połowa niebieska, prawa czerwona.
+
+    Glif rysowany dwukrotnie, za każdym razem przycięty do jednej połowy.
+    """
+    w = pdfmetrics.stringWidth("♥", FONT_HEART, size)
+    for color, (x0, x1) in (
+        (BRAND_BLUE, (x, x + w / 2)),
+        (BRAND_RED, (x + w / 2, x + w)),
+    ):
+        canvas.saveState()
+        path = canvas.beginPath()
+        path.rect(x0, y - 0.3 * size, x1 - x0, 1.3 * size)
+        canvas.clipPath(path, stroke=0, fill=0)
+        canvas.setFont(FONT_HEART, size)
+        canvas.setFillColor(color)
+        canvas.drawString(x, y, "♥")
+        canvas.restoreState()
 
 
 def cover_canvas(canvas, doc):
