@@ -631,7 +631,7 @@ def build_story(styles: dict) -> list:
             "założenia techniczne i organizacyjne, ochronę danych o zdrowiu oraz powiązanie prac "
             "z kosztorysem wniosku. Projekt dotyczy dokończenia, publikacji w sklepach, "
             "dostosowania do wymogów RODO oraz utrzymania aplikacji pacjenta. Prace opierają "
-            "się na istniejącym zapleczu cyfrowym fundacji (serwis, API, logika aplikacji pacjenta), "
+            "się na istniejącym zapleczu cyfrowym fundacji (API, baza danych, działająca wersja robocza), "
             "a nie na budowie całego ekosystemu od zera.",
             styles["body"],
         )
@@ -716,7 +716,8 @@ def build_story(styles: dict) -> list:
             "(WWS) wygodnej, bezpiecznej aplikacji mobilnej, która w jednym miejscu gromadzi "
             "najważniejsze informacje o stanie zdrowia dziecka, potrzebne w codziennej opiece i na wizytach "
             "lekarskich: profil medyczny, leki i przypomnienia dawek, pomiary (m.in. saturacja, tętno, "
-            "ciśnienie, diureza), historię badań INR oraz eksport czytelnego raportu PDF.",
+            "ciśnienie, diureza), historię badań INR, przebieg leczenia i hospitalizacji wraz "
+            "z dokumentacją medyczną oraz eksport czytelnego raportu PDF.",
             styles["body"],
         )
     )
@@ -793,7 +794,7 @@ def build_story(styles: dict) -> list:
             "Istnieją ogólne aplikacje zdrowotne i notatniki, jednak nie są one dopasowane "
             "do specyfiki opieki nad dzieckiem z wadą serca (INR, leki z przypomnieniami, historia "
             "hospitalizacji, udostępnianie w rodzinie, eksport karty na wizytę). Fundacja "
-            "dysponuje już zapleczem cyfrowym (strona, API, logika aplikacji pacjenta). "
+            "dysponuje już własnym zapleczem cyfrowym i działającą wersją roboczą aplikacji. "
             "Projekt dotacyjny pozwala ukończyć wersję mobilną, opublikować aplikację "
             "w oficjalnych sklepach, wzmocnić ochronę danych o zdrowiu oraz zapewnić rok "
             "stabilnego utrzymania.",
@@ -983,7 +984,7 @@ def build_story(styles: dict) -> list:
         ["Krok", "Działanie użytkownika", "Wynik"],
         [
             "1",
-            "Logowanie (Google lub Apple, zależnie od platformy); akceptacja regulaminu / zgód RODO (w tym na dane o zdrowiu)",
+            "Logowanie kontem Google (na iOS zgodnie z wymaganiami App Store); akceptacja regulaminu i zgód RODO, w tym na dane o zdrowiu",
             "Utworzenie lub odtworzenie sesji; wejście do aplikacji",
         ],
         [
@@ -1042,7 +1043,7 @@ def build_story(styles: dict) -> list:
     plat_rows = [
         ["Element", "Założenie"],
         ["Android", "Aplikacja pacjenta w sklepie z aplikacjami Google Play; konto deweloperskie fundacji; opłata rejestracyjna sklepu jest jednorazowa."],
-        ["iOS", "Ta sama baza funkcjonalna; logowanie Apple; testy przedpremierowe i publikacja w App Store z konta deweloperskiego fundacji."],
+        ["iOS", "Ta sama baza funkcjonalna; logowanie dostosowane do wymagań App Store; testy przedpremierowe i publikacja z konta deweloperskiego fundacji."],
         ["Cena dla użytkownika", "Aplikacja <b>bezpłatna</b>: pobranie i pełne korzystanie bez opłat. Brak zakupów w aplikacji, subskrypcji, reklam i jakiejkolwiek sprzedaży wewnątrz aplikacji; wzmianki o „sklepach” w tym dokumencie dotyczą wyłącznie sklepów z aplikacjami (Google Play, App Store)."],
         ["Materiały w sklepach", "Opisy i materiały po polsku; polityka prywatności i zastrzeżenie medyczne dostępne przed pobraniem aplikacji."],
     ]
@@ -1114,7 +1115,7 @@ def build_story(styles: dict) -> list:
         ["Kopie zapasowe", "Regularne kopie zapasowe bazy (retencja krótko- i średnioterminowa wg konfiguracji chmury)."],
         ["Zabezpieczenia API", "Ograniczenie publicznie zbędnej dokumentacji API, ochrona sekretów, limity zapytań, zawężenie uprawnień kont serwisowych."],
         ["Rozliczalność", "Podstawowy dziennik zdarzeń dostępu (kto / kiedy / jaki zasób, bez zbędnego logowania treści klinicznej)."],
-        ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; usunięcie konta i powiązanych danych medycznych jako funkcja docelowa v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
+        ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; usunięcie konta i powiązanych danych medycznych w zakresie v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
         ["Dokumentacja medyczna", "Wgrywanie plików wyłącznie przez zalogowanych użytkowników zatwierdzonych przez fundację; limit wielkości pliku; pliki przechowywane w tym samym reżimie bezpieczeństwa co pozostałe dane o zdrowiu."],
         ["Pełnoletność pacjenta", "Po ukończeniu 18 lat dostęp rodziców zostaje wstrzymany; dalszy wgląd wymaga wyraźnej zgody pacjenta, którą może on w każdej chwili wycofać."],
         ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) na podstawie art. 35 RODO; przetwarzanie łączy dane o zdrowiu, dane dzieci i aplikację mobilną, co wskazuje na obowiązek jej przeprowadzenia."],
@@ -1125,7 +1126,7 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "<b>Zastrzeżenie medyczne.</b> Aplikacja nie stawia diagnoz i nie zastępuje konsultacji lekarskiej. "
-            "Moduł INR i etykiety wynikowe mają charakter pomocniczy / edukacyjny. Sformułowania w interfejsie "
+            "Moduł INR jest rejestrem wyników, a zakresy odniesienia mają charakter informacyjny. Sformułowania w interfejsie "
             "i w opisach sklepowych będą spójne z tą zasadą, aby nie wprowadzać użytkowników w błąd "
             "co do charakteru narzędzia.",
             styles["body"],
@@ -1136,11 +1137,9 @@ def build_story(styles: dict) -> list:
     story.extend(section_title("7", "Harmonogram i kamienie milowe", styles))
     story.append(
         p(
-            "Poniższy harmonogram ma charakter roboczy (miesiące od startu finansowania). "
-            "Część prac produktowych jest już zaawansowana; projekt koncentruje się na ukończeniu prac, "
-            "zgodności, publikacji i utrzymaniu. Prace rozwojowe rozłożone są na osiem miesięcy "
-            "(ok. 100 godzin miesięcznie, czyli ok. 5 godzin dziennie), a dwunastomiesięczny "
-            "okres utrzymania zaczyna się dopiero po ich zakończeniu i publikacji aplikacji.",
+            "Harmonogram ma charakter roboczy (miesiące liczone od startu finansowania). Prace rozwojowe "
+            "rozłożono na osiem miesięcy (ok. 100 godzin miesięcznie, czyli ok. 5 godzin dziennie), "
+            "a dwunastomiesięczny okres utrzymania zaczyna się po ich zakończeniu i publikacji.",
             styles["body"],
         )
     )
@@ -1154,7 +1153,8 @@ def build_story(styles: dict) -> list:
         [
             "F2. Produkt Android + iOS",
             "Miesiące 1–5",
-            "Ukończenie funkcji v1, logowanie Apple, testy na urządzeniach, stabilizacja.",
+            "Dokumentacja medyczna, historia hospitalizacji, panel opiekunów, przejęcie konta po 18. r.ż.; "
+            "stabilizacja Androida, wersja iOS, testy na urządzeniach i z rodzinami-testerami.",
         ],
         [
             "F3. RODO i bezpieczeństwo",
@@ -1205,7 +1205,6 @@ def build_story(styles: dict) -> list:
     )
 
     # ========== 8. BUDŻET ==========
-    story.append(PageBreak())
     story.extend(section_title("8", "Powiązanie z budżetem projektu", styles))
     story.append(
         p(
