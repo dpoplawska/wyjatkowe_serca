@@ -803,7 +803,7 @@ def build_story(styles: dict) -> list:
             "<b>Dlaczego aplikacja mobilna?</b> Opiekunowie korzystają ze smartfona w szpitalu, "
             "w domu i w drodze. Aplikacja mobilna umożliwia m.in. lokalne przypomnienia o dawkach "
             "i pomiarach, wygodne wprowadzanie danych oraz udostępnianie raportu PDF lekarzowi "
-            "bez konieczności logowania się do wersji przeglądarkowej w trudnych warunkach.",
+            "wprost z telefonu, bez szukania komputera w trudnych warunkach.",
             styles,
         )
     )
@@ -884,7 +884,7 @@ def build_story(styles: dict) -> list:
         [
             "Zaplecze: API, baza, chmura",
             "API fundacji obsługujące profil, leki, pomiary, INR oraz dostępy; baza danych "
-            "w regionie UE, uwierzytelnianie, kopie zapasowe; ta sama logika w wersji webowej.",
+            "w regionie UE, uwierzytelnianie, kopie zapasowe.",
             "Wzmocnienie zabezpieczeń, limity zapytań i wgrywanych plików, dziennik dostępu, "
             "usuwanie konta i danych w całym systemie.",
         ],
@@ -892,7 +892,7 @@ def build_story(styles: dict) -> list:
             "Ochrona danych (RODO)",
             "Dostęp do danych wyłącznie po zalogowaniu, połączenia szyfrowane, przetwarzanie "
             "w infrastrukturze w UE.",
-            "Wyraźne zgody na dane o zdrowiu (art. 9), aktualizacja polityki prywatności, prawo "
+            "Wyraźne zgody na dane o zdrowiu (art. 9 ust. 2 lit. a), aktualizacja polityki prywatności, prawo "
             "do usunięcia konta, ocena skutków (DPIA), dziennik dostępu.",
         ],
         [
@@ -925,7 +925,7 @@ def build_story(styles: dict) -> list:
             styles["body"],
         )
     )
-    story.append(p("Możliwe kolejne etapy — po ukończeniu v1, w osobnym finansowaniu", styles["group_label"]))
+    story.append(p("Możliwe kolejne etapy: po ukończeniu v1, w osobnym finansowaniu", styles["group_label"]))
     story.append(
         bullets(
             [
@@ -939,7 +939,7 @@ def build_story(styles: dict) -> list:
             styles,
         )
     )
-    story.append(p("Nieplanowane — poza kierunkiem rozwoju aplikacji", styles["group_label"]))
+    story.append(p("Nieplanowane: poza kierunkiem rozwoju aplikacji", styles["group_label"]))
     story.append(
         bullets(
             [
@@ -953,7 +953,7 @@ def build_story(styles: dict) -> list:
             styles,
         )
     )
-    story.append(p("Istnieją niezależnie od projektu — utrzymywane poza tą linią budżetową", styles["group_label"]))
+    story.append(p("Istnieją niezależnie od projektu: utrzymywane poza tą linią budżetową", styles["group_label"]))
     story.append(
         bullets(
             [
@@ -1044,7 +1044,7 @@ def build_story(styles: dict) -> list:
     story.append(make_table(plat_rows, [32 * mm, usable - 32 * mm], styles))
     story.append(Spacer(1, 6))
 
-    story.append(p("<b>5.2. Architektura (zarys dla recenzenta, bez szczegółów wdrożeniowych)</b>", styles["h2"]))
+    story.append(p("<b>5.2. Architektura (zarys bez szczegółów wdrożeniowych)</b>", styles["h2"]))
     story.append(
         p(
             "Aplikacja mobilna komunikuje się z własnym API fundacji, utrzymywanym w chmurze "
@@ -1059,7 +1059,7 @@ def build_story(styles: dict) -> list:
     story.append(
         info_box(
             "<b>Model dostępu:</b> urządzenie użytkownika → szyfrowane połączenie HTTPS → API "
-            "(weryfikacja tokenu) → magazyn danych w UE. Klienci mobilni i webowi nie uzyskują "
+            "(weryfikacja tokenu) → magazyn danych w UE. Aplikacja nie uzyskuje "
             "bezpośredniego, otwartego dostępu do całej bazy, a jedynie do zasobów wynikających "
             "z tożsamości i ewentualnego udostępnienia w rodzinie.",
             styles,
@@ -1092,7 +1092,7 @@ def build_story(styles: dict) -> list:
         bullets(
             [
                 "administrator danych: Fundacja Wyjątkowe Serca (dane rejestrowe i kontakt RODO w polityce prywatności);",
-                "podstawa: świadczenie usługi aplikacji (art. 6 RODO) oraz <b>wyraźna zgoda</b> na przetwarzanie danych o zdrowiu (art. 9 ust. 2 lit. a), zbierana w aplikacji w sposób oddzielny od marketingu;",
+                "podstawa: <b>art. 6 ust. 1 lit. b RODO</b>, czyli przetwarzanie niezbędne do świadczenia usługi, o którą prosi użytkownik (regulamin aplikacji), oraz <b>wyraźna zgoda</b> na dane o zdrowiu z <b>art. 9 ust. 2 lit. a RODO</b>, zbierana oddzielnie od zgód marketingowych;",
                 "informacja o roli opiekuna prawnego przy danych dziecka;",
                 "polityka prywatności zaktualizowana pod aplikację pacjenta, dostępna w aplikacji i w opisach sklepowych;",
                 "jasna informacja przy zaproszeniu współopiekuna: druga osoba uzyska wgląd w pełny zakres danych medycznych udostępnionego profilu.",
@@ -1112,7 +1112,7 @@ def build_story(styles: dict) -> list:
         ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; usunięcie konta i powiązanych danych medycznych jako funkcja docelowa v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
         ["Dokumentacja medyczna", "Wgrywanie plików wyłącznie przez zalogowanych użytkowników zatwierdzonych przez fundację; limit wielkości pliku; pliki przechowywane w tym samym reżimie bezpieczeństwa co pozostałe dane o zdrowiu."],
         ["Pełnoletność pacjenta", "Po ukończeniu 18 lat dostęp rodziców zostaje wstrzymany; dalszy wgląd wymaga wyraźnej zgody pacjenta, którą może on w każdej chwili wycofać."],
-        ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) dla przetwarzania danych o zdrowiu w aplikacji pacjenta."],
+        ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) na podstawie art. 35 RODO; przetwarzanie łączy dane o zdrowiu, dane dzieci i aplikację mobilną, co wskazuje na obowiązek jej przeprowadzenia."],
         ["Podmioty przetwarzające", "Umowy / warunki powierzenia z dostawcami chmury i tożsamości (dostawcy infrastruktury w UE); po stronie fundacji."],
     ]
     story.append(make_table(rodo_rows, [32 * mm, usable - 32 * mm], styles))
@@ -1266,7 +1266,7 @@ def build_story(styles: dict) -> list:
         ],
         [
             "10",
-            "Usunięcie konta i danych w całym systemie (API, web, aplikacja mobilna) "
+            "Usunięcie konta i danych w całym systemie (aplikacja i API) "
             "wraz z testami kasowania kaskadowego",
             "»50",
             "»11 000",
@@ -1277,7 +1277,7 @@ def build_story(styles: dict) -> list:
             "»45",
             "»9 900",
         ],
-        ["12", "Dziennik dostępu, ocena skutków (DPIA), testy zgodności", "»50", "»11 000"],
+        ["12", "Dziennik dostępu, ocena skutków (DPIA), sprawdzenie wdrożenia wymogów RODO w działającej aplikacji", "»50", "»11 000"],
         ["", "«b»Suma B", "»205", "»45 100"],
         ["", "«b»C. Koszty stałe w okresie prac", "", ""],
         ["13", "Konsultacja / przegląd dokumentacji RODO (prawnik)", "»–", "»3 000"],
@@ -1366,9 +1366,9 @@ def build_story(styles: dict) -> list:
     fin_head = p("<b>Jak czytać powyższe kwoty</b>", styles["h2"])
     fin_rows = [
         ["Składnik", "Kwota"],
-        ["Prace rozwojowe (bloki A i B) — finansowane z dotacji", "»155 100 zł"],
-        ["Koszty stałe okresu prac (blok C) — finansowane z dotacji", "»7 000 zł"],
-        ["Utrzymanie przez 12 miesięcy po wdrożeniu (blok D) — z dotacji", "»66 300 zł"],
+        ["Prace rozwojowe (bloki A i B), finansowane z dotacji", "»155 100 zł"],
+        ["Koszty stałe okresu prac (blok C), finansowane z dotacji", "»7 000 zł"],
+        ["Utrzymanie przez 12 miesięcy po wdrożeniu (blok D), z dotacji", "»66 300 zł"],
         ["«b»Razem: wnioskowana dotacja", "»228 400 zł**"],
         ["Wkład własny fundacji: prace wykonane przed projektem, poza dotacją", "»121 000 zł"],
         ["«b»Wartość gotowej aplikacji (prace rozwojowe + wkład własny)", "»276 100 zł**"],
@@ -1380,7 +1380,7 @@ def build_story(styles: dict) -> list:
     story.append(
         info_box(
             "Wartość gotowej aplikacji obejmuje wyłącznie prace nad produktem: 121 000 zł, które "
-            "fundacja wniosła nieodpłatnie (ok. 550 h, ok. 44% zakresu — wykaz funkcji w rozdz. 3), "
+            "fundacja wniosła nieodpłatnie (ok. 550 h, ok. 44% zakresu; wykaz funkcji w rozdz. 3), "
             "oraz 155 100 zł prac pozostałych do wykonania. Utrzymanie i koszty stałe okresu prac "
             "są kosztem eksploatacji, dlatego nie wchodzą do wartości produktu. Autor wersji roboczej "
             "zrealizuje także prace objęte kosztorysem, co ogranicza ryzyko wdrożenia.",
@@ -1469,26 +1469,35 @@ def build_story(styles: dict) -> list:
         )
     )
     eff_rows = [
-        ["Obszar", "Przykładowy miernik", "Uwagi"],
+        ["Obszar", "Miernik i wartość docelowa", "Sposób weryfikacji"],
         [
             "Dostępność",
-            "Publikacja w Google Play i (docelowo) App Store; aplikacja bezpłatna",
-            "Tak / nie + data publikacji",
+            "Aplikacja opublikowana i bezpłatnie dostępna w Google Play oraz (docelowo) "
+            "w App Store",
+            "Publiczne strony aplikacji w sklepach; data publikacji",
         ],
         [
             "Zasięg",
-            "Co najmniej 200 instalacji i 100 aktywnych kont w 12 mies. od publikacji",
-            "Wartości docelowe ostrożne; wynik zależny od promocji fundacji",
+            "Co najmniej 200 pobrań i 100 aktywnych kont w ciągu 12 miesięcy od publikacji",
+            "Statystyki Google Play Console i App Store Connect",
         ],
         [
-            "Użyteczność",
-            "Korzystanie z głównych funkcji (profil, leki, pomiary/INR, PDF)",
-            "Na podstawie statystyk zagregowanych, bez treści medycznej w raportach publicznych",
+            "Realne korzystanie",
+            "Co najmniej 40% aktywnych kont zapisuje w miesiącu przynajmniej jeden wpis "
+            "(dawka leku, pomiar lub wynik INR)",
+            "Zagregowane statystyki użycia, bez dostępu do treści medycznych",
         ],
         [
-            "Bezpieczeństwo / RODO",
-            "Wdrożone zgody, usuwanie konta, zaktualizowana polityka, DPIA",
-            "Lista kontrolna ukończenia fazy F3",
+            "Zgodność z RODO",
+            "Wdrożone zgody art. 9, działające usuwanie konta i danych, zaktualizowana "
+            "polityka prywatności, sporządzona ocena skutków (DPIA)",
+            "Lista kontrolna fazy F3, dokument DPIA, opublikowana polityka prywatności",
+        ],
+        [
+            "Wsparcie rodzin",
+            "Rodziny poznane dzięki aplikacji korzystają z bezpłatnych konsultacji "
+            "psychologicznych fundacji",
+            "Liczba konsultacji udzielonych rodzinom zgłoszonym przez aplikację",
         ],
     ]
     story.append(make_table(eff_rows, [28 * mm, usable * 0.42, usable * 0.58 - 28 * mm], styles))
