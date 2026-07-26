@@ -616,8 +616,8 @@ def build_story(styles: dict) -> list:
         p(
             "<b>Charakter dokumentu.</b> Niniejszy załącznik opisuje cele, zakres funkcjonalny, "
             "założenia techniczne i organizacyjne, ochronę danych o zdrowiu oraz powiązanie prac "
-            "z kosztorysem wniosku. Projekt dotyczy <b>dokończenia, publikacji w sklepach, "
-            "dostosowania do wymogów RODO oraz utrzymania</b> aplikacji pacjenta. Prace opierają "
+            "z kosztorysem wniosku. Projekt dotyczy dokończenia, publikacji w sklepach, "
+            "dostosowania do wymogów RODO oraz utrzymania aplikacji pacjenta. Prace opierają "
             "się na istniejącym zapleczu cyfrowym fundacji (serwis, API, logika aplikacji pacjenta), "
             "a nie na budowie całego ekosystemu od zera.",
             styles["body"],
@@ -696,7 +696,7 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "Celem projektu jest udostępnienie rodzicom i opiekunom dzieci z wrodzonymi wadami serca "
-            "(WWS) <b>wygodnej, bezpiecznej aplikacji mobilnej</b>, która w jednym miejscu gromadzi "
+            "(WWS) wygodnej, bezpiecznej aplikacji mobilnej, która w jednym miejscu gromadzi "
             "najważniejsze informacje o stanie zdrowia dziecka, potrzebne w codziennej opiece i na wizytach "
             "lekarskich: profil medyczny, leki i przypomnienia dawek, pomiary (m.in. saturacja, tętno, "
             "ciśnienie, diureza), historię badań INR oraz eksport czytelnego raportu PDF.",
@@ -707,7 +707,7 @@ def build_story(styles: dict) -> list:
         p(
             "Aplikacja jest elementem misji Fundacji Wyjątkowe Serca, czyli wspierania rodzin na ścieżce "
             "leczenia, a nie zastępowania personelu medycznego. Narzędzie ma charakter "
-            "<b>rejestru i asystenta organizacyjnego</b> prowadzonego przez opiekuna, a nie systemu "
+            "rejestru i asystenta organizacyjnego prowadzonego przez opiekuna, a nie systemu "
             "diagnostycznego ani dokumentacji prowadzonej przez podmiot leczniczy.",
             styles["body"],
         )
@@ -728,7 +728,7 @@ def build_story(styles: dict) -> list:
     story.append(p("<b>Usamodzielnianie nastoletnich pacjentów</b>", styles["h2"]))
     story.append(
         p(
-            "Aplikacja pomaga <b>wyrobić dobre nawyki u nastolatków</b>: uczy pilnowania dawek leków, "
+            "Aplikacja pomaga wyrobić dobre nawyki u nastolatków: uczy pilnowania dawek leków, "
             "regularnych pomiarów i prowadzenia własnej historii leczenia. Celem jest przygotowanie "
             "pacjenta do samodzielnej opieki nad swoim zdrowiem po ukończeniu 18 lat, w momencie "
             "przejścia spod opieki pediatrycznej do placówki dla dorosłych, który dla wielu rodzin "
@@ -757,8 +757,8 @@ def build_story(styles: dict) -> list:
             "ok. 3 tys. dzieci z WWS (ok. 1% urodzeń). "
             "Rodziny dzieci z WWS na co dzień zarządzają dużą ilością informacji medycznych: "
             "harmonogramami leków (często z różnymi dawkami i częstotliwościami), wynikami INR "
-            "istotnymi przy leczeniu przeciwkrzepliwym, pomiarami domowymi, <b>historią leczenia "
-            "i kolejnych hospitalizacji</b> oraz dokumentacją medyczną z wypisów i konsultacji. "
+            "istotnymi przy leczeniu przeciwkrzepliwym, pomiarami domowymi, historią leczenia "
+            "i kolejnych hospitalizacji oraz dokumentacją medyczną z wypisów i konsultacji. "
             "W praktyce dane te są rozproszone w notesach, zdjęciach wyników, arkuszach "
             "kalkulacyjnych i pamięci opiekunów. Utrudnia to przygotowanie do wizyty, przekazanie "
             "informacji drugiemu opiekunowi oraz zachowanie ciągłości opieki przy zmianie "
@@ -768,11 +768,11 @@ def build_story(styles: dict) -> list:
     )
     story.append(
         p(
-            "Istnieją ogólne aplikacje zdrowotne i notatniki, jednak <b>nie są one dopasowane</b> "
+            "Istnieją ogólne aplikacje zdrowotne i notatniki, jednak nie są one dopasowane "
             "do specyfiki opieki nad dzieckiem z wadą serca (INR, leki z przypomnieniami, historia "
             "hospitalizacji, udostępnianie w rodzinie, eksport karty na wizytę). Fundacja "
             "dysponuje już zapleczem cyfrowym (strona, API, logika aplikacji pacjenta). "
-            "Projekt dotacyjny pozwala <b>ukończyć wersję mobilną</b>, opublikować aplikację "
+            "Projekt dotacyjny pozwala ukończyć wersję mobilną, opublikować aplikację "
             "w oficjalnych sklepach, wzmocnić ochronę danych o zdrowiu oraz zapewnić rok "
             "stabilnego utrzymania.",
             styles["body"],
@@ -804,8 +804,8 @@ def build_story(styles: dict) -> list:
             "Profil pacjenta",
             "Dane identyfikacyjne i medyczne istotne dla WWS: m.in. imię i nazwisko dziecka, grupa krwi, "
             "wady serca, zaburzenia rytmu, rozrusznik, przebyte operacje, powikłania, choroby współistniejące, "
-            "zespoły genetyczne, z automatycznym zapisem. Osobny panel z <b>danymi opiekunów "
-            "lub rodziców</b> (kontakt do osób sprawujących opiekę).",
+            "zespoły genetyczne, z automatycznym zapisem. Osobny panel z danymi opiekunów "
+            "lub rodziców (kontakt do osób sprawujących opiekę).",
         ],
         [
             "Historia leczenia i hospitalizacji",
@@ -814,7 +814,7 @@ def build_story(styles: dict) -> list:
         ],
         [
             "Dokumentacja medyczna",
-            "Dodawanie dokumentów PDF (wypisy, wyniki, konsultacje) <b>z datą dokumentu</b>, "
+            "Dodawanie dokumentów PDF (wypisy, wyniki, konsultacje) z datą dokumentu, "
             "z limitem wielkości pliku; wgrywanie dostępne dla kont zatwierdzonych przez fundację.",
         ],
         [
@@ -869,7 +869,7 @@ def build_story(styles: dict) -> list:
     story.append(p("<b>3.2. Co już działa (stan na dziś)</b>", styles["h2"]))
     story.append(
         p(
-            "Poniższe funkcje są <b>gotowe i przetestowane</b> w roboczej wersji aplikacji "
+            "Poniższe funkcje są gotowe i przetestowane w roboczej wersji aplikacji "
             "(zrzuty ekranu w załączniku A). Stanowią one podstawę szacunku wkładu własnego "
             "fundacji (ok. 40% docelowego zakresu, rozdz. 8):",
             styles["body"],
@@ -1020,9 +1020,9 @@ def build_story(styles: dict) -> list:
     story.append(p("<b>5.2. Architektura (zarys dla recenzenta, bez szczegółów wdrożeniowych)</b>", styles["h2"]))
     story.append(
         p(
-            "Aplikacja mobilna komunikuje się z <b>własnym API</b> fundacji, utrzymywanym w chmurze "
+            "Aplikacja mobilna komunikuje się z własnym API fundacji, utrzymywanym w chmurze "
             "w regionie Europejskiego Obszaru Gospodarczego. Uwierzytelnianie opiera się na "
-            "<b>logowaniu przez zaufanego dostawcę tożsamości</b> (token sesji weryfikowany po stronie "
+            "logowaniu przez zaufanego dostawcę tożsamości (token sesji weryfikowany po stronie "
             "API). Dane medyczne są zapisywane w bazie po stronie serwera i nie są publicznie "
             "dostępne bez zalogowania. Warstwa serwisowa jest współdzielona "
             "z istniejącym zapleczem cyfrowym fundacji, co ogranicza koszt i ryzyko dublowania infrastruktury.",
@@ -1082,7 +1082,7 @@ def build_story(styles: dict) -> list:
         ["Kopie zapasowe", "Regularne kopie zapasowe bazy (retencja krótko- i średnioterminowa wg konfiguracji chmury)."],
         ["Zabezpieczenia API", "Ograniczenie publicznie zbędnej dokumentacji API, ochrona sekretów, limity zapytań, zawężenie uprawnień kont serwisowych."],
         ["Rozliczalność", "Podstawowy dziennik zdarzeń dostępu (kto / kiedy / jaki zasób, bez zbędnego logowania treści klinicznej)."],
-        ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; <b>usunięcie konta i powiązanych danych medycznych</b> jako funkcja docelowa v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
+        ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; usunięcie konta i powiązanych danych medycznych jako funkcja docelowa v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
         ["Dokumentacja medyczna", "Wgrywanie plików wyłącznie przez zalogowanych użytkowników zatwierdzonych przez fundację; limit wielkości pliku; pliki przechowywane w tym samym reżimie bezpieczeństwa co pozostałe dane o zdrowiu."],
         ["Pełnoletność pacjenta", "Po ukończeniu 18 lat dostęp rodziców zostaje wstrzymany; dalszy wgląd wymaga wyraźnej zgody pacjenta, którą może on w każdej chwili wycofać."],
         ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) dla przetwarzania danych o zdrowiu w aplikacji pacjenta."],
@@ -1106,7 +1106,9 @@ def build_story(styles: dict) -> list:
         p(
             "Poniższy harmonogram ma charakter roboczy (miesiące od startu finansowania). "
             "Część prac produktowych jest już zaawansowana; projekt koncentruje się na ukończeniu prac, "
-            "zgodności, publikacji i utrzymaniu.",
+            "zgodności, publikacji i utrzymaniu. Prace rozwojowe zamykają się w pierwszych "
+            "sześciu miesiącach, a dwunastomiesięczny okres utrzymania zaczyna się dopiero "
+            "po ich zakończeniu i publikacji aplikacji.",
             styles["body"],
         )
     )
@@ -1129,14 +1131,20 @@ def build_story(styles: dict) -> list:
         ],
         [
             "F4. Publikacja w sklepach",
-            "Miesiące 3–5",
+            "Miesiące 4–6",
             "Konta deweloperskie fundacji, karty sklepowe PL, weryfikacja w Google Play i App Store, poprawki po weryfikacji.",
         ],
         [
-            "F5. Utrzymanie",
-            "Miesiące 1–12",
-            "Utrzymanie zaplecza od startu projektu, a opublikowanej aplikacji od jej publikacji; "
-            "aktualizacje systemów, poprawki, monitoring hostingu, wsparcie fundacji.",
+            "F5. Odbiór i przekazanie",
+            "Miesiąc 6",
+            "Odbiór prac przez fundację, dokumentacja powdrożeniowa, przekazanie kont sklepowych "
+            "i dostępów; start okresu utrzymania.",
+        ],
+        [
+            "F6. Utrzymanie po wdrożeniu",
+            "Miesiące 7–18",
+            "Dwanaście miesięcy liczonych od zakończenia prac: aktualizacje systemów, poprawki, "
+            "monitoring hostingu, wsparcie fundacji (rozdz. 9).",
         ],
     ]
     story.append(make_table(harm_rows, [38 * mm, 28 * mm, usable - 66 * mm], styles))
@@ -1177,7 +1185,7 @@ def build_story(styles: dict) -> list:
         p(
             "Poniższa tabela łączy bloki merytoryczne z kosztorysem wniosku. "
             "<b>Stawka referencyjna prac programistycznych: 220 zł/h.</b> "
-            "W budżecie <b>nie ujęto</b> kosztów narzędzi warsztatu wykonawcy (środowisko programistyczne, "
+            "W budżecie nie ujęto kosztów narzędzi warsztatu wykonawcy (środowisko programistyczne, "
             "oprogramowanie wspomagające prace deweloperskie itp.); są one wliczone w stawkę. Ujęto koszty "
             "bezpośrednio związane z produktem fundacji: prace, RODO, hosting, opłaty sklepowe.",
             styles["body"],
@@ -1342,7 +1350,7 @@ def build_story(styles: dict) -> list:
             "webowa, aplikacja mobilna i backend/API (wykaz funkcji w rozdz. 3), powstała w całości "
             "<b>nieodpłatnie</b> i odpowiada <b>ok. 40% docelowego zakresu</b>, czyli ok. 550 h pracy "
             "o wartości <b>121 000 zł</b>. To wkład własny fundacji. Kosztorys powyżej obejmuje "
-            "wyłącznie prace przyszłe: pozostałe <b>60% rozwoju (180 400 zł)</b>, koszty stałe okresu "
+            "wyłącznie prace przyszłe: pozostałe 60% rozwoju (180 400 zł), koszty stałe okresu "
             "budowy i 12 miesięcy utrzymania. Autor wersji roboczej zrealizuje także prace objęte "
             "kosztorysem, co ogranicza ryzyko wdrożenia.",
             styles,
@@ -1377,17 +1385,17 @@ def build_story(styles: dict) -> list:
             "systemów Android i iOS, usuwanie zgłaszanych błędów, utrzymanie hostingu API i bazy "
             "wraz z kopiami zapasowymi, drobne zmiany interfejsu i treści (w tym komunikaty RODO) "
             "oraz wsparcie fundacji w komunikacji z rodzinami, zgodnie z zakresem z rozdz. 3 "
-            "i pozycjami 16–20 kosztorysu. Okres utrzymania liczy się od <b>zakończenia prac "
-            "nad aplikacją</b>, a nie od startu projektu.",
+            "i pozycjami 16–20 kosztorysu. Okres utrzymania liczy się od zakończenia prac "
+            "nad aplikacją, a nie od startu projektu.",
             styles["body"],
         )
     )
     maintain.append(
         p(
-            "<b>Model rozliczenia.</b> Utrzymanie opiera się na <b>ryczałcie miesięcznym "
-            "(3 000 zł)</b> za gotowość programisty. Ryczałt obejmuje uzgodnione czasy reakcji (SLA), "
-            "monitoring, kopie zapasowe oraz <b>do 10 godzin prac miesięcznie</b>. Prace ponad ten "
-            "limit rozliczane są ze <b>wskazanej w kosztorysie puli 110 godzin</b> (220 zł/h), "
+            "<b>Model rozliczenia.</b> Utrzymanie opiera się na ryczałcie miesięcznym "
+            "(3 000 zł) za gotowość programisty. Ryczałt obejmuje uzgodnione czasy reakcji (SLA), "
+            "monitoring, kopie zapasowe oraz do 10 godzin prac miesięcznie. Prace ponad ten "
+            "limit rozliczane są ze wskazanej w kosztorysie puli 110 godzin (220 zł/h), "
             "uruchamianej wyłącznie na pisemne zlecenie fundacji. Dzięki temu fundacja ma "
             "przewidywalny koszt stały, zagwarantowaną dostępność wykonawcy oraz z góry określony "
             "limit wydatków na prace nieplanowane.",
@@ -1423,7 +1431,7 @@ def build_story(styles: dict) -> list:
     story.extend(section_title("10", "Oczekiwane efekty i mierniki (ostrożne szacunki)", styles))
     story.append(
         p(
-            "Projekt ma charakter <b>wsparcia organizacyjnego i informacyjnego</b> dla rodzin, "
+            "Projekt ma charakter wsparcia organizacyjnego i informacyjnego dla rodzin, "
             "a nie interwencji medycznej. Poniższe mierniki służą rozliczeniu działania narzędzia "
             "cyfrowego, bez obietnic skutków klinicznych.",
             styles["body"],
@@ -1487,11 +1495,11 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "Aplikacja pacjenta „Wyjątkowe Serca” odpowiada na konkretną potrzebę rodzin dzieci "
-            "z wrodzonymi wadami serca: <b>uporządkowanie danych o zdrowiu i leczeniu w jednym, "
-            "mobilnym, bezpiecznym narzędziu</b>. Projekt grantowy obejmuje ukończenie produktu "
+            "z wrodzonymi wadami serca: uporządkowanie danych o zdrowiu i leczeniu w jednym, "
+            "mobilnym, bezpiecznym narzędziu. Projekt grantowy obejmuje ukończenie produktu "
             "na Androidzie i iOS, publikację w oficjalnych sklepach z aplikacjami, wzmocnienie "
             "zgodności z RODO przy danych o zdrowiu oraz dwunastomiesięczne utrzymanie. "
-            "Aplikacja jest też <b>pomostem do dalszego wsparcia</b>: rodziny, które fundacja "
+            "Aplikacja jest też pomostem do dalszego wsparcia: rodziny, które fundacja "
             "pozna dzięki niej, mogą skorzystać z bezpłatnych konsultacji psychologicznych.",
             styles["body"],
         )
