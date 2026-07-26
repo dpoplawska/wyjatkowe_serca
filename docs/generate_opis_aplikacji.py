@@ -647,6 +647,8 @@ def build_story(styles: dict) -> list:
             "organizuje wydarzenia charytatywne dla małych pacjentów oraz dzieli się praktyczną "
             "wiedzą wynikającą z doświadczeń własnych rodziców. Merytorycznie fundację wspiera "
             "Rada Naukowa złożona z lekarzy kardiologów, kardiochirurgów i perinatologów. "
+            "Fundacja zapewnia też rodzicom <b>bezpłatne wsparcie psychologiczne</b>, finansowane "
+            "ze środków własnych i darowizn, niezależnie od niniejszego projektu. "
             "Statut i sprawozdania finansowe są publikowane "
             "w serwisie internetowym fundacji. Aplikacja pacjenta, której dotyczy niniejszy "
             "dokument, jest rozszerzeniem tej działalności statutowej o narzędzie cyfrowe.",
@@ -958,7 +960,10 @@ def build_story(styles: dict) -> list:
         bullets(
             [
                 "publiczna strona internetowa fundacji;",
-                "sklep charytatywny i płatności darowizn.",
+                "sklep charytatywny i płatności darowizn;",
+                "bezpłatne konsultacje psychologiczne dla rodzin: fundacja prowadzi je w ramach "
+                "działalności statutowej ze środków własnych i darowizn, a wnioskowana dotacja "
+                "nie obejmuje ich finansowania.",
             ],
             styles,
         )
@@ -1496,7 +1501,7 @@ def build_story(styles: dict) -> list:
         [
             "Wsparcie rodzin",
             "Rodziny poznane dzięki aplikacji korzystają z bezpłatnych konsultacji "
-            "psychologicznych fundacji",
+            "psychologicznych (działanie własne fundacji, poza budżetem dotacji)",
             "Liczba konsultacji udzielonych rodzinom zgłoszonym przez aplikację",
         ],
     ]
@@ -1505,10 +1510,11 @@ def build_story(styles: dict) -> list:
     story.append(
         p(
             "<b>Wsparcie psychologiczne.</b> Rodziny, które fundacja pozna dzięki aplikacji, uzyskują "
-            "dostęp do <b>bezpłatnych konsultacji psychologicznych</b> prowadzonych w ramach "
-            "działalności statutowej fundacji. Narzędzie cyfrowe pełni tu funkcję pomostu: "
-            "pozwala dotrzeć ze wsparciem do rodzin, które inaczej pozostałyby poza zasięgiem "
-            "fundacji.",
+            "dostęp do <b>bezpłatnych konsultacji psychologicznych</b>. Narzędzie cyfrowe pełni tu "
+            "funkcję pomostu: pozwala dotrzeć ze wsparciem do rodzin, które inaczej pozostałyby poza "
+            "zasięgiem fundacji. Same konsultacje prowadzone są w ramach działalności statutowej "
+            "i finansowane ze środków własnych fundacji oraz darowizn; <b>wnioskowana dotacja nie "
+            "obejmuje ich kosztów</b> (rozdz. 3.2).",
             styles["body"],
         )
     )
@@ -1540,7 +1546,8 @@ def build_story(styles: dict) -> list:
             "na Androidzie i iOS, publikację w oficjalnych sklepach z aplikacjami, wzmocnienie "
             "zgodności z RODO przy danych o zdrowiu oraz dwunastomiesięczne utrzymanie. "
             "Aplikacja jest też pomostem do dalszego wsparcia: rodziny, które fundacja "
-            "pozna dzięki niej, mogą skorzystać z bezpłatnych konsultacji psychologicznych.",
+            "pozna dzięki niej, mogą skorzystać z bezpłatnych konsultacji psychologicznych, "
+            "prowadzonych przez fundację poza budżetem tego projektu.",
             styles["body"],
         )
     )
