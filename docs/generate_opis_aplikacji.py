@@ -266,6 +266,15 @@ def make_styles() -> dict:
         leftIndent=4,
         spaceAfter=1,
     )
+    styles["group_label"] = ParagraphStyle(
+        "group_label",
+        fontName=FONT_SEMI,
+        fontSize=9.5,
+        leading=13,
+        textColor=GREY_TEXT,
+        spaceBefore=7,
+        spaceAfter=1,
+    )
     styles["callout"] = ParagraphStyle(
         "callout",
         fontName=FONT_REG,
@@ -907,27 +916,51 @@ def build_story(styles: dict) -> list:
 
     story.append(p("<b>3.2. Poza zakresem v1</b>", styles["h2"]))
     story.append(
+        p(
+            "Świadome ograniczenie zakresu pozwala ukończyć produkt użyteczny dla rodzin, "
+            "bezpieczny pod kątem danych o zdrowiu i możliwy do utrzymania przez fundację. "
+            "<b>Wymienione niżej elementy nie zostaną wykonane w ramach wnioskowanej dotacji "
+            "i nie są objęte kosztorysem z rozdz. 8.</b> Podzielono je na trzy grupy, aby było "
+            "jasne, co fundacja planuje w dalszej kolejności, a czego nie zamierza budować.",
+            styles["body"],
+        )
+    )
+    story.append(p("Możliwe kolejne etapy — po ukończeniu v1, w osobnym finansowaniu", styles["group_label"]))
+    story.append(
         bullets(
             [
-                "diagnostyka medyczna, zalecenia terapeutyczne generowane automatycznie, „aplikacja medyczna” w rozumieniu wyrobu medycznego;",
-                "panel lekarza / placówki medycznej, integracja z systemami P1 / e-dokumentacją medyczną podmiotów leczniczych;",
-                "publiczna strona fundacji, sklep charytatywny i płatności darowizn (istnieją osobno; nie są przedmiotem tej linii budżetowej);",
                 "kalendarz i zapisy na konsultacje psychologiczne w aplikacji (wybór wolnego terminu "
-                "przez rodzica), planowany kierunek rozwoju po v1;",
-                "przekazywanie zanonimizowanych danych medycznych do celów naukowych, rozważane "
-                "w kolejnym etapie, wymaga odrębnej analizy prawnej i osobnej, dobrowolnej zgody;",
-                "tryb offline z pełną synchronizacją konfliktów (może być rozważany w przyszłości);",
-                "powiadomienia push wysyłane z serwera; w v1 przypomnienia działają lokalnie na urządzeniu;",
+                "przez rodzica);",
+                "przekazywanie zanonimizowanych danych medycznych do celów naukowych; wymaga "
+                "odrębnej analizy prawnej i osobnej, dobrowolnej zgody;",
+                "tryb offline z pełną synchronizacją danych po odzyskaniu łączności;",
                 "wersje językowe inne niż polski.",
             ],
             styles,
         )
     )
+    story.append(p("Nieplanowane — poza kierunkiem rozwoju aplikacji", styles["group_label"]))
     story.append(
-        p(
-            "Świadome ograniczenie zakresu pozwala ukończyć produkt użyteczny dla rodzin, "
-            "bezpieczny pod kątem danych o zdrowiu i możliwy do utrzymania przez fundację.",
-            styles["body"],
+        bullets(
+            [
+                "diagnostyka medyczna i automatycznie generowane zalecenia terapeutyczne, "
+                "czyli funkcje czyniące z aplikacji wyrób medyczny;",
+                "panel lekarza lub placówki medycznej oraz integracja z systemami P1 "
+                "i e-dokumentacją podmiotów leczniczych;",
+                "powiadomienia push wysyłane z serwera; przypomnienia działają lokalnie "
+                "na urządzeniu użytkownika.",
+            ],
+            styles,
+        )
+    )
+    story.append(p("Istnieją niezależnie od projektu — utrzymywane poza tą linią budżetową", styles["group_label"]))
+    story.append(
+        bullets(
+            [
+                "publiczna strona internetowa fundacji;",
+                "sklep charytatywny i płatności darowizn.",
+            ],
+            styles,
         )
     )
 
