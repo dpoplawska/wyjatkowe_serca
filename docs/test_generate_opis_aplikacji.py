@@ -42,7 +42,7 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
 
     def test_page_count_in_grant_range(self) -> None:
         self.assertGreaterEqual(self.n_pages, 4)
-        self.assertLessEqual(self.n_pages, 10)
+        self.assertLessEqual(self.n_pages, 12)
 
     def test_required_sections(self) -> None:
         required = [
@@ -56,7 +56,7 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
             "budżet",
             "Utrzymanie",
             "efekty",
-            "253 500",
+            "253 700",
             "Analiza i projekt",
             "121 000",
             "dane o zdrowiu",
@@ -89,7 +89,7 @@ class TestOpisAplikacjiPdf(unittest.TestCase):
     def test_polish_and_budget_totals(self) -> None:
         self.assertIn("ł", self.text)
         self.assertIn("ę", self.text)
-        for amount in ("145 200", "35 200", "7 000", "66 100", "253 500", "300 000"):
+        for amount in ("145 200", "35 200", "7 000", "66 300", "253 700", "300 000"):
             self.assertIn(amount, self.text)
 
     def test_metadata(self) -> None:

@@ -10,64 +10,64 @@ Legenda: **[W]** dotyczy wniosku (PDF `Opis_aplikacji_pacjenta_Wyjatkowe_Serca.p
 
 ## 1. Wniosek — zmiany treści i narracji  [W]
 
-- [ ] **Rada naukowa** (str. 2, „O fundacji"): zamiast „Rada Naukowa złożona z lekarzy" →
+- [x] **Rada naukowa** (str. 2, „O fundacji"): zamiast „Rada Naukowa złożona z lekarzy" →
       „złożona z lekarzy **kardiologów, kardiochirurgów i perinatologów**".
-- [ ] **Grupa docelowa**: dopisać **młodzież ok. 16 lat** jako główną grupę (obok rodziców
+- [x] **Grupa docelowa**: dopisać **młodzież ok. 16 lat** jako główną grupę (obok rodziców
       i opiekunów).
-- [ ] **Uzasadnienie — usamodzielnianie nastolatków**: aplikacja pomaga wyrobić dobre nawyki
+- [x] **Uzasadnienie — usamodzielnianie nastolatków**: aplikacja pomaga wyrobić dobre nawyki
       u 16-latków, uczy samodzielnej opieki nad własnym zdrowiem — z myślą o pełnoletności
       i przejściu pod opiekę placówki dla dorosłych.
-- [ ] **Problem i uzasadnienie**: usunąć wzmiankę o **słowniku wad i operacji**.
-- [ ] **Problem i uzasadnienie**: dopisać **historię leczenia i hospitalizacji** prowadzoną
+- [x] **Problem i uzasadnienie**: usunąć wzmiankę o **słowniku wad i operacji**.
+- [x] **Problem i uzasadnienie**: dopisać **historię leczenia i hospitalizacji** prowadzoną
       w aplikacji.
-- [ ] **Sklepy**: przejrzeć wszystkie miejsca mówiące o „sklepach" / „kartach sklepowych"
+- [x] **Sklepy**: przejrzeć wszystkie miejsca mówiące o „sklepach" / „kartach sklepowych"
       i doprecyzować, że chodzi o **sklepy z aplikacjami (Google Play, App Store)**,
       w których aplikacja będzie **bezpłatna** — a nie o sklep wewnątrz aplikacji ani
       jakąkolwiek sprzedaż.
-- [ ] **Pomoc psychologiczna**: dopisać, że osoby korzystające z aplikacji — dzięki temu, że
+- [x] **Pomoc psychologiczna**: dopisać, że osoby korzystające z aplikacji — dzięki temu, że
       fundacja je zauważy — będą mogły skorzystać z **bezpłatnych konsultacji
       psychologicznych**. Dodać też do **Podsumowania**.
-- [ ] **Strona tytułowa**: usunąć dolny wiersz („Interfejs w języku polskim · Publikacja
+- [x] **Strona tytułowa**: usunąć dolny wiersz („Interfejs w języku polskim · Publikacja
       w Google Play i App Store · Dokument spójny z kosztorysem projektu").
-- [ ] **Usunąć sformułowanie „natywna aplikacja"** (obecnie w ramce „Dlaczego aplikacja
+- [x] **Usunąć sformułowanie „natywna aplikacja"** (obecnie w ramce „Dlaczego aplikacja
       mobilna?").
-- [ ] **Wykaz istniejących funkcji**: dodać szczegółowe zestawienie tego, co w aplikacji
+- [x] **Wykaz istniejących funkcji**: dodać szczegółowe zestawienie tego, co w aplikacji
       **już działa** — jako uzasadnienie liczby godzin wkładu własnego.
 
 ## 2. Wniosek — zakres funkcjonalny  [W+D]
 
 Funkcje do dopisania do **zakresu v1** (rozdz. 3.1) i do zbudowania w aplikacji:
 
-- [ ] **Dokumentacja medyczna (PDF)**: przycisk w profilu pacjenta pozwalający dodać
+- [x] **Dokumentacja medyczna (PDF)**: przycisk w profilu pacjenta pozwalający dodać
       dokument PDF **wraz z datą dokumentu**.
-- [ ] **Panel danych opiekunów/rodziców**: osobna sekcja w profilu pacjenta z danymi
+- [x] **Panel danych opiekunów/rodziców**: osobna sekcja w profilu pacjenta z danymi
       rodziców lub opiekunów.
-- [ ] **Historia leczenia i hospitalizacji**: dopisać do głównych obszarów nawigacji
+- [x] **Historia leczenia i hospitalizacji**: dopisać do głównych obszarów nawigacji
       aplikacji (obok Profil / Leki / Pomiary / INR).
-- [ ] **Logowanie**: przeredagować opis — logowanie kontem Google; rozważyć, czy na iOS
+- [x] **Logowanie**: przeredagować opis — logowanie kontem Google; rozważyć, czy na iOS
       da się oprzeć na koncie Google zamiast Sign in with Apple (patrz „Pytania otwarte").
 
 Funkcje do dopisania **poza zakresem v1** (rozdz. 3.2), jako kierunek rozwoju:
 
-- [ ] **Kalendarz i zapisy do psychologa** — wybór wolnych terminów przez rodzica
+- [x] **Kalendarz i zapisy do psychologa** — wybór wolnych terminów przez rodzica
       (model jak w Booksy). Wyraźnie oznaczyć jako **poza zakresem v1**.
-- [ ] **Przekazywanie zanonimizowanych danych medycznych do celów naukowych** — jeśli
+- [x] **Przekazywanie zanonimizowanych danych medycznych do celów naukowych** — jeśli
       wejdzie do wniosku, to z opisem podstawy RODO (patrz „Pytania otwarte").
 
 ## 3. Wniosek — budżet i kosztorys  [W]
 
-- [ ] **Docelowa suma projektu: 300 000 zł** — podnieść wycenę wytworzenia aplikacji
+- [x] **Docelowa suma projektu: 300 000 zł** — podnieść wycenę wytworzenia aplikacji
       oraz dotychczasowego wkładu własnego tak, aby kwota końcowa wyszła na tym poziomie.
-- [ ] **Wkład własny: ok. 300 h** zamiast obecnych 180 h (spójnie z wykazem istniejących
+- [x] **Wkład własny: ok. 300 h** zamiast obecnych 180 h (spójnie z wykazem istniejących
       funkcji z sekcji 1).
-- [ ] **Utrzymanie — wynagrodzenie miesięczne**: zamiast stawki godzinowej wpisać
+- [x] **Utrzymanie — wynagrodzenie miesięczne**: zamiast stawki godzinowej wpisać
       **miesięczne wynagrodzenie za dostępność programisty**; tę samą informację dodać
       w rozdz. 9 („Utrzymanie po wdrożeniu").
-- [ ] **Okres utrzymania**: 12 miesięcy **po zakończeniu prac nad aplikacją** (nie równolegle
+- [x] **Okres utrzymania**: 12 miesięcy **po zakończeniu prac nad aplikacją** (nie równolegle
       od startu projektu).
-- [ ] **Hosting/chmura w fazie budowy**: doliczyć koszty hostingu i chmury również za czas
+- [x] **Hosting/chmura w fazie budowy**: doliczyć koszty hostingu i chmury również za czas
       pracy nad aplikacją (dziś ujęte tylko w bloku utrzymania).
-- [ ] **Przeliczyć koszty serwera** przy założeniu: **100 użytkowników**, każdy wgrywa PDF-y
+- [x] **Przeliczyć koszty serwera** przy założeniu: **100 użytkowników**, każdy wgrywa PDF-y
       (skrajnie: dokument ~100 stron ze skanami) → zaktualizować roczny koszt hostingu.
 
 ## 4. Rozwój aplikacji i serwisu  [D]
