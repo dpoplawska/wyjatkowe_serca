@@ -1107,7 +1107,7 @@ def build_story(styles: dict) -> list:
             "Poniższy harmonogram ma charakter roboczy (miesiące od startu finansowania). "
             "Część prac produktowych jest już zaawansowana; projekt koncentruje się na ukończeniu prac, "
             "zgodności, publikacji i utrzymaniu. Prace rozwojowe zamykają się w pierwszych "
-            "sześciu miesiącach, a dwunastomiesięczny okres utrzymania zaczyna się dopiero "
+            "pięciu miesiącach, a dwunastomiesięczny okres utrzymania zaczyna się dopiero "
             "po ich zakończeniu i publikacji aplikacji.",
             styles["body"],
         )
@@ -1131,20 +1131,14 @@ def build_story(styles: dict) -> list:
         ],
         [
             "F4. Publikacja w sklepach",
-            "Miesiące 4–6",
+            "Miesiące 3–5",
             "Konta deweloperskie fundacji, karty sklepowe PL, weryfikacja w Google Play i App Store, poprawki po weryfikacji.",
         ],
         [
-            "F5. Odbiór i przekazanie",
-            "Miesiąc 6",
-            "Odbiór prac przez fundację, dokumentacja powdrożeniowa, przekazanie kont sklepowych "
-            "i dostępów; start okresu utrzymania.",
-        ],
-        [
-            "F6. Utrzymanie po wdrożeniu",
-            "Miesiące 7–18",
-            "Dwanaście miesięcy liczonych od zakończenia prac: aktualizacje systemów, poprawki, "
-            "monitoring hostingu, wsparcie fundacji (rozdz. 9).",
+            "F5. Utrzymanie po wdrożeniu",
+            "Miesiące 6–17",
+            "Dwanaście miesięcy liczonych od zakończenia prac i publikacji: aktualizacje systemów, "
+            "poprawki, monitoring hostingu, wsparcie fundacji (rozdz. 9).",
         ],
     ]
     story.append(make_table(harm_rows, [38 * mm, 28 * mm, usable - 66 * mm], styles))
