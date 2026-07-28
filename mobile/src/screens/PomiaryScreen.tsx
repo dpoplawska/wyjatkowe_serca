@@ -387,7 +387,7 @@ export default function PomiaryScreen() {
             <>
               {inrEntries.length === 0 ? (
                 <Card style={styles.card}><Card.Content>
-                  <Text style={styles.emptyText}>Brak wyników INR. Przejdź do kalkulatora, aby dodać pierwszy pomiar.</Text>
+                  <Text style={styles.emptyText}>Brak wyników INR. Przejdź do rejestru INR, aby dodać pierwszy pomiar.</Text>
                 </Card.Content></Card>
               ) : (
                 <>
@@ -395,7 +395,7 @@ export default function PomiaryScreen() {
                     <Card style={styles.chartCard} mode="elevated">
                       <Card.Content>
                         <RangePicker range={inrChartRange} onChange={setInrChartRange} />
-                        <MiniLineChart title="INR" samples={samples.inr} color={colors.red} unit="" yMin={0} yMax={5} />
+                        <MiniLineChart title="INR" samples={samples.inr} color={colors.red} unit="" yMin={1} yMax={4} />
                       </Card.Content>
                     </Card>
                   )}
@@ -424,7 +424,7 @@ export default function PomiaryScreen() {
                 textColor={colors.blue}
                 style={{ borderColor: colors.blue, marginTop: 8 }}
               >
-                Kalkulator INR i pełna historia
+                INR — rejestr wyników
               </Button>
             </>
           )}

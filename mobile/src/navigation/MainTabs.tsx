@@ -56,10 +56,10 @@ export default function MainTabs() {
         name="Inr"
         component={InrScreen}
         options={{
-          title: 'Kalkulator INR',
+          title: 'INR — rejestr wyników',
           tabBarLabel: 'INR',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calculator-variant" color={color} size={size} />
+            <MaterialCommunityIcons name="water" color={color} size={size} />
           ),
         }}
       />
