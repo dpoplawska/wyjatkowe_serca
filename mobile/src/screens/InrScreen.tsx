@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { confirmDelete } from '../lib/confirm';
 import { PageScroll } from '../components/PageScroll';
@@ -13,7 +13,9 @@ import {
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
-import { InrEntry } from '../types/api';
+import { readCacheSync, writeCache } from '../lib/dataCache';
+import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
+import { InrEntry, InrData } from '../types/api';
 import { calculateInr } from '../lib/inr';
 import { formatDateTime, newId } from '../lib/format';
 import { useSnackbar } from '../hooks/useSnackbar';
@@ -28,11 +30,27 @@ const REFERENCE_RANGES = [
 ];
 
 export default function InrScreen() {
-  const { getToken } = useAuth();
-  const [history, setHistory] = useState<InrEntry[]>([]);
-  const [fetching, setFetching] = useState(true);
+  const { getToken, user } = useAuth();
+  const uid = user?.uid;
+  // Hydrated cache (memory) read synchronously so the first frame already
+  // shows data — no skeleton flash when a cached copy exists.
+  const [initialCache] = useState(() =>
+    uid ? readCacheSync<Partial<InrData>>(uid, 'inr')?.entries ?? null : null,
+  );
+  const [history, setHistory] = useState<InrEntry[]>(initialCache ?? []);
+  const [fetching, setFetching] = useState(initialCache === null);
+  const [revalidating, setRevalidating] = useState(false);
+  // Edit gate: until the first revalidation settles, the on-screen data may be
+  // a stale cached copy — editing it would make the next full-document PUT
+  // overwrite newer changes from another device. Unlocks on failure too, so
+  // being offline never makes the app read-only.
+  const [synced, setSynced] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
+  // True while a local add/delete may not have reached the server yet — a
+  // background refresh must not overwrite it with the older server copy.
+  // Cleared when the persist succeeds (server caught up).
+  const mutatedRef = useRef(false);
 
   const [pt, setPt] = useState('');
   const [ptNormal, setPtNormal] = useState('12');
@@ -44,16 +62,22 @@ export default function InrScreen() {
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
 
   const load = useCallback(async () => {
+    setRevalidating(true);
     try {
       const api = makeApi(getToken);
       const data = await api.getInr();
-      if (data?.entries) setHistory(data.entries);
+      if (data?.entries) {
+        if (uid) writeCache(uid, 'inr', data);
+        if (!mutatedRef.current) setHistory(data.entries);
+      }
     } catch {
       // first visit
     } finally {
       setFetching(false);
+      setRevalidating(false);
+      setSynced(true);
     }
-  }, [getToken]);
+  }, [getToken, uid]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -75,9 +99,12 @@ export default function InrScreen() {
 
   const persist = async (entries: InrEntry[], successMsg: string) => {
     setSaving(true);
+    mutatedRef.current = true;
     try {
       const api = makeApi(getToken);
       await api.putInr({ entries });
+      if (uid) writeCache(uid, 'inr', { entries });
+      mutatedRef.current = false;
       showSnackbar(successMsg);
     } catch (e) {
       showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
@@ -88,6 +115,10 @@ export default function InrScreen() {
 
   const handleSave = () => {
     if (result === null) return;
+    if (!synced) {
+      showSnackbar('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     const entry: InrEntry = {
       id: newId(),
       date: new Date().toISOString(),
@@ -106,6 +137,10 @@ export default function InrScreen() {
   };
 
   const handleDelete = (id: string) => {
+    if (!synced) {
+      showSnackbar('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     confirmDelete({
       title: 'Usunąć wpis?',
       onConfirm: () => {
@@ -271,6 +306,7 @@ export default function InrScreen() {
         )}
       </PageScroll>
 
+      <BackgroundRefreshIndicator visible={revalidating && !refreshing} />
       {snackbarEl}
     </View>
   );

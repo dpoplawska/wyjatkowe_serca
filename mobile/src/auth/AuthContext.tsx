@@ -10,6 +10,7 @@ import {
   FirebaseAuthTypes,
 } from '@react-native-firebase/auth';
 import { googleWebClientId, isGoogleSignInConfigured } from './firebase';
+import { clearAllCaches, hydrateCache } from '../lib/dataCache';
 
 export interface AppUser {
   uid: string;
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const stored = await SecureStore.getItemAsync(DEV_USER_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as { uid: string; email: string };
+          await hydrateCache(parsed.uid).catch(() => {});
           setDevUser({
             uid: parsed.uid,
             email: parsed.email,
@@ -56,7 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Subscribe to Firebase native auth state
   useEffect(() => {
-    const unsub = onAuthStateChanged(getAuth(), (u) => {
+    const unsub = onAuthStateChanged(getAuth(), async (u) => {
+      // Warm the in-memory data cache before the first screen mounts, while
+      // the splash is still up — screens read it synchronously on first render.
+      if (u) await hydrateCache(u.uid).catch(() => {});
       setFirebaseUser(u);
       setLoading(false);
     });
@@ -119,6 +124,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOutUser = useCallback(async () => {
     setDevUser(null);
+    // Cached medical data must not survive a sign-out on a shared device.
+    await clearAllCaches();
     await SecureStore.deleteItemAsync(DEV_USER_KEY);
     try {
       const { GoogleSignin } = await import('@react-native-google-signin/google-signin');

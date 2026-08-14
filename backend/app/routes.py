@@ -9,7 +9,6 @@ from hashlib import sha256
 
 from fastapi import APIRouter, HTTPException, Request, Header, Depends
 from app.limiter import limiter
-import pandas as pd
 from firebase_admin import auth as firebase_auth
 
 from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData, MedicationsData, InrData, MeasurementsData
@@ -155,8 +154,13 @@ def total_confirmed_payments():
     )
 
     # get only payments for current month
-    current_month_start = pd.Timestamp.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    payments = [payment for payment in payments if pd.Timestamp(payment.to_dict()["modifiedAt"]) >= current_month_start]
+    def parse_modified_at(value: str) -> datetime:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        # naive local comparison; tz offsets are dropped (month granularity)
+        return dt.replace(tzinfo=None)
+
+    current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    payments = [payment for payment in payments if parse_modified_at(payment.to_dict()["modifiedAt"]) >= current_month_start]
 
     total = sum([payment.to_dict()["amount"] for payment in payments])
     return {"total": total}

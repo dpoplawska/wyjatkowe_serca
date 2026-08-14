@@ -16,6 +16,8 @@ import { WrappedChip } from '../components/WrappedChip';
 import { LogoutButton } from '../components/LogoutButton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
+import { readCacheSync, writeCache } from '../lib/dataCache';
+import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
 import {
   PatientProfileData,
   Operacja,
@@ -40,11 +42,38 @@ import { colors } from '../theme/colors';
 
 const emptyOp = (): Operacja => ({ id: newId(), typ: '', data: '', czas_it: '' });
 
+// Server/cache payload → screen state. Returns null when there is nothing to show.
+function normalizeProfile(data: Partial<PatientProfileData> | null | undefined): PatientProfileData | null {
+  if (!data || Object.keys(data).length === 0) return null;
+  const normalized = { ...data } as Partial<PatientProfileData> & { wada_serca?: string | string[] };
+  if (typeof normalized.wada_serca === 'string') {
+    normalized.wada_serca = normalized.wada_serca ? [normalized.wada_serca] : [];
+  }
+  if (Array.isArray(normalized.przebyte_operacje)) {
+    normalized.przebyte_operacje = normalized.przebyte_operacje.map(
+      (op) => ({ ...op, id: op.id ?? newId() }),
+    );
+  }
+  return { ...EMPTY_PATIENT_PROFILE, ...(normalized as Partial<PatientProfileData>) };
+}
+
 export default function PatientProfileScreen() {
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
+  const uid = user?.uid;
   const navigation = useNavigation();
-  const [profile, setProfile] = useState<PatientProfileData>(EMPTY_PATIENT_PROFILE);
-  const [fetching, setFetching] = useState(true);
+  // Hydrated cache (memory) read synchronously so the first frame already
+  // shows data — no skeleton flash when a cached copy exists.
+  const [initialCache] = useState(() =>
+    uid ? normalizeProfile(readCacheSync<Partial<PatientProfileData>>(uid, 'patient-profile')) : null,
+  );
+  const [profile, setProfile] = useState<PatientProfileData>(initialCache ?? EMPTY_PATIENT_PROFILE);
+  const [fetching, setFetching] = useState(initialCache === null);
+  const [revalidating, setRevalidating] = useState(false);
+  // Edit gate: until the first revalidation settles, the on-screen data may be
+  // a stale cached copy — editing it would make the next full-document PUT
+  // overwrite newer changes from another device. Unlocks on failure too, so
+  // being offline never makes the app read-only.
+  const [synced, setSynced] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -61,8 +90,13 @@ export default function PatientProfileScreen() {
   // save was in flight" and avoid clearing the dirty flag in that case.
   const profileRef = useRef(profile);
   profileRef.current = profile;
+  // Mirror of `dirty` readable inside async loads: a background refresh must
+  // not overwrite edits made while the request was in flight.
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
   const load = useCallback(async () => {
+    setRevalidating(true);
     try {
       const api = makeApi(getToken);
       const [data, accessData, guestList] = await Promise.all([
@@ -72,24 +106,19 @@ export default function PatientProfileScreen() {
       ]);
       setAccess({ isGuest: accessData.isGuest, ownerName: accessData.ownerName });
       setGuests(guestList);
-      if (data && Object.keys(data).length > 0) {
-        const normalized = { ...data } as Partial<PatientProfileData> & { wada_serca?: string | string[] };
-        if (typeof normalized.wada_serca === 'string') {
-          normalized.wada_serca = normalized.wada_serca ? [normalized.wada_serca] : [];
-        }
-        if (Array.isArray(normalized.przebyte_operacje)) {
-          normalized.przebyte_operacje = normalized.przebyte_operacje.map(
-            (op) => ({ ...op, id: op.id ?? newId() }),
-          );
-        }
-        setProfile({ ...EMPTY_PATIENT_PROFILE, ...(normalized as Partial<PatientProfileData>) });
+      const normalized = normalizeProfile(data);
+      if (normalized) {
+        if (uid) writeCache(uid, 'patient-profile', data);
+        if (!dirtyRef.current) setProfile(normalized);
       }
     } catch {
       // First-visit empty response or transient network blip — keep defaults.
     } finally {
       setFetching(false);
+      setRevalidating(false);
+      setSynced(true);
     }
-  }, [getToken]);
+  }, [getToken, uid]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -100,6 +129,10 @@ export default function PatientProfileScreen() {
   }, [load]);
 
   const updateProfile = (updater: (p: PatientProfileData) => PatientProfileData) => {
+    if (!synced) {
+      showSnackbar('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     setDirty(true);
     setProfile(updater);
   };
@@ -140,6 +173,7 @@ export default function PatientProfileScreen() {
       try {
         const api = makeApi(getToken);
         await api.putPatientProfile(snapshot);
+        if (uid) writeCache(uid, 'patient-profile', snapshot);
         if (profileRef.current === snapshot) setDirty(false);
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 1500);
@@ -149,7 +183,7 @@ export default function PatientProfileScreen() {
       }
     }, 1000);
     return () => clearTimeout(t);
-  }, [dirty, profile, getToken, showSnackbar]);
+  }, [dirty, profile, getToken, uid, showSnackbar]);
 
   // Stable callback captured via refs so the header IconButton sees the latest
   // showSnackbar / getToken without re-running setOptions on every render.
@@ -471,6 +505,7 @@ export default function PatientProfileScreen() {
         title="Wady serca"
       />
 
+      <BackgroundRefreshIndicator visible={revalidating && !refreshing} />
       {snackbarEl}
     </View>
   );

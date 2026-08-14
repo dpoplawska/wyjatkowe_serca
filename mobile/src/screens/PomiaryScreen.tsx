@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { PageScroll } from '../components/PageScroll';
@@ -16,7 +16,9 @@ import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
-import { MeasurementEntry, InrEntry } from '../types/api';
+import { readCacheSync, writeCache } from '../lib/dataCache';
+import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
+import { MeasurementEntry, InrEntry, MeasurementsData, InrData } from '../types/api';
 import {
   ChartRange,
   CHART_RANGES,
@@ -47,11 +49,32 @@ import {
 import { colors } from '../theme/colors';
 
 export default function PomiaryScreen() {
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
+  const uid = user?.uid;
   const navigation = useNavigation<TabScreenNav>();
-  const [entries, setEntries] = useState<MeasurementEntry[]>([]);
-  const [inrEntries, setInrEntries] = useState<InrEntry[]>([]);
-  const [fetching, setFetching] = useState(true);
+  // True while a local add/delete may not have reached the server yet — a
+  // background refresh must not overwrite it with the older server copy.
+  // Cleared when the persist succeeds (server caught up).
+  const mutatedRef = useRef(false);
+  // Hydrated cache (memory) read synchronously so the first frame already
+  // shows data — no skeleton flash when a cached copy exists.
+  const [initialCache] = useState(() =>
+    uid
+      ? {
+          m: readCacheSync<Partial<MeasurementsData>>(uid, 'measurements')?.entries ?? null,
+          i: readCacheSync<Partial<InrData>>(uid, 'inr')?.entries ?? null,
+        }
+      : { m: null, i: null },
+  );
+  const [entries, setEntries] = useState<MeasurementEntry[]>(initialCache.m ?? []);
+  const [inrEntries, setInrEntries] = useState<InrEntry[]>(initialCache.i?.slice(0, 50) ?? []);
+  const [fetching, setFetching] = useState(initialCache.m === null && initialCache.i === null);
+  const [revalidating, setRevalidating] = useState(false);
+  // Edit gate: until the first revalidation settles, the on-screen data may be
+  // a stale cached copy — editing it would make the next full-document PUT
+  // overwrite newer changes from another device. Unlocks on failure too, so
+  // being offline never makes the app read-only.
+  const [synced, setSynced] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -106,17 +129,26 @@ export default function PomiaryScreen() {
   };
 
   const load = useCallback(async () => {
+    setRevalidating(true);
     try {
       const api = makeApi(getToken);
       const [m, i] = await Promise.all([api.getMeasurements(), api.getInr()]);
-      if (m?.entries) setEntries(m.entries);
-      if (i?.entries) setInrEntries(i.entries.slice(0, 50));
+      if (m?.entries) {
+        if (uid) writeCache(uid, 'measurements', m);
+        if (!mutatedRef.current) setEntries(m.entries);
+      }
+      if (i?.entries) {
+        if (uid) writeCache(uid, 'inr', i);
+        setInrEntries(i.entries.slice(0, 50));
+      }
     } catch {
       // first visit
     } finally {
       setFetching(false);
+      setRevalidating(false);
+      setSynced(true);
     }
-  }, [getToken]);
+  }, [getToken, uid]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -128,9 +160,12 @@ export default function PomiaryScreen() {
 
   const persist = async (updated: MeasurementEntry[], successMsg: string) => {
     setSaving(true);
+    mutatedRef.current = true;
     try {
       const api = makeApi(getToken);
       await api.putMeasurements({ entries: updated });
+      if (uid) writeCache(uid, 'measurements', { entries: updated });
+      mutatedRef.current = false;
       showSnackbar(successMsg);
     } catch (e) {
       showSnackbar(e instanceof Error ? e.message : 'Błąd zapisu');
@@ -143,6 +178,10 @@ export default function PomiaryScreen() {
 
   const handleSave = () => {
     if (!hasAnyValue) return;
+    if (!synced) {
+      showTopToast('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     const entry = makeMeasurement({
       date: measurementDate.toISOString(),
       saturacja,
@@ -160,6 +199,10 @@ export default function PomiaryScreen() {
   };
 
   const handleDelete = (id: string) => {
+    if (!synced) {
+      showTopToast('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     confirmDelete({
       title: 'Usunąć pomiar?',
       onConfirm: () => {
@@ -431,6 +474,7 @@ export default function PomiaryScreen() {
         </View>
       </PageScroll>
 
+      <BackgroundRefreshIndicator visible={revalidating && !refreshing} />
       {topToastEl}
       {snackbarEl}
     </View>

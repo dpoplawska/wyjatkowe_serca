@@ -14,7 +14,9 @@ import {
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
-import { Lek } from '../types/api';
+import { readCacheSync, writeCache } from '../lib/dataCache';
+import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
+import { Lek, MedicationsData } from '../types/api';
 import {
   CZESTOTLIWOSCI,
   emptyLek,
@@ -38,6 +40,16 @@ import { SaveStatusPill, SaveStatus } from '../components/SaveStatusPill';
 import { colors } from '../theme/colors';
 
 const CZESTOTLIWOSCI_LABELS = CZESTOTLIWOSCI.map((c) => c.label);
+
+// Server/cache payload → screen state. Returns null when there is nothing to show.
+const normalizeLeki = (data: Partial<MedicationsData> | null | undefined): Lek[] | null =>
+  data && Array.isArray(data.leki)
+    ? data.leki.map((l) => ({
+        ...emptyLek(),
+        ...l,
+        historia_dawek: normalizeHistory((l as { historia_dawek?: unknown }).historia_dawek),
+      }))
+    : null;
 const CZAS_TRWANIA_OPTIONS = [
   { label: 'Bezterminowo', value: 'bezterminowo' },
   { label: 'Liczba dni', value: 'dni' },
@@ -45,9 +57,21 @@ const CZAS_TRWANIA_OPTIONS = [
 ];
 
 export default function MedicationsScreen() {
-  const { getToken } = useAuth();
-  const [leki, setLeki] = useState<Lek[]>([]);
-  const [fetching, setFetching] = useState(true);
+  const { getToken, user } = useAuth();
+  const uid = user?.uid;
+  // Hydrated cache (memory) read synchronously so the first frame already
+  // shows data — no skeleton flash when a cached copy exists.
+  const [initialCache] = useState(() =>
+    uid ? normalizeLeki(readCacheSync<Partial<MedicationsData>>(uid, 'medications')) : null,
+  );
+  const [leki, setLeki] = useState<Lek[]>(initialCache ?? []);
+  const [fetching, setFetching] = useState(initialCache === null);
+  const [revalidating, setRevalidating] = useState(false);
+  // Edit gate: until the first revalidation settles, the on-screen data may be
+  // a stale cached copy — editing it would make the next full-document PUT
+  // overwrite newer changes from another device. Unlocks on failure too, so
+  // being offline never makes the app read-only.
+  const [synced, setSynced] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -58,27 +82,33 @@ export default function MedicationsScreen() {
   // user edits made during the network round-trip).
   const lekiRef = useRef(leki);
   lekiRef.current = leki;
+  // Mirror of `dirty` readable inside async loads: a background refresh must
+  // not overwrite edits made while the request was in flight.
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
   const load = useCallback(async () => {
+    setRevalidating(true);
     try {
       const api = makeApi(getToken);
       const data = await api.getMedications();
-      if (data && Array.isArray(data.leki)) {
-        const next: Lek[] = data.leki.map((l) => ({
-          ...emptyLek(),
-          ...l,
-          historia_dawek: normalizeHistory((l as { historia_dawek?: unknown }).historia_dawek),
-        }));
-        setLeki(next);
-        // Align OS-scheduled dose reminders with the loaded state.
-        reconcileDoseReminders(next).catch(() => { /* best effort */ });
+      const next = normalizeLeki(data);
+      if (next) {
+        if (uid) writeCache(uid, 'medications', data);
+        if (!dirtyRef.current) {
+          setLeki(next);
+          // Align OS-scheduled dose reminders with the loaded state.
+          reconcileDoseReminders(next).catch(() => { /* best effort */ });
+        }
       }
     } catch {
       // first visit
     } finally {
       setFetching(false);
+      setRevalidating(false);
+      setSynced(true);
     }
-  }, [getToken]);
+  }, [getToken, uid]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -90,6 +120,10 @@ export default function MedicationsScreen() {
 
   // All mutations flow through update() so any edit becomes a debounced autosave.
   const update = (next: Lek[]) => {
+    if (!synced) {
+      showTopToast('Trwa odświeżanie danych — spróbuj za chwilę.');
+      return;
+    }
     setLeki(next);
     setDirty(true);
   };
@@ -105,6 +139,7 @@ export default function MedicationsScreen() {
       try {
         const api = makeApi(getToken);
         await api.putMedications({ leki: snapshot });
+        if (uid) writeCache(uid, 'medications', { leki: snapshot });
         reconcileDoseReminders(snapshot).catch(() => { /* best effort */ });
         if (lekiRef.current === snapshot) setDirty(false);
         setSaveStatus('saved');
@@ -115,7 +150,7 @@ export default function MedicationsScreen() {
       }
     }, 1000);
     return () => clearTimeout(t);
-  }, [dirty, leki, getToken, showSnackbar]);
+  }, [dirty, leki, getToken, uid, showSnackbar]);
 
   const updateLek = <K extends keyof Lek>(index: number, field: K, value: Lek[K]) => {
     const updatedList = leki.map((lek, i) => (i === index ? { ...lek, [field]: value } : lek));
@@ -282,6 +317,7 @@ export default function MedicationsScreen() {
       </PageScroll>
 
       <SaveStatusPill status={saveStatus} />
+      <BackgroundRefreshIndicator visible={revalidating && !refreshing} />
       {topToastEl}
 
       {snackbarEl}
