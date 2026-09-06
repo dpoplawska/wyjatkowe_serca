@@ -532,7 +532,7 @@ export async function openOrShare(fileUri: string): Promise<void> {
 
 // Polish-aware slug: transliterates the most common diacritics, replaces
 // anything not [A-Za-z0-9] with an underscore, collapses repeats.
-function slugify(name: string): string {
+export function slugify(name: string): string {
   const map: Record<string, string> = {
     ą: 'a', ć: 'c', ę: 'e', ł: 'l', ń: 'n', ó: 'o', ś: 's', ź: 'z', ż: 'z',
     Ą: 'A', Ć: 'C', Ę: 'E', Ł: 'L', Ń: 'N', Ó: 'O', Ś: 'S', Ź: 'Z', Ż: 'Z',

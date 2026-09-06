@@ -8,7 +8,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { makeApi, TokenProvider } from '../api/client';
 import { PatientDocument } from '../types/api';
-import { openOrShare } from './pdfReport';
+import { openOrShare, slugify } from './pdfReport';
 
 export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 
@@ -62,7 +62,11 @@ export async function openDocument(getToken: TokenProvider, doc: PatientDocument
   const { url } = await api.getDownloadUrl(doc.id);
   const dir = `${FileSystem.cacheDirectory}documents/`;
   await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-  const target = `${dir}${doc.id}.pdf`;
+  // Name the cached copy after the original so the viewer's title bar shows
+  // "wypis_2026.pdf" rather than the storage id. Prefixing the id keeps two
+  // documents with the same name from colliding.
+  const base = slugify(doc.name.replace(/\.pdf$/i, '')) || 'dokument';
+  const target = `${dir}${base}_${doc.id}.pdf`;
   const res = await FileSystem.downloadAsync(url, target);
   if (res.status < 200 || res.status >= 300) {
     throw new Error(`Pobieranie nie powiodło się (${res.status})`);
