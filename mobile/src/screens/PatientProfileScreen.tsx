@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import { ScreenSkeleton } from '../components/ScreenSkeleton';
 import { useNavigation } from '@react-navigation/native';
+import { TabScreenNav } from '../navigation/types';
 import { WrappedChip } from '../components/WrappedChip';
 import { LogoutButton } from '../components/LogoutButton';
 import { useAuth } from '../auth/AuthContext';
@@ -31,6 +32,7 @@ import {
   ZESPOLY_GENETYCZNE_TYPY,
 } from '../lib/patientProfileOptions';
 import { SectionCard } from '../components/SectionCard';
+import { DocumentsSection } from '../components/DocumentsSection';
 import { MultiSelectModal } from '../components/MultiSelectModal';
 import { SelectMenu } from '../components/SelectMenu';
 import { DateTimePickerField } from '../components/DateTimePickerField';
@@ -60,7 +62,7 @@ function normalizeProfile(data: Partial<PatientProfileData> | null | undefined):
 export default function PatientProfileScreen() {
   const { getToken, user } = useAuth();
   const uid = user?.uid;
-  const navigation = useNavigation();
+  const navigation = useNavigation<TabScreenNav>();
   // Hydrated cache (memory) read synchronously so the first frame already
   // shows data — no skeleton flash when a cached copy exists.
   const [initialCache] = useState(() =>
@@ -80,6 +82,7 @@ export default function PatientProfileScreen() {
   const [wadyOpen, setWadyOpen] = useState(false);
   const [access, setAccess] = useState<{ isGuest: boolean; ownerName?: string }>({ isGuest: false });
   const [guests, setGuests] = useState<{ uid: string; email: string }[]>([]);
+  const [me, setMe] = useState<{ isAdmin: boolean; uploadApproved: boolean }>({ isAdmin: false, uploadApproved: false });
   const creatingInviteRef = useRef(false);
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
   const showSnackbarRef = useRef(showSnackbar);
@@ -99,13 +102,15 @@ export default function PatientProfileScreen() {
     setRevalidating(true);
     try {
       const api = makeApi(getToken);
-      const [data, accessData, guestList] = await Promise.all([
+      const [data, accessData, guestList, meFlags] = await Promise.all([
         api.getPatientProfile(),
         api.getAccessStatus().catch(() => ({ isGuest: false, ownerName: undefined })),
         api.listGuests().catch(() => []),
+        api.getMe().catch(() => ({ isAdmin: false, uploadApproved: false })),
       ]);
       setAccess({ isGuest: accessData.isGuest, ownerName: accessData.ownerName });
       setGuests(guestList);
+      setMe({ isAdmin: meFlags.isAdmin, uploadApproved: meFlags.uploadApproved });
       const normalized = normalizeProfile(data);
       if (normalized) {
         if (uid) writeCache(uid, 'patient-profile', data);
@@ -270,11 +275,20 @@ export default function PatientProfileScreen() {
             accessibilityLabel="Dołącz opiekuna"
             size={22}
           />
+          {me.isAdmin && (
+            <IconButton
+              icon="account-check-outline"
+              iconColor={colors.blue}
+              onPress={() => navigation.navigate('AdminUsers')}
+              accessibilityLabel="Zatwierdzanie użytkowników"
+              size={22}
+            />
+          )}
           <LogoutButton />
         </View>
       ),
     });
-  }, [navigation, shareInviteLink, exportPdf]);
+  }, [navigation, shareInviteLink, exportPdf, me.isAdmin]);
 
   if (fetching) {
     return <ScreenSkeleton />;
@@ -476,6 +490,8 @@ export default function PatientProfileScreen() {
             </>
           )}
         </SectionCard>
+
+        <DocumentsSection getToken={getToken} uploadApproved={me.uploadApproved} showSnackbar={showSnackbar} />
 
         {guests.length > 0 && (
           <SectionCard title="Osoby z dostępem do profilu">

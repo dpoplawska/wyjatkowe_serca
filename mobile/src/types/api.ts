@@ -112,3 +112,33 @@ export const EMPTY_PATIENT_PROFILE: PatientProfileData = {
   zespoly_genetyczne_typ: '',
   zespoly_genetyczne_opis: '',
 };
+
+// --- Medical documentation (PDF) ---
+
+export interface MeFlags {
+  uid: string;
+  isAdmin: boolean;
+  uploadApproved: boolean;
+}
+
+export interface PatientDocument {
+  id: string;
+  name: string;
+  date: string; // YYYY-MM-DD, date of the document itself
+  size: number; // bytes, as verified by storage
+  createdAt: string;
+}
+
+export interface UploadTicket {
+  documentId: string;
+  uploadUrl: string;
+  headers: Record<string, string>;
+}
+
+export interface AdminUser {
+  uid: string;
+  email: string;
+  name: string;
+  isAdmin: boolean;
+  uploadApproved: boolean;
+}

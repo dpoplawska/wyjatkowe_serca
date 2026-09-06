@@ -506,7 +506,7 @@ export async function generatePatientPdf(getToken: TokenProvider): Promise<void>
 // Android: ACTION_VIEW intent on a FileProvider content:// URI.
 // iOS: share sheet (canonical "open or send" surface; iOS has no direct
 // "open in Files" intent equivalent).
-async function openOrShare(fileUri: string): Promise<void> {
+export async function openOrShare(fileUri: string): Promise<void> {
   if (Platform.OS === 'android') {
     try {
       const contentUri = await FileSystem.getContentUriAsync(fileUri);

@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   AcceptInvite: { token: string };
+  AdminUsers: undefined;
 };
 
 export type MainTabParamList = {

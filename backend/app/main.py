@@ -5,6 +5,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.limiter import limiter
 from app.routes import router
+from app.documents import router as documents_router
 
 # Ensure ENV is set
 env = os.getenv('ENV')
@@ -24,5 +25,6 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(documents_router)
 
 # To run the app, use: uvicorn app.main:app --reload

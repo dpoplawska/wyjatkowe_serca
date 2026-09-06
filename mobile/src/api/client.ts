@@ -6,6 +6,10 @@ import {
   MeasurementsData,
   DevUser,
   InviteInfo,
+  MeFlags,
+  PatientDocument,
+  UploadTicket,
+  AdminUser,
 } from '../types/api';
 
 export type TokenProvider = () => Promise<string>;
@@ -86,6 +90,21 @@ export function makeApi(getToken: TokenProvider) {
       request<{ uid: string; email: string; grantedAt: string }[]>('GET', '/access/guests', getToken),
     revokeGuest: (guestUid: string) =>
       request<{ message: string }>('DELETE', `/access/guests/${guestUid}`, getToken),
+
+    getMe: () => request<MeFlags>('GET', '/me', getToken),
+    listDocuments: () => request<PatientDocument[]>('GET', '/documents', getToken),
+    createUploadUrl: (body: { name: string; date: string; size: number }) =>
+      request<UploadTicket>('POST', '/documents/upload-url', getToken, body),
+    completeUpload: (documentId: string) =>
+      request<PatientDocument>('POST', `/documents/${documentId}/complete`, getToken),
+    getDownloadUrl: (documentId: string) =>
+      request<{ url: string; expiresInSeconds: number }>('GET', `/documents/${documentId}/download-url`, getToken),
+    deleteDocument: (documentId: string) =>
+      request<{ message: string }>('DELETE', `/documents/${documentId}`, getToken),
+
+    adminListUsers: () => request<AdminUser[]>('GET', '/admin/users', getToken),
+    adminSetApproval: (uid: string, approved: boolean) =>
+      request<{ uid: string; uploadApproved: boolean }>('PUT', `/admin/users/${uid}/approval`, getToken, { approved }),
   };
 }
 

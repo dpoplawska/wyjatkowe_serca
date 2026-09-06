@@ -7,6 +7,7 @@ import * as Linking from 'expo-linking';
 import { useAuth } from '../auth/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import AcceptInviteScreen from '../screens/AcceptInviteScreen';
+import AdminUsersScreen from '../screens/AdminUsersScreen';
 import MainTabs from './MainTabs';
 import { RootStackParamList } from './types';
 import { colors } from '../theme/colors';
@@ -54,6 +55,11 @@ export default function RootNavigator() {
               name="AcceptInvite"
               component={AcceptInviteScreen}
               options={{ headerShown: true, title: 'Zaproszenie' }}
+            />
+            <Stack.Screen
+              name="AdminUsers"
+              component={AdminUsersScreen}
+              options={{ headerShown: true, title: 'Zatwierdzanie użytkowników' }}
             />
           </>
         ) : (
