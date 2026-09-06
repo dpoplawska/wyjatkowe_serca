@@ -34,7 +34,7 @@ from reportlab.platypus import (
 
 # --- Paths ---
 ROOT = Path(__file__).resolve().parent.parent
-OUT_PDF = Path(__file__).resolve().parent / "Opis_aplikacji_pacjenta_Wyjatkowe_Serca v3.pdf"
+OUT_PDF = Path(__file__).resolve().parent / "Opis_aplikacji_pacjenta_Wyjatkowe_Serca v4.pdf"
 
 # --- Brand (foundation colours) ---
 BRAND_RED = colors.HexColor("#EC1A3B")
@@ -796,8 +796,12 @@ def build_story(styles: dict) -> list:
             "Aplikacja pomaga wyrobić dobre nawyki u nastolatków: uczy pilnowania dawek leków, "
             "regularnych pomiarów i prowadzenia własnej historii leczenia. Celem jest przygotowanie "
             "pacjenta do samodzielnej opieki nad swoim zdrowiem po ukończeniu 18 lat, gdy przechodzi "
-            "spod opieki pediatrycznej pod opiekę placówki dla dorosłych. Środowisko kardiologii "
-            "dziecięcej nazywa ten moment najsłabszym punktem systemu: rodziny bywają zagubione, "
+            "spod opieki pediatrycznej pod opiekę placówki dla dorosłych. Literatura kardiologiczna "
+            "opisuje ten moment jako najsłabszy punkt systemu opieki nad pacjentem z WWS: badania "
+            "pokazują, że znacząca część młodych dorosłych wypada wtedy z obserwacji "
+            "specjalistycznej (Mackie i wsp., Circulation 2009), a wytyczne ESC 2020 dotyczące "
+            "dorosłych z WWS zalecają ustrukturyzowany program przejścia rozpoczynany już "
+            "w wieku nastoletnim. Rodziny bywają zagubione, "
             "nie wiedzą, kto odpowiada za dalsze leczenie, jakie obowiązują procedury i gdzie szukać "
             "pomocy, a część pacjentów wypada wtedy z regularnej obserwacji kardiologicznej. "
             "Prowadzona w aplikacji historia leczenia, hospitalizacji i dokumentacji jest w takiej "
@@ -823,8 +827,10 @@ def build_story(styles: dict) -> list:
     story.extend(section_title("2", "Problem i uzasadnienie", styles))
     story.append(
         p(
-            "Wrodzone wady serca są najczęstszymi z wad wrodzonych. W Polsce co roku rodzi się "
-            "ok. 3 tys. dzieci z WWS (ok. 1% urodzeń). "
+            "Wrodzone wady serca są najczęstszymi z wad wrodzonych: występują u ok. 8–9 na 1000 "
+            "żywych urodzeń (metaanaliza van der Linde i wsp., J Am Coll Cardiol 2011), czyli "
+            "u ok. 1% noworodków. Przy ok. 250–300 tys. urodzeń rocznie w Polsce (GUS) oznacza to "
+            "ok. 2,5–3 tys. dzieci z WWS każdego roku. "
             "Rodziny dzieci z WWS na co dzień zarządzają dużą ilością informacji medycznych: "
             "harmonogramami leków (często z różnymi dawkami i częstotliwościami), wynikami INR "
             "istotnymi przy leczeniu przeciwkrzepliwym, pomiarami domowymi, historią leczenia "
@@ -848,9 +854,20 @@ def build_story(styles: dict) -> list:
 
     story.append(
         p(
-            "Istnieją ogólne aplikacje zdrowotne i notatniki, jednak nie są one dopasowane "
-            "do specyfiki opieki nad dzieckiem z wadą serca (INR, leki z przypomnieniami, historia "
-            "hospitalizacji, udostępnianie w rodzinie, eksport karty na wizytę). Fundacja "
+            "Przed rozpoczęciem prac fundacja sprawdziła dostępne rozwiązania (stan na lipiec 2026). "
+            "<b>mojeIKP</b> udostępnia dokumenty systemu ochrony zdrowia (e-recepty, e-skierowania, "
+            "elektroniczna dokumentacja medyczna), ale nie prowadzi domowego dziennika opiekuna: "
+            "nie ma rejestru INR z parametrami laboratorium, harmonogramu i historii podań leków "
+            "ani raportu na wizytę. <b>Apple Zdrowie</b> i <b>Google Health Connect</b> to ogólne "
+            "magazyny danych powiązane z jednym ekosystemem telefonu, bez INR, bez profilu dziecka "
+            "prowadzonego przez dwoje opiekunów i bez treści w języku polskim dopasowanych do WWS. "
+            "Aplikacje do leków (np. Medisafe, MyTherapy) oraz do INR dla pacjentów "
+            "przeciwkrzepliwych obejmują każda jeden wycinek potrzeb, są w większości "
+            "anglojęzyczne i nastawione na dorosłego pacjenta, a część aplikacji INR podpowiada "
+            "dawki, czego fundacja świadomie unika (rozdz. 6.3). Żadne z tych rozwiązań nie łączy "
+            "w jednym miejscu tego, czego potrzebuje rodzina dziecka z wadą serca: INR, leków "
+            "z przypomnieniami, historii hospitalizacji, udostępniania w rodzinie i eksportu "
+            "karty na wizytę. Fundacja "
             "dysponuje już własnym zapleczem cyfrowym i działającą wersją roboczą aplikacji. "
             "Projekt dotacyjny pozwala ukończyć wersję mobilną, opublikować aplikację "
             "w oficjalnych sklepach, wzmocnić ochronę danych o zdrowiu oraz zapewnić rok "
@@ -909,8 +926,8 @@ def build_story(styles: dict) -> list:
         [
             "Pomiary",
             "Saturacja, tętno, ciśnienie skurczowe i rozkurczowe, diureza dobowa, notatki; historia "
-            "wpisów z oznaczeniem wartości odbiegających od normy, wykresy trendów (od 7 dni "
-            "do całego okresu), codzienne przypomnienie o pomiarze.",
+            "wpisów, wykresy trendów (od 7 dni do całego okresu), codzienne przypomnienie "
+            "o pomiarze. Aplikacja nie ocenia wartości pomiarów.",
             "Dopracowanie wykresów i interfejsu, testy na urządzeniach.",
         ],
         [
@@ -1160,7 +1177,8 @@ def build_story(styles: dict) -> list:
         ["Prawa osoby", "Podgląd i edycja własnych danych w aplikacji; usunięcie konta i powiązanych danych medycznych w zakresie v1; eksport raportu PDF jako forma przenoszenia informacji na wizytę."],
         ["Dokumentacja medyczna", "Wgrywanie plików wyłącznie przez zalogowanych użytkowników zatwierdzonych przez fundację; limit wielkości pliku; pliki przechowywane w tym samym reżimie bezpieczeństwa co pozostałe dane o zdrowiu."],
         ["Pełnoletność pacjenta", "Po ukończeniu 18 lat dostęp rodziców zostaje wstrzymany; dalszy wgląd wymaga wyraźnej zgody pacjenta, którą może on w każdej chwili wycofać."],
-        ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) na podstawie art. 35 RODO; przetwarzanie łączy dane o zdrowiu, dane dzieci i aplikację mobilną, co wskazuje na obowiązek jej przeprowadzenia."],
+        ["Ocena ryzyka", "Ocena skutków dla ochrony danych (DPIA) na podstawie art. 35 RODO; przetwarzanie łączy dane o zdrowiu, dane dzieci i aplikację mobilną, co wskazuje na obowiązek jej przeprowadzenia. Wersja robocza DPIA powstaje w fazie F1 (miesiące 1–2), zanim aplikacja zacznie przetwarzać dane rzeczywistych rodzin; do tego czasu wersja robocza działa wyłącznie na danych testowych. W fazie F3 DPIA jest aktualizowana po wdrożeniu zabezpieczeń."],
+        ["Inspektor ochrony danych", "Fundacja oceniła obowiązek z art. 37 ust. 1 lit. c RODO: przetwarzanie danych o zdrowiu w skali ok. 200 kont, przez jeden podmiot i w jednym kraju, nie ma charakteru wielkoskalowego w rozumieniu motywu 91 RODO, więc wyznaczenie IOD nie jest obowiązkowe. Fundacja wyznacza osobę odpowiedzialną za ochronę danych (kontakt w polityce prywatności) i ponownie oceni obowiązek w ramach DPIA oraz przy istotnym wzroście liczby użytkowników."],
         ["Podmioty przetwarzające", "Umowy / warunki powierzenia z dostawcami chmury i tożsamości (dostawcy infrastruktury w UE); po stronie fundacji."],
     ]
     story.append(make_table(rodo_rows, [32 * mm, usable - 32 * mm], styles))
@@ -1223,6 +1241,8 @@ def build_story(styles: dict) -> list:
             "F1. Analiza zakresu i kwalifikacja MDR",
             "Miesiąc 1–2",
             "Utrwalenie założeń, priorytety sklepów, plan testów. "
+            "Wersja robocza oceny skutków (DPIA, art. 35 RODO) przed przetwarzaniem danych "
+            "rzeczywistych rodzin. "
             "Wstępna opinia prawna kwalifikacji MDR (MDCG 2019-11): przeznaczenie v1, "
             "ryzyka INR i przypomnień dawek.",
         ],
@@ -1236,8 +1256,8 @@ def build_story(styles: dict) -> list:
         [
             "F3. RODO i bezpieczeństwo",
             "Miesiące 2–6",
-            "Zgody art. 9, usuwanie konta, wzmocnienie zabezpieczeń API, dziennik dostępu, ocena skutków (DPIA), "
-            "aktualizacja polityki. Końcowa opinia kwalifikacyjna MDR po ustabilizowaniu funkcji i treści; "
+            "Zgody art. 9, usuwanie konta, wzmocnienie zabezpieczeń API, dziennik dostępu, aktualizacja DPIA "
+            "po wdrożeniu zabezpieczeń, aktualizacja polityki. Końcowa opinia kwalifikacyjna MDR po ustabilizowaniu funkcji i treści; "
             "warunek startu publikacji w sklepach z aplikacjami (F4).",
         ],
         [
@@ -1376,7 +1396,7 @@ def build_story(styles: dict) -> list:
         ],
         [
             "12",
-            "Dziennik dostępu, ocena skutków (DPIA), sprawdzenie wdrożenia wymogów RODO w działającej aplikacji",
+            "Dziennik dostępu, ocena skutków (DPIA: wersja robocza w F1, aktualizacja w F3), sprawdzenie wdrożenia wymogów RODO w działającej aplikacji",
             "»48",
             "»10 080",
         ],
