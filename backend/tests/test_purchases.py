@@ -4,7 +4,7 @@ from tests.conftest import mock_doc, mock_stream
 
 
 PURCHASE_BODY = {
-    "amount": 258,
+    "amount": 260,  # 1 * 239 + 21 (kurier)
     "units": 1,
     "email": "buyer@example.com",
     "phone": "123456789",
@@ -82,8 +82,29 @@ def test_create_purchase_no_items_left(client):
 
 
 def test_create_purchase_invalid_body(client):
-    res = client.post("/purchases", json={"amount": 258})  # missing required fields
+    res = client.post("/purchases", json={"amount": 260})  # missing required fields
     assert res.status_code == 422
+
+
+def test_create_purchase_rejects_wrong_amount(client):
+    body = {**PURCHASE_BODY, "amount": 1}
+    res = client.post("/purchases", json=body)
+    assert res.status_code == 400
+    assert "Invalid amount" in res.json()["detail"]
+
+
+def test_create_purchase_rejects_units_over_stock(client):
+    # 44 units already confirmed → only 1 left, request asks for 2
+    purchases = [{"units": 44, "status": "CONFIRMED"}]
+    mock_db = MagicMock()
+    mock_db.collection().stream.return_value = mock_stream(purchases)
+
+    body = {**PURCHASE_BODY, "units": 2, "amount": 2 * 239 + 21}
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.post("/purchases", json=body)
+
+    assert res.status_code == 400
+    assert "Not enough items" in res.json()["detail"]
 
 
 # ---------------------------------------------------------------------------

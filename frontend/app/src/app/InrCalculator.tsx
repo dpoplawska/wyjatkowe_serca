@@ -49,6 +49,9 @@ export default function InrCalculator() {
   const [history, setHistory] = useState<InrEntry[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [fetching, setFetching] = useState(true);
+  // Every save PUTs the full history list — if the initial load failed, saving
+  // would overwrite the server copy with an empty list, so block it.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false, message: '', severity: 'success',
@@ -63,9 +66,11 @@ export default function InrCalculator() {
         if (res.ok) {
           const data = await res.json();
           if (data?.entries) setHistory(data.entries);
+        } else {
+          setLoadFailed(true);
         }
       } catch {
-        // first visit
+        setLoadFailed(true);
       } finally {
         setFetching(false);
       }
@@ -88,6 +93,10 @@ export default function InrCalculator() {
   };
 
   const persistHistory = async (entries: InrEntry[], successMsg: string) => {
+    if (loadFailed) {
+      setSnackbar({ open: true, message: 'Nie udało się wczytać zapisanej historii — odśwież stronę przed zapisem, aby jej nie nadpisać.', severity: 'error' });
+      return;
+    }
     setSaving(true);
     try {
       const token = await getToken();

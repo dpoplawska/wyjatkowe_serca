@@ -134,6 +134,9 @@ export default function Medications() {
   const { user, loading, logout, getToken } = useAuth();
   const [leki, setLeki] = useState<Lek[]>([]);
   const [fetching, setFetching] = useState(true);
+  // Every save PUTs the full leki list — if the initial load failed, saving
+  // would overwrite the server copy with an empty list, so block it.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shortlistOpen, setShortlistOpen] = useState(true);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -155,9 +158,11 @@ export default function Medications() {
           if (data && Array.isArray(data.leki)) {
             setLeki(data.leki.map((l: Lek) => ({ ...emptyLek(), ...l })));
           }
+        } else {
+          setLoadFailed(true);
         }
       } catch {
-        // first visit — no medications yet
+        setLoadFailed(true);
       } finally {
         setFetching(false);
       }
@@ -180,6 +185,10 @@ export default function Medications() {
   const removeLek = (index: number) => setLeki((prev) => prev.filter((_, i) => i !== index));
 
   const saveLeki = async (updatedLeki: Lek[], successMessage: string) => {
+    if (loadFailed) {
+      setSnackbar({ open: true, message: 'Nie udało się wczytać zapisanych leków — odśwież stronę przed zapisem, aby ich nie nadpisać.', severity: 'error' });
+      return;
+    }
     setSaving(true);
     try {
       const token = await getToken();

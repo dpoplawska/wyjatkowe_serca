@@ -5,6 +5,7 @@ import ValueButton from "./components/ValueButton.tsx";
 import { useLocation } from "react-router-dom";
 import { Checkbox } from "@mui/material";
 import { PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations } from "../app/mediaUrls.ts"
+import { beneficiaries } from "./components/beneficiaries/BeneficiariesData.tsx";
 
 import { API } from '../app/config.ts';
 
@@ -56,14 +57,12 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
 
     const handleValueChange = (event) => {
         setEmptyValue(false);
-        let value = event.target.value;
-        value = value.replace(".", "").replace(",", "");
-        if (valueRegex.test(value)) {
-            setValueError(false);
-            setValue(value);
-        } else {
-            setValueError(true);
-        }
+        // Accept whatever is typed or pasted, but flag anything that isn't a
+        // whole złoty amount ("Wartość musi być liczbą całkowitą") — submit
+        // stays blocked until it's a plain integer.
+        const value = event.target.value;
+        setValue(value);
+        setValueError(!valueRegex.test(value));
     };
 
     const handleEmailChange = (event) => {
@@ -104,7 +103,8 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
 
     const handlePayment = async (event) => {
         event.preventDefault();
-        if (email.length > 0 && emailRegex.test(email) && value !== undefined && acceptTermsAndConditionsCheckbox) {
+        const amountValid = /^[0-9]+$/.test(value) && parseInt(value, 10) > 0;
+        if (email.length > 0 && emailRegex.test(email) && amountValid && acceptTermsAndConditionsCheckbox) {
             setEmptyValue(false);
             setEmptyEmail(false);
             setLoading(true);
@@ -154,7 +154,7 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
             }
         } else {
             setResetButton(true);
-            setEmptyValue(value === undefined);
+            setEmptyValue(!amountValid);
             setEmptyEmail(!(email.length > 0));
         }
     };
@@ -245,11 +245,29 @@ export default function HelpUsSide({ showFundraiserBar, specialFundraiser, benef
                     setHelpText("Wesprzyj Agnieszkę");
                     setTransferTitle("WS8 - Agnieszka Ptaszek");
                     break;
-                default:
-                    setHelpText("Wesprzyj Nas");
+                case '/zbiorka/alicja_wilk':
+                    setHelpText("Wesprzyj Alicję");
+                    setTransferTitle("WS9 - Alicja Wilk");
+                    break;
+                case '/zbiorka/basia_mroz':
+                    setHelpText("Wesprzyj Basię");
+                    setTransferTitle("WS10 - Basia Mróz");
+                    break;
+                default: {
+                    // Safety net for fundraisers not listed above: take the
+                    // transfer title from BeneficiariesData so the donation is
+                    // still attributed to the beneficiary.
+                    const b = beneficiaries.find((entry) => entry.id === beneficiary);
+                    if (b?.transferTitle) {
+                        setHelpText(`Wesprzyj - ${b.name}`);
+                        setTransferTitle(b.transferTitle);
+                    } else {
+                        setHelpText("Wesprzyj Nas");
+                    }
+                }
             }
         }
-    }, [location.pathname, specialFundraiser]);
+    }, [location.pathname, specialFundraiser, beneficiary]);
 
     return (
         <section className="help-us side">

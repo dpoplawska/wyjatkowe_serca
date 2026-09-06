@@ -293,6 +293,9 @@ export default function Pomiary() {
   const [entries, setEntries] = useState<MeasurementEntry[]>([]);
   const [inrEntries, setInrEntries] = useState<InrEntry[]>([]);
   const [fetching, setFetching] = useState(true);
+  // Every save PUTs the full entries list — if the initial load failed, saving
+  // would overwrite the server copy with an empty list, so block it.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [saturacja, setSaturacja] = useState('');
@@ -326,13 +329,15 @@ export default function Pomiary() {
         if (mRes.ok) {
           const data = await mRes.json();
           if (data?.entries) setEntries(data.entries);
+        } else {
+          setLoadFailed(true);
         }
         if (iRes.ok) {
           const data = await iRes.json();
           if (data?.entries) setInrEntries(data.entries.slice(0, 20));
         }
       } catch {
-        // first visit
+        setLoadFailed(true);
       } finally {
         setFetching(false);
       }
@@ -346,6 +351,10 @@ export default function Pomiary() {
   const hasAnyValue = saturacja || tetno || cisSys || diureza;
 
   const persist = async (updated: MeasurementEntry[], successMsg: string) => {
+    if (loadFailed) {
+      setSnackbar({ open: true, message: 'Nie udało się wczytać zapisanych pomiarów — odśwież stronę przed zapisem, aby ich nie nadpisać.', severity: 'error' });
+      return;
+    }
     setSaving(true);
     try {
       const token = await getToken();

@@ -202,6 +202,9 @@ export default function PatientProfile() {
   const { user, loading, logout, getToken } = useAuth();
   const [profile, setProfile] = useState<ProfileData>(emptyProfile);
   const [fetching, setFetching] = useState(true);
+  // Saving PUTs the whole profile — if the initial load failed, saving would
+  // overwrite the server copy with an empty form, so block it.
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareLink, setShareLink] = useState('');
@@ -229,9 +232,11 @@ export default function PatientProfile() {
             }
             setProfile({ ...emptyProfile, ...data });
           }
+        } else {
+          setLoadFailed(true);
         }
       } catch {
-        // first visit — no profile yet
+        setLoadFailed(true);
       } finally {
         setFetching(false);
       }
@@ -259,6 +264,10 @@ export default function PatientProfile() {
     setProfile((p) => ({ ...p, przebyte_operacje: p.przebyte_operacje.filter((_, i) => i !== index) }));
 
   const handleSave = async () => {
+    if (loadFailed) {
+      setSnackbar({ open: true, message: 'Nie udało się wczytać zapisanego profilu — odśwież stronę przed zapisem, aby go nie nadpisać.', severity: 'error' });
+      return;
+    }
     setSaving(true);
     try {
       const token = await getToken();

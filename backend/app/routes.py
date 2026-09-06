@@ -135,10 +135,15 @@ def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:
             if payment_request.beneficiary:
                 doc["beneficiary"] = payment_request.beneficiary
             payment_ref.set(doc)
-        except Exception as e:
-            pass
+        except Exception:
+            # Without this record the notification handler can't match the
+            # payment — fail before the donor is redirected and pays untracked.
+            logging.exception("Failed to store payment %s", payment_response.paymentId)
+            raise HTTPException(status_code=500, detail="Failed to store payment record")
 
         return payment_response
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -178,24 +183,35 @@ async def payment_status(request: Request):
 
         # verify signature
         calculated_signature = base64.b64encode(hmac.new(signature_key.encode(), body, sha256).digest()).decode()
-        if signature != calculated_signature:
+        if not hmac.compare_digest(signature or "", calculated_signature):
             raise HTTPException(status_code=400, detail="Invalid signature")
 
         # parse payment notification
         notification = PaymentNotification(**json.loads(body))
         logging.info(f"Payment notification parsed successfully: {notification.dict()}")
 
-        # Update status in the appropriate collection (donations or purchases)
+        # Update status in the appropriate collection (donations or purchases).
+        # Paynow notifications can arrive out of order — never let a stale
+        # PENDING/NEW overwrite a terminal CONFIRMED status.
+        def update_status(ref, current: dict):
+            if current.get("status") == "CONFIRMED" and notification.status != "CONFIRMED":
+                logging.warning(
+                    "Ignoring out-of-order notification %s for confirmed payment %s",
+                    notification.status, notification.paymentId,
+                )
+                return
+            ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
+
         payment_doc = db_client.collection("payments").document(notification.paymentId).get()
         if payment_doc.exists:
             payment_ref = db_client.collection("payments").document(notification.paymentId)
-            payment_ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
+            update_status(payment_ref, payment_doc.to_dict())
             logging.info("Donation status updated successfully")
         else:
             purchase_doc = db_client.collection("purchases").document(notification.paymentId).get()
             if purchase_doc.exists:
                 purchase_ref = db_client.collection("purchases").document(notification.paymentId)
-                purchase_ref.update({"status": notification.status, "modifiedAt": notification.modifiedAt})
+                update_status(purchase_ref, purchase_doc.to_dict())
                 logging.info("Purchase status updated successfully")
             else:
                 logging.warning("No matching donation or purchase found for paymentId")
@@ -228,13 +244,26 @@ def get_items_left() -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+PRODUCT_PRICE = 239
+SHIPPING_PACZKOMAT = 19
+SHIPPING_KURIER = 21
+
+
 @router.post("/purchases", response_model=PurchaseResponse)
 def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseResponse:
     try:
+        # the client-sent amount must match the server-side price list
+        shipping = SHIPPING_PACZKOMAT if purchase_request.paczkomat else SHIPPING_KURIER
+        expected_amount = PRODUCT_PRICE * purchase_request.units + shipping
+        if purchase_request.amount != expected_amount:
+            raise HTTPException(status_code=400, detail="Invalid amount for the requested units")
+
         # don't allow new purchases if items left is 0
         items_left = get_items_left()["items_left"]
         if items_left <= 0:
             raise HTTPException(status_code=400, detail="No items left for purchase")
+        if purchase_request.units > items_left:
+            raise HTTPException(status_code=400, detail="Not enough items left for purchase")
 
         purchase_response = create_purchase(purchase_request)
 
@@ -252,8 +281,11 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
                 "paczkomat_id": purchase_request.paczkomat_id,
                 "status": purchase_response.status
             })
-        except Exception as e:
-            pass
+        except Exception:
+            # Without this record the notification handler can't match the
+            # purchase and shipping data is lost — fail before the customer pays.
+            logging.exception("Failed to store purchase %s", purchase_response.purchaseId)
+            raise HTTPException(status_code=500, detail="Failed to store purchase record")
 
         return purchase_response
     except HTTPException:

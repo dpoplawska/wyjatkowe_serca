@@ -61,7 +61,7 @@ export default function Shop() {
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(e.target.value);
-    const value = isNaN(parsedValue) ? parsedValue : Math.min(parsedValue, currentLimit);
+    const value = isNaN(parsedValue) ? parsedValue : Math.min(Math.max(parsedValue, 1), currentLimit);
     setQuantity(value);
   };
 
@@ -93,8 +93,10 @@ export default function Shop() {
       setEmptyEmail(false);
     } else if (email.length < 1) {
       setEmptyEmail(true);
+      return;
     } else {
       setEmailError(true);
+      return;
     }
 
     const paymentData = {
