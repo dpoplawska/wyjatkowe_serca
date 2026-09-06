@@ -98,7 +98,7 @@ export function makeApi(getToken: TokenProvider) {
     completeUpload: (documentId: string) =>
       request<PatientDocument>('POST', `/documents/${documentId}/complete`, getToken),
     getDownloadUrl: (documentId: string) =>
-      request<{ url: string; expiresInSeconds: number }>('GET', `/documents/${documentId}/download-url`, getToken),
+      request<{ url: string }>('GET', `/documents/${documentId}/download-url`, getToken),
     deleteDocument: (documentId: string) =>
       request<{ message: string }>('DELETE', `/documents/${documentId}`, getToken),
 

@@ -14,6 +14,16 @@ export function formatDateShort(iso: string): string {
   return dayjs(iso).format('DD.MM');
 }
 
+export function formatDate(iso: string): string {
+  return iso ? dayjs(iso).format('DD.MM.YYYY') : '';
+}
+
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 // ISO date (YYYY-MM-DD) — used for Operacja.data which is stored as a date
 // string without time. Backend matches the web's <input type="date"> format.
 export function parseIsoDate(s: string): Date | null {

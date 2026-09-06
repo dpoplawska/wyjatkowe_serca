@@ -11,34 +11,36 @@ Authorization stays here: the signed URLs are the only way to touch the
 bucket from outside, and they are issued per call after the usual checks.
 """
 import logging
-import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-import google.auth
-from google.auth.transport import requests as gauth_requests
 from fastapi import APIRouter, Depends, HTTPException
 from firebase_admin import auth as firebase_auth
-from firebase_admin import storage as firebase_storage
+from google.api_core.exceptions import NotFound
 from pydantic import BaseModel, Field
 
-from app.db import get_firestore_client, initialize_firestore
+from app.db import get_firestore_client
 from app.routes import resolve_uid, verify_token
+from app.storage import get_bucket, signed_url
 
 router = APIRouter()
 
-DOCUMENTS_BUCKET = os.getenv("DOCUMENTS_BUCKET", "wyjatkowe-serca-documents")
 MAX_FILE_BYTES = 50 * 1024 * 1024  # per document
 MAX_TOTAL_BYTES = 200 * 1024 * 1024  # per patient, ready + pending
 UPLOAD_URL_TTL = timedelta(minutes=15)
 DOWNLOAD_URL_TTL = timedelta(minutes=10)
 PDF_CONTENT_TYPE = "application/pdf"
+# Signed into the upload URL, so Storage itself rejects anything else.
+UPLOAD_HEADERS = {
+    "Content-Type": PDF_CONTENT_TYPE,
+    "x-goog-content-length-range": f"0,{MAX_FILE_BYTES}",
+}
 
 
 class UploadRequest(BaseModel):
-    name: str = Field(min_length=1, max_length=200)
+    name: str = Field(min_length=1, max_length=200, pattern=r"(?i)\.pdf$")
     date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
-    size: int = Field(gt=0)
+    size: int = Field(gt=0, le=MAX_FILE_BYTES)
 
 
 class ApprovalRequest(BaseModel):
@@ -49,60 +51,54 @@ class ApprovalRequest(BaseModel):
 # helpers
 
 
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _bucket():
-    initialize_firestore()
-    return firebase_storage.bucket(DOCUMENTS_BUCKET)
-
-
-def _signed_url(blob, method: str, ttl: timedelta, **kwargs) -> str:
-    """V4 signed URL. On Cloud Run there is no private key, so sign through the
-    IAM signBlob API using the runtime service account's access token."""
-    creds, _ = google.auth.default()
-    if hasattr(creds, "sign_bytes"):  # service-account key file (local dev)
-        return blob.generate_signed_url(version="v4", expiration=ttl, method=method, **kwargs)
-    creds.refresh(gauth_requests.Request())
-    return blob.generate_signed_url(
-        version="v4",
-        expiration=ttl,
-        method=method,
-        service_account_email=creds.service_account_email,
-        access_token=creds.token,
-        **kwargs,
-    )
-
-
 def _items(db_client, owner_uid: str):
     return db_client.collection("patientDocuments").document(owner_uid).collection("items")
 
 
-def _user_flags(db_client, uid: str) -> dict:
-    doc = db_client.collection("users").document(uid).get()
-    data = doc.to_dict() if doc.exists else {}
+def _flags(data: dict | None) -> dict:
+    data = data or {}
     return {
         "isAdmin": bool(data.get("isAdmin", False)),
         "uploadApproved": bool(data.get("uploadApproved", False)),
     }
 
 
-def require_admin(uid: str = Depends(verify_token)) -> str:
-    db_client = get_firestore_client()
-    if not _user_flags(db_client, uid)["isAdmin"]:
-        raise HTTPException(status_code=403, detail="Brak uprawnień administratora")
-    return uid
+def _user_flags(db_client, uid: str) -> dict:
+    return _flags(db_client.collection("users").document(uid).get().to_dict())
+
+
+def require_flag(flag: str, detail: str):
+    """Dependency: the signed-in account must carry `flag` in users/{uid}."""
+    def dependency(uid: str = Depends(verify_token)) -> str:
+        if not _user_flags(get_firestore_client(), uid)[flag]:
+            raise HTTPException(status_code=403, detail=detail)
+        return uid
+    return dependency
+
+
+require_admin = require_flag("isAdmin", "Brak uprawnień administratora")
+# Approval is per signed-in account, even when uploading into an owner's
+# profile as a guest.
+require_upload_approved = require_flag(
+    "uploadApproved", "Wgrywanie dokumentów wymaga zatwierdzenia konta przez fundację"
+)
 
 
 def _public(doc: dict) -> dict:
-    return {
-        "id": doc["id"],
-        "name": doc["name"],
-        "date": doc["date"],
-        "size": doc.get("size", 0),
-        "createdAt": doc.get("createdAt", ""),
-    }
+    return {"id": doc["id"], "name": doc["name"], "date": doc["date"], "size": doc.get("size", 0)}
+
+
+def _emails_by_uid(uids: list[str]) -> dict[str, str]:
+    """Batch-resolve e-mail addresses (100 per Identity Toolkit call)."""
+    emails: dict[str, str] = {}
+    for i in range(0, len(uids), 100):
+        chunk = [firebase_auth.UidIdentifier(u) for u in uids[i:i + 100]]
+        try:
+            for user in firebase_auth.get_users(chunk).users:
+                emails[user.uid] = user.email or ""
+        except Exception:
+            logging.exception("Failed to resolve user e-mails")
+    return emails
 
 
 # ---------------------------------------------------------------------------
@@ -111,8 +107,7 @@ def _public(doc: dict) -> dict:
 
 @router.get("/me")
 def get_me(uid: str = Depends(verify_token)) -> dict:
-    db_client = get_firestore_client()
-    return {"uid": uid, **_user_flags(db_client, uid)}
+    return _user_flags(get_firestore_client(), uid)
 
 
 # ---------------------------------------------------------------------------
@@ -121,24 +116,15 @@ def get_me(uid: str = Depends(verify_token)) -> dict:
 
 @router.get("/documents")
 def list_documents(uid: str = Depends(verify_token)) -> list[dict]:
-    db_client = get_firestore_client()
-    owner_uid = resolve_uid(uid)
-    docs = [d.to_dict() for d in _items(db_client, owner_uid).stream()]
+    docs = [d.to_dict() for d in _items(get_firestore_client(), resolve_uid(uid)).stream()]
     ready = [d for d in docs if d.get("status") == "ready"]
     ready.sort(key=lambda d: (d.get("date", ""), d.get("createdAt", "")), reverse=True)
     return [_public(d) for d in ready]
 
 
 @router.post("/documents/upload-url")
-def create_upload_url(req: UploadRequest, uid: str = Depends(verify_token)) -> dict:
+def create_upload_url(req: UploadRequest, uid: str = Depends(require_upload_approved)) -> dict:
     db_client = get_firestore_client()
-    if not _user_flags(db_client, uid)["uploadApproved"]:
-        raise HTTPException(status_code=403, detail="Wgrywanie dokumentów wymaga zatwierdzenia konta przez fundację")
-    if req.size > MAX_FILE_BYTES:
-        raise HTTPException(status_code=400, detail="Plik jest za duży (limit 50 MB)")
-    if not req.name.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Dozwolone są tylko pliki PDF")
-
     owner_uid = resolve_uid(uid)
     used = sum(d.to_dict().get("size", 0) for d in _items(db_client, owner_uid).stream())
     if used + req.size > MAX_TOTAL_BYTES:
@@ -153,36 +139,21 @@ def create_upload_url(req: UploadRequest, uid: str = Depends(verify_token)) -> d
         "size": req.size,
         "status": "pending",
         "objectPath": object_path,
-        "createdAt": _now(),
+        "createdAt": datetime.now(timezone.utc).isoformat(),
         "uploadedBy": uid,
     })
-    blob = _bucket().blob(object_path)
     try:
-        url = _signed_url(
-            blob,
-            "PUT",
-            UPLOAD_URL_TTL,
-            content_type=PDF_CONTENT_TYPE,
-            headers={"x-goog-content-length-range": f"0,{MAX_FILE_BYTES}"},
-        )
+        url = signed_url(get_bucket().blob(object_path), "PUT", UPLOAD_URL_TTL, headers=UPLOAD_HEADERS)
     except Exception:
         logging.exception("Failed to sign upload URL for %s", object_path)
         raise HTTPException(status_code=500, detail="Nie udało się przygotować wysyłki pliku")
-    return {
-        "documentId": doc_id,
-        "uploadUrl": url,
-        "headers": {
-            "Content-Type": PDF_CONTENT_TYPE,
-            "x-goog-content-length-range": f"0,{MAX_FILE_BYTES}",
-        },
-    }
+    return {"documentId": doc_id, "uploadUrl": url, "headers": UPLOAD_HEADERS}
 
 
 @router.post("/documents/{doc_id}/complete")
 def complete_upload(doc_id: str, uid: str = Depends(verify_token)) -> dict:
-    db_client = get_firestore_client()
     owner_uid = resolve_uid(uid)
-    ref = _items(db_client, owner_uid).document(doc_id)
+    ref = _items(get_firestore_client(), owner_uid).document(doc_id)
     snap = ref.get()
     if not snap.exists:
         raise HTTPException(status_code=404, detail="Nie znaleziono dokumentu")
@@ -190,11 +161,12 @@ def complete_upload(doc_id: str, uid: str = Depends(verify_token)) -> dict:
     if meta.get("status") == "ready":
         return _public(meta)
 
-    bucket = _bucket()
+    bucket = get_bucket()
     pending = bucket.blob(meta["objectPath"])
-    if not pending.exists():
+    try:
+        pending.reload()
+    except NotFound:
         raise HTTPException(status_code=400, detail="Plik nie został wysłany")
-    pending.reload()
 
     def reject(detail: str):
         pending.delete()
@@ -211,43 +183,38 @@ def complete_upload(doc_id: str, uid: str = Depends(verify_token)) -> dict:
     ready_path = f"ready/{owner_uid}/{doc_id}.pdf"
     bucket.copy_blob(pending, bucket, ready_path)
     pending.delete()
-    ref.update({"status": "ready", "objectPath": ready_path, "size": pending.size})
-    meta.update({"status": "ready", "objectPath": ready_path, "size": pending.size})
-    return _public(meta)
+    changes = {"status": "ready", "objectPath": ready_path, "size": pending.size}
+    ref.update(changes)
+    return _public({**meta, **changes})
 
 
 @router.get("/documents/{doc_id}/download-url")
 def get_download_url(doc_id: str, uid: str = Depends(verify_token)) -> dict:
-    db_client = get_firestore_client()
-    owner_uid = resolve_uid(uid)
-    snap = _items(db_client, owner_uid).document(doc_id).get()
+    snap = _items(get_firestore_client(), resolve_uid(uid)).document(doc_id).get()
     if not snap.exists or snap.to_dict().get("status") != "ready":
         raise HTTPException(status_code=404, detail="Nie znaleziono dokumentu")
-    meta = snap.to_dict()
-    blob = _bucket().blob(meta["objectPath"])
+    object_path = snap.to_dict()["objectPath"]
     try:
-        url = _signed_url(
-            blob,
+        url = signed_url(
+            get_bucket().blob(object_path),
             "GET",
             DOWNLOAD_URL_TTL,
             response_disposition=f'inline; filename="{doc_id}.pdf"',
             response_type=PDF_CONTENT_TYPE,
         )
     except Exception:
-        logging.exception("Failed to sign download URL for %s", meta["objectPath"])
+        logging.exception("Failed to sign download URL for %s", object_path)
         raise HTTPException(status_code=500, detail="Nie udało się przygotować pobrania")
-    return {"url": url, "expiresInSeconds": int(DOWNLOAD_URL_TTL.total_seconds())}
+    return {"url": url}
 
 
 @router.delete("/documents/{doc_id}")
 def delete_document(doc_id: str, uid: str = Depends(verify_token)) -> dict:
-    db_client = get_firestore_client()
-    owner_uid = resolve_uid(uid)
-    ref = _items(db_client, owner_uid).document(doc_id)
+    ref = _items(get_firestore_client(), resolve_uid(uid)).document(doc_id)
     snap = ref.get()
     if not snap.exists:
         raise HTTPException(status_code=404, detail="Nie znaleziono dokumentu")
-    blob = _bucket().blob(snap.to_dict()["objectPath"])
+    blob = get_bucket().blob(snap.to_dict()["objectPath"])
     if blob.exists():
         blob.delete()
     ref.delete()
@@ -263,27 +230,27 @@ def admin_list_users(admin_uid: str = Depends(require_admin)) -> list[dict]:
     db_client = get_firestore_client()
     flags = {d.id: d.to_dict() for d in db_client.collection("users").stream()}
     profiles = {d.id: d.to_dict() for d in db_client.collection("patientProfiles").stream()}
-    users = []
-    for uid in sorted(set(flags) | set(profiles)):
-        try:
-            email = firebase_auth.get_user(uid).email or ""
-        except Exception:
-            email = ""
-        users.append({
+    uids = sorted(set(flags) | set(profiles))
+    emails = _emails_by_uid(uids)
+    return [
+        {
             "uid": uid,
-            "email": email,
+            "email": emails.get(uid, ""),
             "name": profiles.get(uid, {}).get("imie_nazwisko", ""),
-            "isAdmin": bool(flags.get(uid, {}).get("isAdmin", False)),
-            "uploadApproved": bool(flags.get(uid, {}).get("uploadApproved", False)),
-        })
-    return users
+            **_flags(flags.get(uid)),
+        }
+        for uid in uids
+    ]
 
 
 @router.put("/admin/users/{uid}/approval")
 def admin_set_approval(uid: str, req: ApprovalRequest, admin_uid: str = Depends(require_admin)) -> dict:
-    db_client = get_firestore_client()
-    db_client.collection("users").document(uid).set(
-        {"uploadApproved": req.approved, "approvedAt": _now(), "approvedBy": admin_uid},
+    get_firestore_client().collection("users").document(uid).set(
+        {
+            "uploadApproved": req.approved,
+            "approvedAt": datetime.now(timezone.utc).isoformat(),
+            "approvedBy": admin_uid,
+        },
         merge=True,
     )
     return {"uid": uid, "uploadApproved": req.approved}

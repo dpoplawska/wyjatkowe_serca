@@ -17,7 +17,7 @@ import {
 } from '../types/api';
 import { frequencyLabel, normalizeHistory, CZAS_TRWANIA_LABELS, isDone } from './medications';
 import { Sample, pickSamples, pickInrSamples, filterByRange } from './measurements';
-import { formatDateTime } from './format';
+import { formatDateTime, formatDate } from './format';
 
 const BRAND_RED = '#EC1A3B';
 const BRAND_BLUE = '#2383C5';
@@ -32,10 +32,6 @@ function esc(s: string | number | null | undefined): string {
   return String(s).replace(/[&<>"']/g, (c) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string),
   );
-}
-
-function fmtDate(iso: string): string {
-  return iso ? dayjs(iso).format('DD.MM.YYYY') : '';
 }
 
 function fmtShort(iso: string): string {
@@ -204,7 +200,7 @@ function renderProfile(p: PatientProfileData): string {
         ? `<h3>Przebyte operacje</h3>
            <table class="data">
              <thead><tr><th style="width:55%">Typ</th><th>Data</th><th>Czas pobytu OIT</th></tr></thead>
-             <tbody>${ops.map((o) => `<tr><td>${esc(o.typ)}</td><td>${esc(fmtDate(o.data))}</td><td>${esc(o.czas_it)}</td></tr>`).join('')}</tbody>
+             <tbody>${ops.map((o) => `<tr><td>${esc(o.typ)}</td><td>${esc(formatDate(o.data))}</td><td>${esc(o.czas_it)}</td></tr>`).join('')}</tbody>
            </table>`
         : ''
     }
@@ -253,7 +249,7 @@ function renderMedications(leki: Lek[]): string {
       ${
         total > 0
           ? `<div class="med-stats">
-               <span>Pierwsza: <b>${esc(fmtDate(first))}</b></span>
+               <span>Pierwsza: <b>${esc(formatDate(first))}</b></span>
                <span>Ostatnia: <b>${esc(formatDateTime(last))}</b></span>
                <span>Łącznie: <b>${total}</b> ${total === 1 ? 'podanie' : total < 5 ? 'podania' : 'podań'}</span>
              </div>
@@ -374,7 +370,7 @@ function renderInr(entries: InrEntry[]): string {
         ${recent
           .map(
             (e) => `<tr>
-              <td>${esc(fmtDate(e.date))}</td>
+              <td>${esc(formatDate(e.date))}</td>
               <td><b>${esc(e.inr)}</b></td>
               <td>${esc(e.pt)}</td>
               <td>${esc(e.pt_normal)}</td>

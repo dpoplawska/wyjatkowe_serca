@@ -116,7 +116,6 @@ export const EMPTY_PATIENT_PROFILE: PatientProfileData = {
 // --- Medical documentation (PDF) ---
 
 export interface MeFlags {
-  uid: string;
   isAdmin: boolean;
   uploadApproved: boolean;
 }
@@ -126,7 +125,6 @@ export interface PatientDocument {
   name: string;
   date: string; // YYYY-MM-DD, date of the document itself
   size: number; // bytes, as verified by storage
-  createdAt: string;
 }
 
 export interface UploadTicket {

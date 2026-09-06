@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const PREFIX = 'cache.v1';
 
 // Documents hydrated at startup. Screens must use these exact resource names.
-export const CACHED_RESOURCES = ['patient-profile', 'medications', 'inr', 'measurements'];
+export const CACHED_RESOURCES = ['patient-profile', 'medications', 'inr', 'measurements', 'documents'];
 
 const memCache = new Map<string, unknown>();
 

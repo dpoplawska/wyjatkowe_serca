@@ -20,6 +20,8 @@ import { makeApi } from '../api/client';
 import { readCacheSync, writeCache } from '../lib/dataCache';
 import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
 import {
+  MeFlags,
+  PatientDocument,
   PatientProfileData,
   Operacja,
   EMPTY_PATIENT_PROFILE,
@@ -82,7 +84,10 @@ export default function PatientProfileScreen() {
   const [wadyOpen, setWadyOpen] = useState(false);
   const [access, setAccess] = useState<{ isGuest: boolean; ownerName?: string }>({ isGuest: false });
   const [guests, setGuests] = useState<{ uid: string; email: string }[]>([]);
-  const [me, setMe] = useState<{ isAdmin: boolean; uploadApproved: boolean }>({ isAdmin: false, uploadApproved: false });
+  const [me, setMe] = useState<MeFlags>({ isAdmin: false, uploadApproved: false });
+  const [docs, setDocs] = useState<PatientDocument[]>(
+    () => (uid ? readCacheSync<PatientDocument[]>(uid, 'documents') : null) ?? [],
+  );
   const creatingInviteRef = useRef(false);
   const { show: showSnackbar, element: snackbarEl } = useSnackbar();
   const showSnackbarRef = useRef(showSnackbar);
@@ -102,15 +107,20 @@ export default function PatientProfileScreen() {
     setRevalidating(true);
     try {
       const api = makeApi(getToken);
-      const [data, accessData, guestList, meFlags] = await Promise.all([
+      const [data, accessData, guestList, meFlags, docList] = await Promise.all([
         api.getPatientProfile(),
         api.getAccessStatus().catch(() => ({ isGuest: false, ownerName: undefined })),
         api.listGuests().catch(() => []),
         api.getMe().catch(() => ({ isAdmin: false, uploadApproved: false })),
+        api.listDocuments().catch(() => null),
       ]);
       setAccess({ isGuest: accessData.isGuest, ownerName: accessData.ownerName });
       setGuests(guestList);
-      setMe({ isAdmin: meFlags.isAdmin, uploadApproved: meFlags.uploadApproved });
+      setMe(meFlags);
+      if (docList) {
+        setDocs(docList);
+        if (uid) writeCache(uid, 'documents', docList);
+      }
       const normalized = normalizeProfile(data);
       if (normalized) {
         if (uid) writeCache(uid, 'patient-profile', data);
@@ -132,6 +142,14 @@ export default function PatientProfileScreen() {
     await load();
     setRefreshing(false);
   }, [load]);
+
+  const updateDocs = useCallback((update: (prev: PatientDocument[]) => PatientDocument[]) => {
+    setDocs((prev) => {
+      const next = update(prev);
+      if (uid) writeCache(uid, 'documents', next);
+      return next;
+    });
+  }, [uid]);
 
   const updateProfile = (updater: (p: PatientProfileData) => PatientProfileData) => {
     if (!synced) {
@@ -491,7 +509,13 @@ export default function PatientProfileScreen() {
           )}
         </SectionCard>
 
-        <DocumentsSection getToken={getToken} uploadApproved={me.uploadApproved} showSnackbar={showSnackbar} />
+        <DocumentsSection
+          docs={docs}
+          onDocsChange={updateDocs}
+          getToken={getToken}
+          uploadApproved={me.uploadApproved}
+          showSnackbar={showSnackbar}
+        />
 
         {guests.length > 0 && (
           <SectionCard title="Osoby z dostępem do profilu">
