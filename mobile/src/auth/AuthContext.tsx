@@ -11,6 +11,7 @@ import {
 } from '@react-native-firebase/auth';
 import { googleWebClientId, isGoogleSignInConfigured } from './firebase';
 import { clearAllCaches, hydrateCache } from '../lib/dataCache';
+import { setCrashUser } from '../lib/crash';
 
 export interface AppUser {
   uid: string;
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Warm the in-memory data cache before the first screen mounts, while
       // the splash is still up — screens read it synchronously on first render.
       if (u) await hydrateCache(u.uid).catch(() => {});
+      setCrashUser(u?.uid ?? null);
       setFirebaseUser(u);
       setLoading(false);
     });

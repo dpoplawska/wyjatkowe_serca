@@ -7,6 +7,7 @@ import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from './src/auth/AuthContext';
 import RootNavigator from './src/navigation/RootNavigator';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { paperTheme } from './src/theme/paperTheme';
 import { setUpDoseNotifications } from './src/lib/notifications';
 import { navigationRef } from './src/navigation/navRef';
@@ -46,7 +47,9 @@ export default function App() {
       <PaperProvider theme={paperTheme}>
         <AuthProvider>
           <StatusBar style="dark" />
-          <RootNavigator />
+          <ErrorBoundary>
+            <RootNavigator />
+          </ErrorBoundary>
         </AuthProvider>
       </PaperProvider>
     </SafeAreaProvider>

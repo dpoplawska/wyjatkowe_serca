@@ -1,4 +1,5 @@
 import { API } from './config';
+import { logBreadcrumb, reportError } from '../lib/crash';
 import {
   PatientProfileData,
   MedicationsData,
@@ -35,11 +36,18 @@ async function request<T>(
     const token = await getToken();
     headers.Authorization = `Bearer ${token}`;
   }
-  const res = await fetch(`${API}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) {
+    // Offline / DNS / TLS — expected in the field, so a breadcrumb, not a report.
+    logBreadcrumb(`network failure ${method} ${path}: ${e instanceof Error ? e.message : String(e)}`);
+    throw e;
+  }
   if (!res.ok) {
     let detail = res.statusText;
     try {
@@ -48,7 +56,10 @@ async function request<T>(
     } catch {
       // ignore
     }
-    throw new ApiError(res.status, detail);
+    const err = new ApiError(res.status, detail);
+    // 4xx are user/auth outcomes the UI already explains; 5xx are ours.
+    if (res.status >= 500) reportError(err, { where: 'api', method, path, status: String(res.status) });
+    throw err;
   }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
