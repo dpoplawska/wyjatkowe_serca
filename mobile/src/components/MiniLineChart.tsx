@@ -94,7 +94,7 @@ function MiniLineChartImpl({ title, samples, color, unit, yMin, yMax }: Props) {
     return samples.map((s, i) => ({
       value: s.value,
       dateLabel: s.label,
-      ...(i % step === 0 ? { label: s.label, labelTextStyle: styles.axisLabel } : {}),
+      ...(i % step === 0 ? { label: s.label, labelTextStyle: AXIS_LABEL_STYLE } : {}),
     }));
   }, [samples]);
 
@@ -160,11 +160,16 @@ function MiniLineChartImpl({ title, samples, color, unit, yMin, yMax }: Props) {
 
 export const MiniLineChart = React.memo(MiniLineChartImpl);
 
+// Plain object on purpose: gifted-charts deep-clones each data point and
+// stamps a temporary property on every nested object. StyleSheet.create
+// freezes its styles in dev builds, so passing one crashes on Hermes with
+// "Cannot add new property 'isActiveClone'".
+const AXIS_LABEL_STYLE = { color: colors.grey2, fontSize: 9, width: 44 };
+
 const styles = StyleSheet.create({
   wrap: { marginBottom: 16 },
   title: { fontSize: 12, fontWeight: '700', color: colors.grey2, marginBottom: 4 },
   unit: { fontSize: 10, color: colors.grey2, marginTop: 4 },
-  axisLabel: { color: colors.grey2, fontSize: 9, width: 44 },
   tooltip: {
     backgroundColor: colors.grey1,
     paddingHorizontal: 8,
