@@ -48,11 +48,14 @@ def has_current_consent(db_client, uid: str) -> bool:
     return bool(rec and rec.get("version") == CONSENT_VERSION and rec.get("terms") and rec.get("healthData"))
 
 
-def require_consent(uid: str = Depends(verify_token)) -> str:
+def require_consent(request: Request, uid: str = Depends(verify_token)) -> str:
     """Dependency for every route touching patient data: the account must have
-    accepted the current terms and the art. 9 health-data consent."""
+    accepted the current terms and the art. 9 health-data consent. Marks the
+    request for the access log (app.audit)."""
     if not has_current_consent(get_firestore_client(), uid):
         raise HTTPException(status_code=403, detail="consent_required")
+    request.state.audit_uid = uid
+    request.state.audit_owner_uid = resolve_uid(uid)
     return uid
 
 
@@ -316,7 +319,8 @@ def upsert_measurements(data: MeasurementsData, uid: str = Depends(require_conse
 
 
 @router.post("/invite")
-def create_invite(uid: str = Depends(require_consent)) -> dict:
+@limiter.limit("10/minute")
+def create_invite(request: Request, uid: str = Depends(require_consent)) -> dict:
     # Guests cannot create invites (invites must come from the data owner)
     owner_uid = resolve_uid(uid)
     if owner_uid != uid:

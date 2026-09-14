@@ -8,8 +8,10 @@
 - W aplikacji mobilnej nie ma ekranu zgód — nic nie zapisuje akceptacji regulaminu ani zgody art. 9.
 - Brak usuwania konta przez użytkownika. Jedyne kasowanie to endpoint dev-only w `backend/app/routes.py`
   (bez autoryzacji, nie usuwa dokumentów medycznych ze Storage ani kolekcji `documents`).
-- Brak dziennika dostępu i limitów zapytań. Dokumentacja FastAPI (`/docs`) jest publiczna.
-- Cloud Run działa w `europe-central2`; region Firestore i Storage do potwierdzenia.
+- (zrobione 14.09.2026) dziennik dostępu, limity zapytań, `/docs` wyłączone w prod.
+- (sprawdzone 14.09.2026) Cloud Run, Firestore i bucket dokumentów `wyjatkowe-serca-documents` są w `europe-central2`.
+  Domyślny bucket `wyjatkowe-serca.firebasestorage.app` (logo, PDF-y strony, bez danych pacjentów) jest w `US-CENTRAL1`.
+  Firestore ma dzienną kopię zapasową z retencją 14 dni (od 07.03.2026).
 - Crashlytics jest włączony — musi trafić do polityki prywatności jako podmiot przetwarzający.
 
 ## Aplikacja i API
@@ -24,13 +26,14 @@
 - [ ] Komunikat przy zaproszeniu współopiekuna: druga osoba uzyska pełny wgląd w dane medyczne profilu.
 - [ ] Informacja o roli opiekuna prawnego przy danych dziecka.
 - [x] (14.09.2026) Linki do polityki prywatności i regulaminu na ekranie zgód i w sekcji „Prywatność i konto".
-- [ ] Wyłączenie `/docs` i `/openapi.json` w prod.
-- [ ] Limity zapytań na trasach pacjenta (slowapi jest już na płatnościach); limit wielkości uploadu i zatwierdzanie kont już są.
+- [x] (14.09.2026) `/docs`, `/redoc`, `/openapi.json` tylko przy `ENV=dev`; CORS zawężony do domen strony.
+- [x] (14.09.2026) Limit domyślny 120/min na IP dla wszystkich tras; 10/min na zgodę i zaproszenia, 20/min na upload-url, 5/min na usunięcie konta.
 - [ ] Przegląd sekretów i uprawnień kont serwisowych (zasada minimalnych uprawnień).
-- [ ] Middleware dziennika dostępu: uid, ścieżka, metoda, czas, bez treści klinicznej; ustalona retencja logów.
+- [x] (14.09.2026) `backend/app/audit.py`: kolekcja `accessLog` (uid, ownerUid, metoda, szablon trasy, status, czas). Retencja 90 dni
+      przez TTL — **do włączenia raz w projekcie: `make firestore-ttl`**.
 - [ ] Pełnoletność pacjenta: odcięcie dostępu rodziców po 18. r.ż., zgoda pacjenta na przywrócenie dostępu
       (odwoływalna). Wymaga decyzji: kasować czy archiwizować konta rodziców.
-- [ ] Potwierdzić region Firestore i Storage (EU); włączyć harmonogram kopii zapasowych Firestore.
+- [x] (14.09.2026) Regiony potwierdzone (patrz „Stan"), kopie zapasowe Firestore już działają. Do rozważenia: włączenie ochrony przed usunięciem bazy (delete protection) i PITR.
 
 ## Dokumenty i decyzje (fundacja + prawnik)
 
@@ -48,9 +51,10 @@
 
 ## Kolejność proponowana
 
-1. Ekran zgód + zapis akceptacji.
-2. Usuwanie konta z kasowaniem kaskadowym.
+1. ~~Ekran zgód + zapis akceptacji.~~
+2. ~~Usuwanie konta z kasowaniem kaskadowym.~~
 3. Polityka prywatności i retencja z prawnikiem.
-4. Hardening API (docs, limity, upload).
-5. Dziennik dostępu.
-6. DPIA i potwierdzenie regionów.
+4. ~~Hardening API (docs, limity, upload).~~
+5. ~~Dziennik dostępu.~~
+6. DPIA (regiony potwierdzone).
+7. Po wdrożeniu backendu: `make firestore-ttl`.

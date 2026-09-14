@@ -25,6 +25,10 @@ dev-rebuild-backend:
 deploy-backend:
 	gcloud run deploy wyjatkowe-serca --allow-unauthenticated --region europe-central2 --source ./backend/
 
+# Firestore TTL for the access log (app/audit.py): entries expire 90 days after write.
+firestore-ttl:
+	gcloud firestore fields ttls update expiresAt --collection-group=accessLog --enable-ttl --project=wyjatkowe-serca
+
 deploy-frontend:
 	cd frontend/app && npm run build && cd ../.. && firebase deploy --only hosting:wyjatkowe-serca-app --project=wyjatkowe-serca
 

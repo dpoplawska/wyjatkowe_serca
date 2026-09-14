@@ -12,11 +12,12 @@ import logging
 import os
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from firebase_admin import auth as firebase_auth
 from pydantic import BaseModel
 
 from app.db import get_firestore_client, initialize_firestore
+from app.limiter import limiter
 from app.routes import CONSENT_VERSION, consent_record, verify_token
 from app.storage import get_bucket
 
@@ -47,7 +48,8 @@ def get_consent(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.put("/consent")
-def put_consent(req: ConsentRequest, uid: str = Depends(verify_token)) -> dict:
+@limiter.limit("10/minute")
+def put_consent(request: Request, req: ConsentRequest, uid: str = Depends(verify_token)) -> dict:
     if not (req.terms and req.healthData):
         raise HTTPException(status_code=400, detail="Wymagana jest akceptacja regulaminu i zgoda na dane o zdrowiu")
     rec = {
@@ -152,7 +154,12 @@ def delete_account(db_client, uid: str, purge: bool) -> dict:
 
 
 @router.delete("/account")
-def delete_own_account(req: DeleteAccountRequest | None = None, uid: str = Depends(verify_token)) -> dict:
+@limiter.limit("5/minute")
+def delete_own_account(
+    request: Request, req: DeleteAccountRequest | None = None, uid: str = Depends(verify_token)
+) -> dict:
+    request.state.audit_uid = uid
+    request.state.audit_owner_uid = uid
     return delete_account(get_firestore_client(), uid, purge=bool(req and req.purge))
 
 

@@ -9,4 +9,7 @@ def get_real_ip(request: Request) -> str:
     return request.client.host
 
 
-limiter = Limiter(key_func=get_real_ip)
+# Default applies to every route (SlowAPIMiddleware); sensitive routes set
+# tighter per-route limits. Keyed by client IP, so a family behind one NAT
+# shares a budget — generous enough that autosave never hits it.
+limiter = Limiter(key_func=get_real_ip, default_limits=["120/minute"])
