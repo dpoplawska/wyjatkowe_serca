@@ -4,6 +4,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 
 export type RootStackParamList = {
   Login: undefined;
+  Consent: undefined;
   Main: undefined;
   AcceptInvite: { token: string };
   AdminUsers: undefined;

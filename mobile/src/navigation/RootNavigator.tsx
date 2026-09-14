@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Linking from 'expo-linking';
 import { useAuth } from '../auth/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
+import ConsentScreen from '../screens/ConsentScreen';
 import AcceptInviteScreen from '../screens/AcceptInviteScreen';
 import AdminUsersScreen from '../screens/AdminUsersScreen';
 import MainTabs from './MainTabs';
@@ -35,9 +36,9 @@ const linking: LinkingOptions<RootStackParamList> = {
 };
 
 export default function RootNavigator() {
-  const { user, loading } = useAuth();
+  const { user, loading, consentAccepted } = useAuth();
 
-  if (loading) {
+  if (loading || (user && consentAccepted === null)) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={colors.blue} />
@@ -48,7 +49,9 @@ export default function RootNavigator() {
   return (
     <NavigationContainer ref={navigationRef} linking={linking}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
+        {user && !consentAccepted ? (
+          <Stack.Screen name="Consent" component={ConsentScreen} />
+        ) : user ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen
