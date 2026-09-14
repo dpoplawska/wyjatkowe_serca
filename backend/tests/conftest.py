@@ -36,6 +36,17 @@ def client(app):
     return TestClient(app, raise_server_exceptions=False)
 
 
+# Access log writes go to the in-memory db; rate-limit counters reset per test
+# so the session-wide default limit never trips across the suite.
+@pytest.fixture(autouse=True)
+def isolate_side_effects(db):
+    from unittest.mock import patch
+    from app.limiter import limiter
+    limiter.reset()
+    with patch("app.audit.get_firestore_client", return_value=db):
+        yield
+
+
 # The consent gate wraps every patient-data route. Tests that don't exercise
 # it bypass the Firestore lookup so their MagicMock call sequences stay put;
 # test_consent.py drops the override to test the gate itself.
@@ -104,6 +115,12 @@ class FakeCollection:
 
     def document(self, doc_id):
         return FakeDocRef(self.store, f"{self.path}/{doc_id}")
+
+    def add(self, data):
+        import uuid
+        ref = self.document(uuid.uuid4().hex)
+        ref.set(data)
+        return None, ref
 
     def where(self, field, op, value):
         assert op == "=="

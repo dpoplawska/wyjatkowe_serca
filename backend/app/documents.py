@@ -14,12 +14,13 @@ import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from firebase_admin import auth as firebase_auth
 from google.api_core.exceptions import NotFound
 from pydantic import BaseModel, Field
 
 from app.db import get_firestore_client
+from app.limiter import limiter
 from app.routes import require_consent, resolve_uid, verify_token
 from app.storage import get_bucket, signed_url
 
@@ -123,7 +124,8 @@ def list_documents(uid: str = Depends(require_consent)) -> list[dict]:
 
 
 @router.post("/documents/upload-url")
-def create_upload_url(req: UploadRequest, uid: str = Depends(require_upload_approved)) -> dict:
+@limiter.limit("20/minute")
+def create_upload_url(request: Request, req: UploadRequest, uid: str = Depends(require_upload_approved)) -> dict:
     db_client = get_firestore_client()
     owner_uid = resolve_uid(uid)
     used = sum(d.to_dict().get("size", 0) for d in _items(db_client, owner_uid).stream())
