@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Pressable, Share } from 'react-native';
+import { View, StyleSheet, Pressable, Share, Alert } from 'react-native';
 import { PageScroll } from '../components/PageScroll';
 import { confirmDelete } from '../lib/confirm';
 import {
@@ -19,7 +19,9 @@ import { useAuth } from '../auth/AuthContext';
 import { makeApi } from '../api/client';
 import { readCacheSync, writeCache } from '../lib/dataCache';
 import { BackgroundRefreshIndicator } from '../components/BackgroundRefreshIndicator';
+import { openPrivacyPolicy, openTerms } from '../lib/legalLinks';
 import {
+  ConsentRecord,
   MeFlags,
   PatientDocument,
   PatientProfileData,
@@ -62,7 +64,7 @@ function normalizeProfile(data: Partial<PatientProfileData> | null | undefined):
 }
 
 export default function PatientProfileScreen() {
-  const { getToken, user } = useAuth();
+  const { getToken, user, signOutUser } = useAuth();
   const uid = user?.uid;
   const navigation = useNavigation<TabScreenNav>();
   // Hydrated cache (memory) read synchronously so the first frame already
@@ -84,6 +86,7 @@ export default function PatientProfileScreen() {
   const [wadyOpen, setWadyOpen] = useState(false);
   const [access, setAccess] = useState<{ isGuest: boolean; ownerName?: string }>({ isGuest: false });
   const [guests, setGuests] = useState<{ uid: string; email: string }[]>([]);
+  const [consent, setConsent] = useState<ConsentRecord | null>(null);
   const [me, setMe] = useState<MeFlags>({ isAdmin: false, uploadApproved: false });
   const [docs, setDocs] = useState<PatientDocument[]>(
     () => (uid ? readCacheSync<PatientDocument[]>(uid, 'documents') : null) ?? [],
@@ -107,16 +110,18 @@ export default function PatientProfileScreen() {
     setRevalidating(true);
     try {
       const api = makeApi(getToken);
-      const [data, accessData, guestList, meFlags, docList] = await Promise.all([
+      const [data, accessData, guestList, meFlags, docList, consentStatus] = await Promise.all([
         api.getPatientProfile(),
         api.getAccessStatus().catch(() => ({ isGuest: false, ownerName: undefined })),
         api.listGuests().catch(() => []),
         api.getMe().catch(() => ({ isAdmin: false, uploadApproved: false })),
         api.listDocuments().catch(() => null),
+        api.getConsent().catch(() => null),
       ]);
       setAccess({ isGuest: accessData.isGuest, ownerName: accessData.ownerName });
       setGuests(guestList);
       setMe(meFlags);
+      if (consentStatus) setConsent(consentStatus.record);
       if (docList) {
         setDocs(docList);
         if (uid) writeCache(uid, 'documents', docList);
@@ -242,6 +247,54 @@ export default function PatientProfileScreen() {
         }
       },
     });
+  };
+
+  const runDeleteAccount = async (purge: boolean) => {
+    try {
+      const api = makeApi(getTokenRef.current);
+      await api.deleteAccount(purge);
+      await signOutUser();
+    } catch (e) {
+      showSnackbarRef.current(e instanceof Error ? `Nie udało się usunąć konta: ${e.message}` : 'Nie udało się usunąć konta');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (access.isGuest) {
+      confirmDelete({
+        title: 'Usunąć konto?',
+        message: 'Stracisz dostęp do profilu, do którego zostałeś/aś zaproszony/a. Dane pacjenta pozostaną u właściciela profilu.',
+        onConfirm: () => runDeleteAccount(false),
+      });
+      return;
+    }
+    if (guests.length === 0) {
+      confirmDelete({
+        title: 'Usunąć konto i wszystkie dane?',
+        message: 'Profil pacjenta, leki, pomiary, wyniki INR i dokumenty zostaną trwale usunięte. Tej operacji nie można cofnąć.',
+        onConfirm: () => runDeleteAccount(true),
+      });
+      return;
+    }
+    const names = guests.map((g) => g.email).join(', ');
+    Alert.alert(
+      'Usunąć konto?',
+      `Do profilu ma dostęp: ${names}. Możesz przekazać dane tej osobie (zostanie właścicielem profilu) albo usunąć wszystko, co odetnie dostęp wszystkim.`,
+      [
+        { text: 'Anuluj', style: 'cancel' },
+        { text: 'Przekaż dane opiekunowi', onPress: () => runDeleteAccount(false) },
+        {
+          text: 'Usuń wszystko',
+          style: 'destructive',
+          onPress: () =>
+            confirmDelete({
+              title: 'Na pewno usunąć wszystkie dane?',
+              message: 'Profil pacjenta, leki, pomiary, wyniki INR i dokumenty zostaną trwale usunięte, a zaproszeni opiekunowie stracą dostęp. Tej operacji nie można cofnąć.',
+              onConfirm: () => runDeleteAccount(true),
+            }),
+        },
+      ],
+    );
   };
 
   const shareInviteLink = useCallback(async () => {
@@ -532,6 +585,31 @@ export default function PatientProfileScreen() {
             ))}
           </SectionCard>
         )}
+
+        <SectionCard title="Prywatność i konto">
+          <Text style={styles.privacyText}>
+            {consent?.acceptedAt
+              ? `Regulamin i zgoda na dane o zdrowiu zaakceptowane ${formatConsentDate(consent.acceptedAt)} (wersja ${consent.version}).`
+              : 'Brak zapisanej zgody.'}
+          </Text>
+          <View style={styles.privacyLinks}>
+            <Button mode="text" compact icon="file-document-outline" onPress={openPrivacyPolicy}>
+              Polityka prywatności
+            </Button>
+            <Button mode="text" compact icon="file-document-outline" onPress={openTerms}>
+              Regulamin
+            </Button>
+          </View>
+          <Button
+            mode="outlined"
+            icon="account-remove"
+            textColor={colors.dangerFg}
+            style={styles.deleteAccountBtn}
+            onPress={handleDeleteAccount}
+          >
+            Usuń konto
+          </Button>
+        </SectionCard>
       </PageScroll>
 
       <SaveStatusPill status={saveStatus} />
@@ -549,6 +627,11 @@ export default function PatientProfileScreen() {
       {snackbarEl}
     </View>
   );
+}
+
+function formatConsentDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString('pl-PL');
 }
 
 function SwitchRow({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
@@ -591,6 +674,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.grey1,
   },
+  privacyText: { fontSize: 13, color: colors.grey2, lineHeight: 18 },
+  privacyLinks: { flexDirection: 'row', flexWrap: 'wrap' },
+  deleteAccountBtn: { borderColor: colors.dangerFg },
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   switchLabel: { fontSize: 14, color: colors.grey1 },
   chips: { flexDirection: 'column' },

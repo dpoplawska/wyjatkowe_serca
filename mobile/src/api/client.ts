@@ -8,6 +8,7 @@ import {
   DevUser,
   InviteInfo,
   MeFlags,
+  ConsentStatus,
   PatientDocument,
   UploadTicket,
   AdminUser,
@@ -103,6 +104,11 @@ export function makeApi(getToken: TokenProvider) {
       request<{ message: string }>('DELETE', `/access/guests/${guestUid}`, getToken),
 
     getMe: () => request<MeFlags>('GET', '/me', getToken),
+    getConsent: () => request<ConsentStatus>('GET', '/consent', getToken),
+    putConsent: () =>
+      request<ConsentStatus>('PUT', '/consent', getToken, { terms: true, healthData: true }),
+    deleteAccount: (purge: boolean) =>
+      request<{ deleted_data: boolean; message: string }>('DELETE', '/account', getToken, { purge }),
     listDocuments: () => request<PatientDocument[]>('GET', '/documents', getToken),
     createUploadUrl: (body: { name: string; date: string; size: number }) =>
       request<UploadTicket>('POST', '/documents/upload-url', getToken, body),

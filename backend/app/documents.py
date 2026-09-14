@@ -20,7 +20,7 @@ from google.api_core.exceptions import NotFound
 from pydantic import BaseModel, Field
 
 from app.db import get_firestore_client
-from app.routes import resolve_uid, verify_token
+from app.routes import require_consent, resolve_uid, verify_token
 from app.storage import get_bucket, signed_url
 
 router = APIRouter()
@@ -69,7 +69,7 @@ def _user_flags(db_client, uid: str) -> dict:
 
 def require_flag(flag: str, detail: str):
     """Dependency: the signed-in account must carry `flag` in users/{uid}."""
-    def dependency(uid: str = Depends(verify_token)) -> str:
+    def dependency(uid: str = Depends(require_consent)) -> str:
         if not _user_flags(get_firestore_client(), uid)[flag]:
             raise HTTPException(status_code=403, detail=detail)
         return uid
@@ -115,7 +115,7 @@ def get_me(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.get("/documents")
-def list_documents(uid: str = Depends(verify_token)) -> list[dict]:
+def list_documents(uid: str = Depends(require_consent)) -> list[dict]:
     docs = [d.to_dict() for d in _items(get_firestore_client(), resolve_uid(uid)).stream()]
     ready = [d for d in docs if d.get("status") == "ready"]
     ready.sort(key=lambda d: (d.get("date", ""), d.get("createdAt", "")), reverse=True)
@@ -151,7 +151,7 @@ def create_upload_url(req: UploadRequest, uid: str = Depends(require_upload_appr
 
 
 @router.post("/documents/{doc_id}/complete")
-def complete_upload(doc_id: str, uid: str = Depends(verify_token)) -> dict:
+def complete_upload(doc_id: str, uid: str = Depends(require_consent)) -> dict:
     owner_uid = resolve_uid(uid)
     ref = _items(get_firestore_client(), owner_uid).document(doc_id)
     snap = ref.get()
@@ -189,7 +189,7 @@ def complete_upload(doc_id: str, uid: str = Depends(verify_token)) -> dict:
 
 
 @router.get("/documents/{doc_id}/download-url")
-def get_download_url(doc_id: str, uid: str = Depends(verify_token)) -> dict:
+def get_download_url(doc_id: str, uid: str = Depends(require_consent)) -> dict:
     snap = _items(get_firestore_client(), resolve_uid(uid)).document(doc_id).get()
     if not snap.exists or snap.to_dict().get("status") != "ready":
         raise HTTPException(status_code=404, detail="Nie znaleziono dokumentu")
@@ -209,7 +209,7 @@ def get_download_url(doc_id: str, uid: str = Depends(verify_token)) -> dict:
 
 
 @router.delete("/documents/{doc_id}")
-def delete_document(doc_id: str, uid: str = Depends(verify_token)) -> dict:
+def delete_document(doc_id: str, uid: str = Depends(require_consent)) -> dict:
     ref = _items(get_firestore_client(), resolve_uid(uid)).document(doc_id)
     snap = ref.get()
     if not snap.exists:

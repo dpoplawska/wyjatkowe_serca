@@ -34,6 +34,28 @@ def verify_token(authorization: str = Header(...)) -> str:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
+# Bump when the consent wording changes; every user is re-prompted.
+CONSENT_VERSION = "2026-09-14"
+
+
+def consent_record(db_client, uid: str) -> dict | None:
+    data = db_client.collection("users").document(uid).get().to_dict() or {}
+    return data.get("consent")
+
+
+def has_current_consent(db_client, uid: str) -> bool:
+    rec = consent_record(db_client, uid)
+    return bool(rec and rec.get("version") == CONSENT_VERSION and rec.get("terms") and rec.get("healthData"))
+
+
+def require_consent(uid: str = Depends(verify_token)) -> str:
+    """Dependency for every route touching patient data: the account must have
+    accepted the current terms and the art. 9 health-data consent."""
+    if not has_current_consent(get_firestore_client(), uid):
+        raise HTTPException(status_code=403, detail="consent_required")
+    return uid
+
+
 def resolve_uid(uid: str) -> str:
     """If the user has been granted access to another user's data, return that user's UID."""
     db_client = get_firestore_client()
@@ -59,65 +81,6 @@ def get_dev_users() -> list[dict]:
         page = page.get_next_page()
     return result
 
-
-PATIENT_COLLECTIONS = ["patientProfiles", "medications", "inrHistory", "measurements"]
-
-
-@router.delete("/dev/users/{uid}")
-def dev_delete_user(uid: str) -> dict:
-    if os.getenv("ENV") != "dev":
-        raise HTTPException(status_code=404, detail="Not found")
-    initialize_firestore()
-    db_client = get_firestore_client()
-
-    # Determine whether uid is a guest or an owner
-    access_doc = db_client.collection("userAccess").document(uid).get()
-    is_guest = access_doc.exists
-    owner_uid = access_doc.to_dict()["ownerUid"] if is_guest else uid
-
-    # Find all guests pointing to owner_uid (excluding uid being deleted)
-    other_guests = [
-        doc.id for doc in
-        db_client.collection("userAccess").where("ownerUid", "==", owner_uid).stream()
-        if doc.id != uid
-    ]
-
-    if is_guest:
-        # There is always at least the owner → never the only user → just unlink
-        db_client.collection("userAccess").document(uid).delete()
-        firebase_auth.delete_user(uid)
-        return {"deleted_data": False, "message": f"Unlinked guest {uid}; child data preserved under {owner_uid}"}
-
-    # uid is the owner
-    if not other_guests:
-        # Only user — delete all child data
-        for col in PATIENT_COLLECTIONS:
-            db_client.collection(col).document(uid).delete()
-        firebase_auth.delete_user(uid)
-        return {"deleted_data": True, "message": f"Deleted owner {uid} and all child data"}
-
-    # Owner has guests — transfer ownership to first guest
-    new_owner = other_guests[0]
-    remaining_guests = other_guests[1:]
-
-    for col in PATIENT_COLLECTIONS:
-        doc = db_client.collection(col).document(uid).get()
-        if doc.exists:
-            db_client.collection(col).document(new_owner).set(doc.to_dict())
-        db_client.collection(col).document(uid).delete()
-
-    # new_owner becomes the real owner — remove their userAccess doc
-    db_client.collection("userAccess").document(new_owner).delete()
-
-    # Point remaining guests to new_owner
-    for guest_uid in remaining_guests:
-        db_client.collection("userAccess").document(guest_uid).set({
-            "ownerUid": new_owner,
-            "grantedAt": db_client.collection("userAccess").document(guest_uid).get().to_dict().get("grantedAt", ""),
-        })
-
-    firebase_auth.delete_user(uid)
-    return {"deleted_data": False, "message": f"Deleted owner {uid}; ownership transferred to {new_owner}"}
 
 @router.post("/payments", response_model=PaymentResponse)
 def create_payment_endpoint(payment_request: PaymentRequest) -> PaymentResponse:
@@ -295,7 +258,7 @@ def create_purchase_endpoint(purchase_request: PurchaseRequest) -> PurchaseRespo
 
 
 @router.get("/patient-profile")
-def get_patient_profile(uid: str = Depends(verify_token)) -> dict:
+def get_patient_profile(uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("patientProfiles").document(resolve_uid(uid)).get()
     if not doc.exists:
@@ -304,56 +267,56 @@ def get_patient_profile(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.put("/patient-profile")
-def upsert_patient_profile(profile: PatientProfileData, uid: str = Depends(verify_token)) -> dict:
+def upsert_patient_profile(profile: PatientProfileData, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     db_client.collection("patientProfiles").document(resolve_uid(uid)).set(profile.model_dump())
     return {"message": "Profil zapisany pomyślnie"}
 
 
 @router.get("/medications")
-def get_medications(uid: str = Depends(verify_token)) -> dict:
+def get_medications(uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("medications").document(resolve_uid(uid)).get()
     return doc.to_dict() if doc.exists else {}
 
 
 @router.put("/medications")
-def upsert_medications(data: MedicationsData, uid: str = Depends(verify_token)) -> dict:
+def upsert_medications(data: MedicationsData, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     db_client.collection("medications").document(resolve_uid(uid)).set(data.model_dump())
     return {"message": "Leki zapisane pomyślnie"}
 
 
 @router.get("/inr")
-def get_inr(uid: str = Depends(verify_token)) -> dict:
+def get_inr(uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("inrHistory").document(resolve_uid(uid)).get()
     return doc.to_dict() if doc.exists else {}
 
 
 @router.put("/inr")
-def upsert_inr(data: InrData, uid: str = Depends(verify_token)) -> dict:
+def upsert_inr(data: InrData, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     db_client.collection("inrHistory").document(resolve_uid(uid)).set(data.model_dump())
     return {"message": "Historia INR zapisana pomyślnie"}
 
 
 @router.get("/measurements")
-def get_measurements(uid: str = Depends(verify_token)) -> dict:
+def get_measurements(uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("measurements").document(resolve_uid(uid)).get()
     return doc.to_dict() if doc.exists else {}
 
 
 @router.put("/measurements")
-def upsert_measurements(data: MeasurementsData, uid: str = Depends(verify_token)) -> dict:
+def upsert_measurements(data: MeasurementsData, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     db_client.collection("measurements").document(resolve_uid(uid)).set(data.model_dump())
     return {"message": "Pomiary zapisane pomyślnie"}
 
 
 @router.post("/invite")
-def create_invite(uid: str = Depends(verify_token)) -> dict:
+def create_invite(uid: str = Depends(require_consent)) -> dict:
     # Guests cannot create invites (invites must come from the data owner)
     owner_uid = resolve_uid(uid)
     if owner_uid != uid:
@@ -372,7 +335,7 @@ def create_invite(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.get("/invite/{token}")
-def get_invite(token: str, uid: str = Depends(verify_token)) -> dict:
+def get_invite(token: str, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("invitations").document(token).get()
     if not doc.exists:
@@ -392,7 +355,7 @@ def get_invite(token: str, uid: str = Depends(verify_token)) -> dict:
 
 
 @router.post("/accept-invite/{token}")
-def accept_invite(token: str, uid: str = Depends(verify_token)) -> dict:
+def accept_invite(token: str, uid: str = Depends(require_consent)) -> dict:
     db_client = get_firestore_client()
     doc = db_client.collection("invitations").document(token).get()
     if not doc.exists:
@@ -414,7 +377,7 @@ def accept_invite(token: str, uid: str = Depends(verify_token)) -> dict:
 
 
 @router.get("/access")
-def get_access_status(uid: str = Depends(verify_token)) -> dict:
+def get_access_status(uid: str = Depends(require_consent)) -> dict:
     """Returns whether the caller is currently a guest on someone else's profile."""
     db_client = get_firestore_client()
     doc = db_client.collection("userAccess").document(uid).get()
@@ -429,7 +392,7 @@ def get_access_status(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.delete("/access")
-def unlink_access(uid: str = Depends(verify_token)) -> dict:
+def unlink_access(uid: str = Depends(require_consent)) -> dict:
     """Removes the caller's link to another user's profile. Reversible by accepting a new invite."""
     db_client = get_firestore_client()
     doc = db_client.collection("userAccess").document(uid).get()
@@ -440,7 +403,7 @@ def unlink_access(uid: str = Depends(verify_token)) -> dict:
 
 
 @router.get("/access/guests")
-def list_guests(uid: str = Depends(verify_token)) -> list[dict]:
+def list_guests(uid: str = Depends(require_consent)) -> list[dict]:
     """List every user that the caller has granted access to. Empty if the caller is themselves a guest."""
     db_client = get_firestore_client()
     if db_client.collection("userAccess").document(uid).get().exists:
@@ -464,7 +427,7 @@ def list_guests(uid: str = Depends(verify_token)) -> list[dict]:
 
 
 @router.delete("/access/guests/{guest_uid}")
-def revoke_guest(guest_uid: str, uid: str = Depends(verify_token)) -> dict:
+def revoke_guest(guest_uid: str, uid: str = Depends(require_consent)) -> dict:
     """Revoke a specific user's access to the caller's profile."""
     db_client = get_firestore_client()
     doc = db_client.collection("userAccess").document(guest_uid).get()

@@ -12,6 +12,7 @@ import {
 import { googleWebClientId, isGoogleSignInConfigured } from './firebase';
 import { clearAllCaches, hydrateCache } from '../lib/dataCache';
 import { setCrashUser } from '../lib/crash';
+import { API } from '../api/config';
 
 export interface AppUser {
   uid: string;
@@ -22,6 +23,9 @@ export interface AppUser {
 interface AuthContextValue {
   user: AppUser | null;
   loading: boolean;
+  // null = not checked yet for the current user; false = ConsentScreen gates the app.
+  consentAccepted: boolean | null;
+  setConsentAccepted: (accepted: boolean) => void;
   signInAsDevUser: (uid: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOutUser: () => Promise<void>;
@@ -91,6 +95,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [devUser, firebaseUser]);
 
+  // Consent gate: every patient-data route on the API refuses accounts
+  // without the current consent record, so ask once per signed-in user.
+  const [consentAccepted, setConsentAccepted] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!user) {
+      setConsentAccepted(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch(`${API}/consent`, {
+          headers: { Authorization: `Bearer ${token}`, 'bypass-tunnel-reminder': '1' },
+        });
+        const body = res.ok ? ((await res.json()) as { accepted?: boolean }) : {};
+        if (!cancelled) setConsentAccepted(Boolean(body.accepted));
+      } catch {
+        // Offline: assume the stored consent still holds so cached data stays
+        // reachable; the API re-checks on every request anyway.
+        if (!cancelled) setConsentAccepted(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
+
   const signInAsDevUser = useCallback(async (uid: string, name: string) => {
     const newUser: AppUser = {
       uid,
@@ -150,8 +180,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const value = useMemo(
-    () => ({ user, loading, signInAsDevUser, signInWithGoogle, signOutUser, getToken }),
-    [user, loading, signInAsDevUser, signInWithGoogle, signOutUser, getToken],
+    () => ({ user, loading, consentAccepted, setConsentAccepted, signInAsDevUser, signInWithGoogle, signOutUser, getToken }),
+    [user, loading, consentAccepted, signInAsDevUser, signInWithGoogle, signOutUser, getToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

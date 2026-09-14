@@ -36,6 +36,22 @@ def client(app):
     return TestClient(app, raise_server_exceptions=False)
 
 
+# The consent gate wraps every patient-data route. Tests that don't exercise
+# it bypass the Firestore lookup so their MagicMock call sequences stay put;
+# test_consent.py drops the override to test the gate itself.
+@pytest.fixture(autouse=True)
+def bypass_consent(app):
+    from app.routes import require_consent, verify_token
+    from fastapi import Depends
+
+    def passthrough(uid: str = Depends(verify_token)) -> str:
+        return uid
+
+    app.dependency_overrides[require_consent] = passthrough
+    yield
+    app.dependency_overrides.pop(require_consent, None)
+
+
 # Convenience: Authorization header for dev token
 def dev_auth(uid: str = "test-uid") -> dict:
     return {"Authorization": f"Bearer dev:{uid}"}
@@ -89,12 +105,26 @@ class FakeCollection:
     def document(self, doc_id):
         return FakeDocRef(self.store, f"{self.path}/{doc_id}")
 
+    def where(self, field, op, value):
+        assert op == "=="
+        return FakeQuery(self, field, value)
+
     def stream(self):
         prefix = self.path + "/"
         for path, data in list(self.store.items()):
             rest = path[len(prefix):]
             if path.startswith(prefix) and "/" not in rest:
                 yield FakeSnap(rest, data)
+
+
+class FakeQuery:
+    def __init__(self, collection, field, value):
+        self.collection, self.field, self.value = collection, field, value
+
+    def stream(self):
+        for snap in self.collection.stream():
+            if (snap.to_dict() or {}).get(self.field) == self.value:
+                yield snap
 
 
 class FakeDb:

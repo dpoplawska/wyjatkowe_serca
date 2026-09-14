@@ -120,6 +120,19 @@ export interface MeFlags {
   uploadApproved: boolean;
 }
 
+export interface ConsentRecord {
+  version: string;
+  acceptedAt: string;
+  terms: boolean;
+  healthData: boolean;
+}
+
+export interface ConsentStatus {
+  accepted: boolean;
+  requiredVersion: string;
+  record: ConsentRecord | null;
+}
+
 export interface PatientDocument {
   id: string;
   name: string;
