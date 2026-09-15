@@ -1,5 +1,11 @@
 import "./css/Footer.css";
-import { LOGO as logo, PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations, PDF_STATUT as statut, PDF_KONKURS as konkurs } from "../app/mediaUrls.ts";
+import {
+	LOGO as logo,
+	PDF_PRIVACY as privacyPolicy,
+	PDF_REGULATIONS as serviceRegulations,
+	PDF_STATUT as statut,
+	PDF_KONKURS as konkurs,
+} from "../app/mediaUrls.ts";
 import PlaceIcon from "@mui/icons-material/Place";
 
 export default function Footer() {
@@ -40,7 +46,7 @@ export default function Footer() {
 				<div className="container">
 					<footer className="d-flex flex-wrap justify-content-between align-items-center py-1 my-2 border-top">
 						<div
-							className="col-md-6 d-flex align-items-center"
+							className="footer-links col-md-6 d-flex align-items-center"
 							style={{ gap: "10px" }}
 						>
 							<a
@@ -74,11 +80,13 @@ export default function Footer() {
 							<a href="/raporty-finansowe" className="service-regualtions-link">
 								Sprawozdania finansowe
 							</a>
-										<a 		href={konkurs}
+							<a
+								href={konkurs}
 								target="_blank"
 								rel="noopener noreferrer"
 								id="konkurs-link"
-								className="privacy-policy-link">
+								className="privacy-policy-link"
+							>
 								Konkurs
 							</a>
 						</div>

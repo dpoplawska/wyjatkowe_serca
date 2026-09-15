@@ -15,7 +15,12 @@ export default function BeneficiariesPage() {
 		useState(false);
 
 	const disorders = [
-		...new Set(beneficiaries.map((b) => b.disorder).filter((d) => d)),
+		...new Set(
+			beneficiaries
+				.filter((b) => !b.angel)
+				.map((b) => b.disorder)
+				.filter((d) => d),
+		),
 	];
 	const names = [...new Set(beneficiaries.map((b) => b.name).filter((n) => n))];
 

@@ -1,17 +1,17 @@
 import { BENEFICIARIES } from "../../../app/mediaUrls.ts";
-const { ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8_1, ws8_2, ws8_3, ws9, ws10 } =
-	BENEFICIARIES;
+const { ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8_1, ws8_2, ws8_3, ws9, ws10, ws11 } =
+  BENEFICIARIES;
 
 export const beneficiaries = [
-	{
-		id: "danuta_grzyb",
-		name: "Danuta Grzyb",
-		disorder: "Kardiomiopatia, blok przedsionkowo-komorowy III*st",
-		sectionsImageUrl: [ws1],
-		moreInfoLink: "/zbiorka/danuta_grzyb",
-		transferTitle: "WS1 - Danuta Grzyb",
-		afterHeartTransplant: true,
-		description: `<p>
+  {
+    id: "danuta_grzyb",
+    name: "Danuta Grzyb",
+    disorder: "Kardiomiopatia, blok przedsionkowo-komorowy III*st",
+    sectionsImageUrl: [ws1],
+    moreInfoLink: "/zbiorka/danuta_grzyb",
+    transferTitle: "WS1 - Danuta Grzyb",
+    afterHeartTransplant: true,
+    description: `<p>
 					Danusia urodziła się w 30 tygodniu ciąży, w lipcu 2020r, jako skrajny
 					wcześniak. Przyszła na świat przez cesarskie cięcie i natychmiast
 					przeszła operację wszczepienia stymulatora serca. Powiększona komora
@@ -34,15 +34,15 @@ export const beneficiaries = [
 					skutki immunosupresji, powikłań po przeszczepowych i żyć jak najlepiej
 					zdobywając czas do następnej transplantacji.
 				</p>`,
-	},
-	{
-		id: "franciszek_grzyb",
-		name: "Franciszek Grzyb",
-		disorder: "blok przedsionkowo-komorowy III*st",
-		sectionsImageUrl: [ws2],
-		moreInfoLink: "/zbiorka/franciszek_grzyb",
-		transferTitle: "WS2 - Franciszek Grzyb",
-		description: `<p>
+  },
+  {
+    id: "franciszek_grzyb",
+    name: "Franciszek Grzyb",
+    disorder: "blok przedsionkowo-komorowy III*st",
+    sectionsImageUrl: [ws2],
+    moreInfoLink: "/zbiorka/franciszek_grzyb",
+    transferTitle: "WS2 - Franciszek Grzyb",
+    description: `<p>
 					Franciszek urodził się z wrodzonym blokiem przedsionkowo-komorowym
 					III*st., jest po dwóch operacjach serca. Ostatnie kontrole
 					kardiologiczne wskazały na powolne rozładowanie baterii i kolejną
@@ -53,15 +53,15 @@ export const beneficiaries = [
 					rówieśnikom. Mimo ograniczeń jakie ma przez wszczepiony stymulator w
 					powłoki brzuszne, jest radosnym i pogodnym dzieckiem.
 				</p>`,
-	},
-	{
-		id: "cyprian_zawadzki",
-		name: "Cyprian Zawadzki",
-		disorder: "Dwuujściowa prawa komora typu tetralogia Fallota (Dorv typ ToF)",
-		sectionsImageUrl: [ws3],
-		moreInfoLink: "/zbiorka/cyprian_zawadzki",
-		transferTitle: "WS3 - Cyprian Zawadzki",
-		description: `<p>
+  },
+  {
+    id: "cyprian_zawadzki",
+    name: "Cyprian Zawadzki",
+    disorder: "Dwuujściowa prawa komora typu tetralogia Fallota (Dorv typ ToF)",
+    sectionsImageUrl: [ws3],
+    moreInfoLink: "/zbiorka/cyprian_zawadzki",
+    transferTitle: "WS3 - Cyprian Zawadzki",
+    description: `<p>
 					1.08.2022 roku w Dziecięcym Szpitalu Klinicznym im. Józefa Polikarpa
 					Brudzińskiego w Warszawie (UCK WUM) przyszedł na świat nasz drugi
 					synek Cyprian z wyjątkowym serduszkiem. Po porodzie spędził 3 doby na
@@ -127,16 +127,16 @@ export const beneficiaries = [
 					dzielnego synka, cieszymy się każdym dniem i wspólnie spędzonymi
 					chwilami, bo nigdy nie wiemy co przyniesie jutro.
 				</p>`,
-	},
-	{
-		id: "mikolaj_wegierski",
-		name: "Mikołaj Węgierski",
-		disorder: "Kardiomiopatia",
-		sectionsImageUrl: [ws4],
-		moreInfoLink: "/zbiorka/mikolaj_wegierski",
-		transferTitle: "WS4 - Mikołaj Węgierski",
-		afterHeartTransplant: true,
-		description: `<p>
+  },
+  {
+    id: "mikolaj_wegierski",
+    name: "Mikołaj Węgierski",
+    disorder: "Kardiomiopatia",
+    sectionsImageUrl: [ws4],
+    moreInfoLink: "/zbiorka/mikolaj_wegierski",
+    transferTitle: "WS4 - Mikołaj Węgierski",
+    afterHeartTransplant: true,
+    description: `<p>
 					Mikuś to pełen życia, uśmiechnięty 2-letni chłopiec, który każdego
 					dnia pokazuje, jak ogromną ma wolę walki. Za sobą ma już więcej niż
 					niejeden dorosły - spędził w szpitalu ponad 519 dni.
@@ -170,16 +170,16 @@ export const beneficiaries = [
 				</p>
 				<p>Z całego serca dziękujemy za każdą pomoc!</p>
 				<p>Rodzice</p>`,
-	},
-	{
-		id: "cecylia_suchocka",
-		name: "Cecylia Suchocka",
-		disorder: "Kardiomiopatia",
-		sectionsImageUrl: [ws5],
-		moreInfoLink: "/zbiorka/cecylia_suchocka",
-		transferTitle: "WS5 - Cecylia Suchocka",
-		afterHeartTransplant: true,
-		description: `<p>
+  },
+  {
+    id: "cecylia_suchocka",
+    name: "Cecylia Suchocka",
+    disorder: "Kardiomiopatia",
+    sectionsImageUrl: [ws5],
+    moreInfoLink: "/zbiorka/cecylia_suchocka",
+    transferTitle: "WS5 - Cecylia Suchocka",
+    afterHeartTransplant: true,
+    description: `<p>
 					Kiedy Cecylka miała zaledwie 7 miesięcy, wydarzyło się coś, co na
 					zawsze odmieniło nasze życie - jej maleńkie serduszko nagle się
 					zatrzymało… Lekarze zdiagnozowali u niej ciężką kardiomiopatię
@@ -195,15 +195,15 @@ export const beneficiaries = [
 					ale dziś z każdym dniem rozwija się, rośnie i cieszy nowym serduszkiem
 					oraz beztroskimi chwilami dzieciństwa.
 				</p>`,
-	},
-	{
-		id: "hubert_szymborski",
-		name: "Hubert Szymborski",
-		disorder: "Lymphomatoid granulomatosis",
-		sectionsImageUrl: [ws6],
-		moreInfoLink: "/zbiorka/hubert_szymborski",
-		transferTitle: "WS6 - Hubert Szymborski",
-		description: `<p>
+  },
+  {
+    id: "hubert_szymborski",
+    name: "Hubert Szymborski",
+    disorder: "Lymphomatoid granulomatosis",
+    sectionsImageUrl: [ws6],
+    moreInfoLink: "/zbiorka/hubert_szymborski",
+    transferTitle: "WS6 - Hubert Szymborski",
+    description: `<p>
                     Hubert to 17-letni chłopak, który chciał zostać strażakiem - pomagać ludziom, ratować życie, być bohaterem.
                     Marzył o podróżach i odkrywaniu nowych miejsc. Niestety ostatnio jego świat nagle się zatrzymał.
                     Podejrzewa się u niego bardzo rzadką chorobę nowotworową - Lymphomatoid granulomatosis.
@@ -225,15 +225,15 @@ export const beneficiaries = [
                     Teraz potrzebujemy Waszej pomocy, by mógł on dostać szansę na leczenie.
                     Każda darowizna to krok bliżej do odzyskania zdrowia, siły i przyszłości pełnej marzeń.
                 </p>`,
-	},
-	{
-		id: "nikodem_kochel",
-		name: "Nikodem Kochel",
-		disorder: "Zespół Fallota",
-		sectionsImageUrl: [ws7],
-		moreInfoLink: "/zbiorka/nikodem_kochel",
-		transferTitle: "WS7 - Nikodem Kochel",
-		description: `<p>Nasz mały wojownik - Nikoś</p>
+  },
+  {
+    id: "nikodem_kochel",
+    name: "Nikodem Kochel",
+    disorder: "Zespół Fallota",
+    sectionsImageUrl: [ws7],
+    moreInfoLink: "/zbiorka/nikodem_kochel",
+    transferTitle: "WS7 - Nikodem Kochel",
+    description: `<p>Nasz mały wojownik - Nikoś</p>
 				<p>
 					O wadzie serduszka naszego synka dowiedzieliśmy się już w 20. tygodniu
 					ciąży. Lekarz wtedy wypowiedział słowa, które na zawsze zmieniły nasze
@@ -275,15 +275,15 @@ export const beneficiaries = [
 					drodze!
 				</p>
 				<p>Mama i Tata Nikosia</p>`,
-	},
-	{
-		id: "agnieszka_ptaszek",
-		name: "Agnieszka Ptaszek",
-		disorder: "TGA, Dorv, oczekuje na transplantację serca i płuc",
-		sectionsImageUrl: [ws8_1, ws8_2, ws8_3],
-		moreInfoLink: "/zbiorka/agnieszka_ptaszek",
-		transferTitle: "WS8 - Agnieszka Ptaszek",
-		description: `
+  },
+  {
+    id: "agnieszka_ptaszek",
+    name: "Agnieszka Ptaszek",
+    disorder: "TGA, Dorv, oczekuje na transplantację serca i płuc",
+    sectionsImageUrl: [ws8_1, ws8_2, ws8_3],
+    moreInfoLink: "/zbiorka/agnieszka_ptaszek",
+    transferTitle: "WS8 - Agnieszka Ptaszek",
+    description: `
 		<p>💖 Agnieszka - nasza mała wojowniczka po 9 operacjach serca! Teraz czeka na przeszczep serca i płuc 💔</p>
 				<p>
 					Kiedy dowiedzieliśmy się, że nasza córeczka urodzi się z ciężką wadą serca, świat nam się zawalił.
@@ -331,15 +331,16 @@ Nie potrafimy sobie wyobrazić świata bez jej uśmiechu.</p>
 <p>❤️ Dziękujemy, że jesteście z nami w tej walce.
 Rodzice Agnieszki ❤️
 </p>`,
-	},
-	{
-		id: "alicja_wilk",
-		name: "Alicja Wilk",
-		disorder: "Dekstrokardia, hipoplazja prawego płuca oraz wcześniacza retinopatia, atrezja przełyku z przetoką tchawiczo-przełykową",
-		sectionsImageUrl: [ws9],
-		moreInfoLink: "/zbiorka/alicja_wilk",
-		transferTitle: "WS9 - Alicja Wilk",
-		description: `
+  },
+  {
+    id: "alicja_wilk",
+    name: "Alicja Wilk",
+    disorder:
+      "Dekstrokardia, hipoplazja prawego płuca oraz wcześniacza retinopatia, atrezja przełyku z przetoką tchawiczo-przełykową",
+    sectionsImageUrl: [ws9],
+    moreInfoLink: "/zbiorka/alicja_wilk",
+    transferTitle: "WS9 - Alicja Wilk",
+    description: `
 		<p><b>Alicja przyszła na świat w 30. tygodniu trojaczej ciąży jako skrajny wcześniak. Już w trakcie ciąży wiedzieliśmy, że będzie zmagała się z wieloma poważnymi wadami. Urodziła się przez cięcie cesarskie, ważąc zaledwie 990 gramów – od pierwszych dni musiała walczyć o swoje kruche życie! </b> </p>
 <p>
 W drugiej dobie życia córeczka przeszła pilną operację <b>z powodu atrezji przełyku z przetoką tchawiczo-przełykową</b>. Podczas zabiegu założono jej PEG-a, aby podawać pokarm bezpośrednio do żołądka. U Alicji stwierdzono również dekstrokardię, hipoplazję prawego płuca oraz wcześniaczą retinopatię. </p>
@@ -348,51 +349,81 @@ Po trzech miesiącach przeprowadzono operację złączenia przewodu pokarmowego.
 <p>
 W czerwcu przłeszła kolejną poważną operację usunięcia ziarniny, która całkowicie blokowała jej oddech. Dopiero po tym zabiegu jej stan zaczął się stopniowo stabilizować. We wrześniu mogliśmy zabrać Alicję po raz pierwszy do domu. Dziś, dzięki intensywnej rehabilitacji, potrafi samodzielnie siadać i wciąż robi postępy. <b>Jej rozwój psychoruchowy pozostaje jednak opóźniony</b>, a ona nadal wymaga stałej opieki, regularnych wizyt u wielu specjalistów, leczenia, rehabilitacji oraz wsparcia specjalistycznego sprzętu.
 </p>`,
-	},
-	{
-		id: "basia_mroz",
-		name: "Basia Mróz",
-		disorder: "HLHS oczekuje na transplantację serca, wrodzona wada rozwoju zastawki aorty i zastawki dwudzielnej",
-		sectionsImageUrl: [ws10],
-		moreInfoLink: "/zbiorka/basia_mroz",
-		transferTitle: "WS10 - Basia Mróz",
-		description: `
+  },
+  {
+    id: "basia_mroz",
+    name: "Basia Mróz",
+    disorder: "Pamięci Wyjątkowego Aniołka",
+    sectionsImageUrl: [ws10],
+    moreInfoLink: "/zbiorka/basia_mroz",
+    angel: true,
+    transferTitle: "",
+    description: `
 		<p>
-	Basia nasza dzielna mała wojowniczka która połowę swojego życia spędziła w szpitalu. Przeszła trzy skomplikowane operacje na otwartym serduszku, wiele zabiegów interwencyjnych i obecnie oczekuje na pilnej liście do transplantacji serca. </p>
-<p>
-W 12 tygodniu ciąży dowiedzieliśmy się, że nasza córeczka urodzi się z krytyczna wada serca pod postacią HLHS czyli zespołem niedorozwoju lewej części serca, wrodzona wadą rozwoju zastawki aorty i zastawki dwudzielnej. W tamtym momencie nasz świat rozsypał się na milion małych kawałków. Kolejnym ciosem był fakt, że w przypadku HLHS nie istnieje możliwość wyleczenia wady serca, a nasza córka będzie  potrzebowała wieloetapowego leczenia polegającego na wykonaniu trzech skomplikowanych operacji, które są operacjami "paliatywnymi", mającymi na celu zapewnienia jej zdolności do życia. Trudno było pogodzić się z tym, że nasze maleństwo będzie od pierwszych swoich dni walczyć o życie.
+	Na zawsze część naszej historii.
+Na zawsze w naszych sercach.
 </p>
-
 <p>
-Basia urodziła się 11 marca 2023 przez cesarskie cięcie . Niestety nie mogłam jej przytulić i ukoić jej pierwszych łez. Została od razu zabrana do inkubatora i podłączono jej lek, który umożliwiał zachowanie krążenia płodowego i pozwolił jej dotrwać do pierwszej operacji.
+Są pożegnania, na które nigdy nie można być gotowym. I są takie osoby, po których pozostaje cisza, której nic nie potrafi wypełnić.
 </p>
-
 <p>
-W 9 dobie życia Basia przeszła pierwsza operację na otwartym sercu, która trwała kilka godzin. Pomimo tego, że bardzo dzielnie ją zniosła, jej stan po operacji był ciężki i lekarze musieli go ustabilizować. Wymagała tlenoterapii, a w kolejnych dniach okazało się, że ma porażoną przeponę po lewej stronie i niedodmę na obu płucach. Przez ciągłe spadki saturacji musiała mieć wykonane cewnikowanie serca. Po 2 miesiącach walki o Jej życie i zdrowie Basia mogła wrócić do domu i poznać swoją starszą siostrę.
+Z ogromnym smutkiem… 💔 przyszło się nam pożegnać Basiu. Nasza Wyjątkowa Gwiazdeczko, byłaś dla nas promyczkiem nadziei i słońca w najbardziej pochmurne dni.  Byłaś kimś z kim połączyła nas szczególna więź. Kimś, o kogo się martwiliśmy, komu kibicowaliśmy i kogo po prostu bardzo pokochaliśmy.
 </p>
-
 <p>
- Kolejna operacja odbyła się szybciej niż spodziewaliśmy, bo w czwartym miesiącu Jej życia. Planowa kontrola na oddziale kardiologii zmieniła się w kolejną walkę o życie Basi. Poważne zwężenia zespolenia Sano, które zostało wykonane przy pierwszej operacji, spowodowały kwalifikacje do cewnikowania serca. Niestety nie był to koniec dramatycznych zdarzeń: NZK - nagłe zatrzymanie krążenia, pilne cewnikowanie serca, druga operacja (zespolenie GLENA),pooperacyjna terapia ECMO, kolejne cewnikowanie serca, dysfunkcja prawej kopuły przepony,ropień około mostkowy i rewizja mostka.
- </p>
-
-<p>
-Był to dla nas czas pełen strachu, łez i niepewności, ale Basia kolejny raz udowodniła, że jest niesamowicie dzielną i silną dziewczynką i nic Jej nie złamie. Po 2 miesiącach traumatycznych przeżyć i ciężkiej walki mogła opuścić szpital.</p>
-<p>
-Dzięki intensywnej rehabilitacji, która trwała 1,5 roku,  Basia nauczyła się najpierw przekręcać na boki, zaakceptowała leżenie na brzuchu, nauczyła się siadać, raczkować i wreszcie stawiać pierwsze kroki.</p>
-
-<p>
-  21 maja 2025 r. Basia przeszła 3 ostatnią planową operację. Mieliśmy ogromną nadzieję, że tym razem przejdzie ją bez komplikacji. Niestety życie napisało dla Niej inny scenariusz. W krótkim czasie po operacji Basia musiała mieć kolejne cewnikowanie serca i kolejny raz musiała zmagać się z komplikacjami pooperacyjnymi: porażona przepona po prawej stronie, zabieg plikacji przepony, przewlekły płyn w opłucnych, niewydolność krążenia, reoperacja polegająca na wytworzeniu fenestracji. Basia spędziła ponad 7 miesięcy w szpitalu, który stawał się dla niej domem. Pomimo starań lekarzy i ogromnej woli walki naszego dziecka, niestety serce Basi nie zaakceptowało nowego krążenia wytworzonego w czasie operacji. Lekarze zdecydowali zakwalifikować ją do przeszczepu serca.</p>
-
-	<p>
-Basia pomimo ciężkiej drogi, którą przeszła, jest bardzo pogodną i dzielną dziewczynką. Bardzo chciałaby pójść do przedszkola, rozwijać się jak jej rówieśnicy i spełniać swoje dziecięce marzenia. Ma szansę to wszystko osiągnąć dzięki intensywnej rehabilitacji, dużej ilości leków, które musi przyjmować każdego dnia, częstych kontroli i wizyt u specjalistów.
+Dziś trudno znaleźć słowa, które mogłyby unieść ten ból. Chcemy wierzyć, że miłość nie kończy się wraz z odejściem. Że zostaje we  wspomnieniach, w uśmiechu, który pamiętamy, w chwilach spędzonych razem i w śladzie, jaki drugi człowiek zostawia w naszym sercu.
 </p>
-
 <p>
-Prosimy Was o wsparcie, które umożliwi nam walkę o lepsze jutro dla naszej córki. 
+Basiu, dziękujemy, że mogliśmy Cię poznać.
+Dziękujemy, że pozwoliłaś być nam blisko. Dziękujemy Ci za każdy moment i za Twoją obecność, która była dla nas darem. Dziękujemy za każdy uśmiech, każdy całus, i za piękne słowo TU-KAN.
+Zostaniesz z nami — na zawsze w naszych sercach . 🤍
 </p>
-
 <p>
-Wdzięczni Rodzice.
-</p>`,
+Odeszłaś tam, gdzie nie ma już bólu,
+a nam zostawiłaś cząstkę swojego światła.
+
+Do zobaczenia, Basiu… 🕊️
+</p>
+<p>
+Myślami i sercem jesteśmy z Rodziną Basi. 🤍
+</p>
+`,
 	},
+	  {
+    id: "kamil_dudek",
+    name: "Kamil Dudek",
+    disorder: "Pamięci Wyjątkowego Aniołka",
+    sectionsImageUrl: [ws11],
+    moreInfoLink: "/zbiorka/kamil_dudek",
+    angel: true,
+    transferTitle: "",
+    description: `
+		<p>
+Są marzenia, których nie zdążyło się spełnić.
+</p>
+<p>
+I są ludzie, którzy zostają z nami, choć nie możemy już iść obok nich.
+</p>
+<p>
+Wyruszyliśmy na Kasprowy Wierch dla Niego — dla Kamila.
+</p>
+<p>
+Każdy krok był wspomnieniem o Jego marzeniach, uśmiechu i życiu, które pozostawiło ślad w sercach tak wielu osób.
+</p>
+<p>
+Nasz Skarbeczku, ten Kasprowy był dla Ciebie.
+</p>
+<p>
+Nie ma słów, które mogłyby wypełnić pustkę, ale możemy pamiętać, mówić Twoje imię i nie pozwolić, by Twoja historia odeszła razem z Tobą.
+</p>
+<p>
+Kochani Rodzice — myślami i całym sercem jesteśmy z Wami. Kamil pozostanie w naszych sercach i pamięci na zawsze.
+</p>
+<p>
+Kamilku, zostawiłeś po sobie więcej, niż mogłeś wiedzieć.
+</p>
+<p>
+Do zobaczenia tam, gdzie góry dotykają nieba. 🤍
+</p>
+`,
+  },
 ];

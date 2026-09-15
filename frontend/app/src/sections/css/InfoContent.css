@@ -75,9 +75,9 @@ h1, h2 {
 .hashtags {
     margin-top: 3vh;
     font-family: var(--font-family-grandstander);
-    font-size: 28px;
-    color: var(--redish);
-    font-weight: 600;
+    font-size: 22px;
+    color: var(--grey2);
+    font-weight: 500;
     text-decoration: none;
 }
 
@@ -126,7 +126,7 @@ h1, h2 {
   }
 
   .hashtags {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .content {
@@ -183,7 +183,7 @@ h1, h2 {
 
 @media screen and (min-width: 480px) and (max-width: 992px) {
      .hashtags{
-        font-size: 18px;
+        font-size: 16px;
     }
 }
 
