@@ -23,7 +23,11 @@ const BeneficiaryCard = ({
 
 	return (
 		<>
-			<div className="col-md-6" style={{ marginBottom: "20px"}}>
+			<div
+				className="col-md-6"
+				style={{ marginBottom: "20px", cursor: "pointer" }}
+				onClick={handleButton}
+			>
 				<div className="card mb-4 shadow-sm h-100">
 					<img
 						className="card-img-top"

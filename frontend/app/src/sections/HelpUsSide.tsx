@@ -1,394 +1,463 @@
-import { TextField } from "@mui/material"
-import { useEffect, useState } from "react"
-import "./css/Sides.css"
+import { TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import "./css/Sides.css";
 import ValueButton from "./components/ValueButton.tsx";
 import { useLocation } from "react-router-dom";
 import { Checkbox } from "@mui/material";
-import { PDF_PRIVACY as privacyPolicy, PDF_REGULATIONS as serviceRegulations } from "../app/mediaUrls.ts"
+import {
+	PDF_PRIVACY as privacyPolicy,
+	PDF_REGULATIONS as serviceRegulations,
+} from "../app/mediaUrls.ts";
 import { beneficiaries } from "./components/beneficiaries/BeneficiariesData.tsx";
 
-import { API } from '../app/config.ts';
+import { API } from "../app/config.ts";
 
 type HelpUsSideProps = {
-    showFundraiserBar: boolean;
-    specialFundraiser: boolean;
-    beneficiary?: string;
-}
+	showFundraiserBar: boolean;
+	specialFundraiser: boolean;
+	beneficiary?: string;
+};
 
-export default function HelpUsSide({ showFundraiserBar, specialFundraiser, beneficiary }: HelpUsSideProps) {
-    const location = useLocation();
-    const defaultValue = "20";
-    const [value, setValue] = useState(defaultValue);
-    const [email, setEmail] = useState("");
-    const [emailError, setEmailError] = useState(false);
-    const [valueError, setValueError] = useState(false);
-    const [emptyValue, setEmptyValue] = useState(false);
-    const [emptyEmail, setEmptyEmail] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [resetButton, setResetButton] = useState(false);
-    const [anotherButtonClicked, setAnotherButtonClicked] = useState(false);
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const valueRegex = /^[0-9]*$/;
-    const [currentValue, setCurrentValue] = useState(-1);
-    const percentage = (currentValue / 15000) * 100;
-    const fundraiserGoal = "15 000";
-    const [showValueTextField, setShowValueTextField] = useState(false);
-    const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] = useState(true);
-    const [acceptTermsAndConditionsCheckbox, setAcceptTermsAndConditionsCheckbox] = useState(false);
-    const [disabled, setDisabled] = useState(false);
+export default function HelpUsSide({
+	showFundraiserBar,
+	specialFundraiser,
+	beneficiary,
+}: HelpUsSideProps) {
+	const location = useLocation();
+	const defaultValue = "20";
+	const [value, setValue] = useState(defaultValue);
+	const [email, setEmail] = useState("");
+	const [emailError, setEmailError] = useState(false);
+	const [valueError, setValueError] = useState(false);
+	const [emptyValue, setEmptyValue] = useState(false);
+	const [emptyEmail, setEmptyEmail] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [resetButton, setResetButton] = useState(false);
+	const [anotherButtonClicked, setAnotherButtonClicked] = useState(false);
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	const valueRegex = /^[0-9]*$/;
+	const [currentValue, setCurrentValue] = useState(-1);
+	const percentage = (currentValue / 15000) * 100;
+	const fundraiserGoal = "15 000";
+	const [showValueTextField, setShowValueTextField] = useState(false);
+	const [showKnowMoreAboutFundraiser, setShowKnowMoreAboutFundraiser] =
+		useState(true);
+	const [
+		acceptTermsAndConditionsCheckbox,
+		setAcceptTermsAndConditionsCheckbox,
+	] = useState(false);
+	const [disabled, setDisabled] = useState(false);
 
-    const monthMap = {
-        "01": "W styczniu",
-        "02": "W lutym",
-        "03": "W marcu",
-        "04": "W kwietniu",
-        "05": "W maju",
-        "06": "W czerwcu",
-        "07": "W lipcu",
-        "08": "W sierpniu",
-        "09": "We wrześniu",
-        "10": "W październiku",
-        "11": "W listopadzie",
-        "12": "W grudniu"
-    };
-    const date = new Date();
-    const currentMonth = (date.getMonth() + 1).toString().padStart(2, '0');
-    const monthString = monthMap[currentMonth];
+	const monthMap = {
+		"01": "W styczniu",
+		"02": "W lutym",
+		"03": "W marcu",
+		"04": "W kwietniu",
+		"05": "W maju",
+		"06": "W czerwcu",
+		"07": "W lipcu",
+		"08": "W sierpniu",
+		"09": "We wrześniu",
+		"10": "W październiku",
+		"11": "W listopadzie",
+		"12": "W grudniu",
+	};
+	const date = new Date();
+	const currentMonth = (date.getMonth() + 1).toString().padStart(2, "0");
+	const monthString = monthMap[currentMonth];
 
-    const handleValueChange = (event) => {
-        setEmptyValue(false);
-        // Accept whatever is typed or pasted, but flag anything that isn't a
-        // whole złoty amount ("Wartość musi być liczbą całkowitą") — submit
-        // stays blocked until it's a plain integer.
-        const value = event.target.value;
-        setValue(value);
-        setValueError(!valueRegex.test(value));
-    };
+	const handleValueChange = (event) => {
+		setEmptyValue(false);
+		// Accept whatever is typed or pasted, but flag anything that isn't a
+		// whole złoty amount ("Wartość musi być liczbą całkowitą") — submit
+		// stays blocked until it's a plain integer.
+		const value = event.target.value;
+		setValue(value);
+		setValueError(!valueRegex.test(value));
+	};
 
-    const handleEmailChange = (event) => {
-        setEmailError(false);
-        setEmptyEmail(false);
-        setEmail(event.target.value);
-        if (emailRegex.test(event.target.value)) {
-            setEmailError(false);
-            setEmptyEmail(false);
-        } else if (event.target.value.length < 1) {
-            setEmptyEmail(true);
-        } else {
-            setEmailError(true);
-        }
-    };
+	const handleEmailChange = (event) => {
+		setEmailError(false);
+		setEmptyEmail(false);
+		setEmail(event.target.value);
+		if (emailRegex.test(event.target.value)) {
+			setEmailError(false);
+			setEmptyEmail(false);
+		} else if (event.target.value.length < 1) {
+			setEmptyEmail(true);
+		} else {
+			setEmailError(true);
+		}
+	};
 
-    const handleAcceptTermsAndConditions = () => {
-        setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox)
-    }
+	const handleAcceptTermsAndConditions = () => {
+		setAcceptTermsAndConditionsCheckbox(!acceptTermsAndConditionsCheckbox);
+	};
 
-    const handleSetValue = (value) => {
-        setValue(value);
-        setShowValueTextField(false);
-        setAnotherButtonClicked(false);
-        setResetButton(true);
-    };
+	const handleSetValue = (value) => {
+		setValue(value);
+		setShowValueTextField(false);
+		setAnotherButtonClicked(false);
+		setResetButton(true);
+	};
 
-    const handleAnotherValue = () => {
-        setShowValueTextField(true);
-        setAnotherButtonClicked(true);
-    };
+	const handleAnotherValue = () => {
+		setShowValueTextField(true);
+		setAnotherButtonClicked(true);
+	};
 
-    const handleKeyPress = (event) => {
-        if (event.key === "Enter") {
-            handlePayment(event);
-        }
-    };
+	const handleKeyPress = (event) => {
+		if (event.key === "Enter") {
+			handlePayment(event);
+		}
+	};
 
-    const handlePayment = async (event) => {
-        event.preventDefault();
-        const amountValid = /^[0-9]+$/.test(value) && parseInt(value, 10) > 0;
-        if (email.length > 0 && emailRegex.test(email) && amountValid && acceptTermsAndConditionsCheckbox) {
-            setEmptyValue(false);
-            setEmptyEmail(false);
-            setLoading(true);
-            setResetButton(true);
-            setAcceptTermsAndConditionsCheckbox(false);
+	const handlePayment = async (event) => {
+		event.preventDefault();
+		const amountValid = /^[0-9]+$/.test(value) && parseInt(value, 10) > 0;
+		if (
+			email.length > 0 &&
+			emailRegex.test(email) &&
+			amountValid &&
+			acceptTermsAndConditionsCheckbox
+		) {
+			setEmptyValue(false);
+			setEmptyEmail(false);
+			setLoading(true);
+			setResetButton(true);
+			setAcceptTermsAndConditionsCheckbox(false);
 
-            const paymentData: { amount: string; email: string; beneficiary?: string } = {
-                amount: value,
-                email: email,
-            };
-            if (specialFundraiser && transferTitle) {
-                paymentData.beneficiary = transferTitle;
-            }
+			const paymentData: {
+				amount: string;
+				email: string;
+				beneficiary?: string;
+			} = {
+				amount: value,
+				email: email,
+			};
+			if (specialFundraiser && transferTitle) {
+				paymentData.beneficiary = transferTitle;
+			}
 
-            try {
-                const response = await fetch(
-                    `${API}/payments`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(paymentData),
-                    }
-                );
+			try {
+				const response = await fetch(`${API}/payments`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(paymentData),
+				});
 
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
 
-                const data = await response.json();
+				const data = await response.json();
 
-                if (data.paymentId) {
-                    setTimeout(() => {
-                        window.open(data.redirectUrl, "_blank");
-                    });
-                } else {
-                    throw new Error("Invalid response data");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            } finally {
-                setValue(defaultValue);
-                setEmail("");
-                setLoading(false);
-                setAcceptTermsAndConditionsCheckbox(false);
-            }
-        } else {
-            setResetButton(true);
-            setEmptyValue(!amountValid);
-            setEmptyEmail(!(email.length > 0));
-        }
-    };
+				if (data.paymentId) {
+					setTimeout(() => {
+						window.open(data.redirectUrl, "_blank");
+					});
+				} else {
+					throw new Error("Invalid response data");
+				}
+			} catch (error) {
+				console.error("Error:", error);
+			} finally {
+				setValue(defaultValue);
+				setEmail("");
+				setLoading(false);
+				setAcceptTermsAndConditionsCheckbox(false);
+			}
+		} else {
+			setResetButton(true);
+			setEmptyValue(!amountValid);
+			setEmptyEmail(!(email.length > 0));
+		}
+	};
 
+	const getCurrentFundraisedValue = async () => {
+		try {
+			fetch(`${API}/payments/total-confirmed`)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error("Network response was not ok");
+					}
+					return response.json();
+				})
+				.then((data) => {
+					setCurrentValue(data.total);
+				})
+				.catch((error) => {
+					console.error("There was a problem with the fetch operation:", error);
+				});
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
-    const getCurrentFundraisedValue = async () => {
-        try {
-            fetch(
-                `${API}/payments/total-confirmed`
-            )
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    setCurrentValue(data.total);
-                })
-                .catch((error) => {
-                    console.error("There was a problem with the fetch operation:", error);
-                });
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+	useEffect(() => {
+		getCurrentFundraisedValue();
+	}, []);
 
-    useEffect(() => {
-        getCurrentFundraisedValue();
-    }, []);
+	useEffect(() => {
+		if (location.pathname !== "/") {
+			setShowKnowMoreAboutFundraiser(false);
+		}
+	}, [location.pathname]);
 
-    useEffect(() => {
-        if (location.pathname !== '/') {
-            setShowKnowMoreAboutFundraiser(false);
-        }
-    }, [location.pathname])
+	useEffect(() => {
+		if (
+			email.length === 0 ||
+			emailError === true ||
+			acceptTermsAndConditionsCheckbox === false
+		) {
+			setDisabled(true);
+		} else {
+			setDisabled(false);
+		}
+	}, [email, emailError, acceptTermsAndConditionsCheckbox]);
 
-    useEffect(() => {
-        if (email.length === 0 || emailError === true || acceptTermsAndConditionsCheckbox === false) {
-            setDisabled(true)
-        } else {
-            setDisabled(false)
-        }
-    }, [email, emailError, acceptTermsAndConditionsCheckbox])
+	const [helpText, setHelpText] = useState("Wesprzyj Nas");
+	useEffect(() => {
+		if (specialFundraiser === true) {
+			setHelpText("Wesprzyj");
+		}
+	}, [specialFundraiser]);
 
-    const [helpText, setHelpText] = useState("Wesprzyj Nas");
-    useEffect(() => {
-        if (specialFundraiser === true) {
-            setHelpText("Wesprzyj")
-        }
-    }, [specialFundraiser]);
+	const [transferTitle, setTransferTitle] = useState("Darowizna");
 
-    const [transferTitle, setTransferTitle] = useState("");
+	const currentBeneficiary = beneficiaries.find(
+		(entry) =>
+			entry.id === beneficiary || entry.moreInfoLink === location.pathname,
+	);
 
-    console.log(location.pathname);
-    useEffect(() => {
-        if (specialFundraiser === true) {
-            switch (location.pathname) {
-                case '/zbiorka/danuta_grzyb':
-                    setHelpText("Wesprzyj Danusię");
-                    setTransferTitle("WS1 - Danuta Grzyb");
-                    break;
-                case '/zbiorka/franciszek_grzyb':
-                    setHelpText("Wesprzyj Franka");
-                    setTransferTitle("WS2 - Franciszek Grzyb");
-                    break;
-                case '/zbiorka/cyprian_zawadzki':
-                    setHelpText("Wesprzyj Cypriana");
-                    setTransferTitle("WS3 - Cyprian Zawadzki");
-                    break;
-                case '/zbiorka/mikolaj_wegierski':
-                    setHelpText("Wesprzyj Mikołaja");
-                    setTransferTitle("WS4 - Mikołaj Węgierski");
-                    break;
-                case '/zbiorka/cecylia_suchocka':
-                    setHelpText("Wesprzyj Cecylię");
-                    setTransferTitle("WS5 - Cecylia Suchocka");
-                    break;
-                case '/zbiorka/hubert_szymborski':
-                    setHelpText("Wesprzyj Huberta");
-                    setTransferTitle("WS6 - Hubert Szymborski");
-                    break;
-                case '/zbiorka/nikodem_kochel':
-                    setHelpText("Wesprzyj Nikodema");
-                    setTransferTitle("WS7 - Nikodem Kochel");
-                    break;
-                case '/zbiorka/agnieszka_ptaszek':
-                    setHelpText("Wesprzyj Agnieszkę");
-                    setTransferTitle("WS8 - Agnieszka Ptaszek");
-                    break;
-                case '/zbiorka/alicja_wilk':
-                    setHelpText("Wesprzyj Alicję");
-                    setTransferTitle("WS9 - Alicja Wilk");
-                    break;
-                case '/zbiorka/basia_mroz':
-                    setHelpText("Wesprzyj Basię");
-                    setTransferTitle("WS10 - Basia Mróz");
-                    break;
-                default: {
-                    // Safety net for fundraisers not listed above: take the
-                    // transfer title from BeneficiariesData so the donation is
-                    // still attributed to the beneficiary.
-                    const b = beneficiaries.find((entry) => entry.id === beneficiary);
-                    if (b?.transferTitle) {
-                        setHelpText(`Wesprzyj - ${b.name}`);
-                        setTransferTitle(b.transferTitle);
-                    } else {
-                        setHelpText("Wesprzyj Nas");
-                    }
-                }
-            }
-        }
-    }, [location.pathname, specialFundraiser, beneficiary]);
+	useEffect(() => {
+		if (specialFundraiser && currentBeneficiary?.transferTitle) {
+			setHelpText(`Wesprzyj ${currentBeneficiary.name}`);
+			setTransferTitle(currentBeneficiary.transferTitle);
+		} else {
+			setHelpText("Wesprzyj Nas");
+			setTransferTitle("Darowizna");
+		}
+	}, [currentBeneficiary, specialFundraiser]);
 
-    return (
-        <section className="help-us side">
-            <>
-                <div className="supportUs">{helpText}</div>
-                <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                    {["200", "150", "100"].map((btnValue) => (
-                        <ValueButton
-                            key={btnValue}
-                            setValue={handleSetValue}
-                            value={btnValue}
-                            isActive={value === btnValue}
-                            resetButton={resetButton}
-                        />
-                    ))}
-                </div>
-                <div className="btn-group" style={{ display: "flex", gap: "5px" }}>
-                    {["50", "20"].map((btnValue) => (
-                        <ValueButton
-                            key={btnValue}
-                            setValue={handleSetValue}
-                            value={btnValue}
-                            isActive={value === btnValue}
-                            resetButton={resetButton}
-                        />
-                    ))}
-                    <ValueButton handleAnotherValue={handleAnotherValue} anotherButtonClicked={anotherButtonClicked} resetButton={resetButton} isAnotherButton />
-                </div>
-                {specialFundraiser === true && transferTitle && (
-                    <p className="content" style={{ fontSize: "16px", color: "#616161", marginBottom: "6px", textAlign: "center" }}>
-                        <span style={{ display: "block" }}>Wpłata bezpośrednio dla</span><strong>{transferTitle.replace(/^WS\d+ - /, '')}</strong>
-                    </p>
-                )}
-                {showValueTextField && (
-                    <div className="textfield-container">
-                        <TextField
-                            aria-label="Pole tekstowe na kwotę wpłaty"
-                            required
-                            id="outlined"
-                            label="Kwota wpłaty (zł)"
-                            value={value}
-                            onChange={handleValueChange}
-                            onKeyDown={handleKeyPress}
-                            error={emptyValue || valueError}
-                            helperText={valueError ? "Wartość musi być liczbą całkowitą" : ""}
-                        />
-                    </div>
-                )}
-                <div className="textfield-container">
-                    <TextField
-                        aria-label="Pole tekstowe na email"
-                        required
-                        id="outlined"
-                        label="Adres e-mail"
-                        value={email}
-                        onChange={handleEmailChange}
-                        onKeyDown={handleKeyPress}
-                        type="email"
-                        error={emailError || emptyEmail}
-                        helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
-                    />
-                </div>
-                <span className="content" style={{ fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Checkbox size="small" required sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }} checked={acceptTermsAndConditionsCheckbox} onClick={handleAcceptTermsAndConditions} />
-                    <span style={{ display: "flex", flexDirection: "column", marginLeft: "0px" }}>
-                        <span>Akceptuję
-                            <a href={serviceRegulations} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="service-regualtions-link"> regulamin serwisu </a></span>
-                        <span>i
-                            <a href={privacyPolicy} style={{ color: "#EC1A3B" }} target="_blank" rel="noopener noreferrer" className="privacy-policy-link"> politykę prywatności</a>. *</span>
-                    </span>
-                </span>
+	return (
+		<section className="help-us side">
+			<>
+				<div className="supportUs">{helpText}</div>
+				<div className="btn-group" style={{ display: "flex", gap: "5px" }}>
+					{["200", "150", "100"].map((btnValue) => (
+						<ValueButton
+							key={btnValue}
+							setValue={handleSetValue}
+							value={btnValue}
+							isActive={value === btnValue}
+							resetButton={resetButton}
+						/>
+					))}
+				</div>
+				<div className="btn-group" style={{ display: "flex", gap: "5px" }}>
+					{["50", "20"].map((btnValue) => (
+						<ValueButton
+							key={btnValue}
+							setValue={handleSetValue}
+							value={btnValue}
+							isActive={value === btnValue}
+							resetButton={resetButton}
+						/>
+					))}
+					<ValueButton
+						handleAnotherValue={handleAnotherValue}
+						anotherButtonClicked={anotherButtonClicked}
+						resetButton={resetButton}
+						isAnotherButton
+					/>
+				</div>
+				{specialFundraiser === true && !currentBeneficiary?.angel && (
+					<p
+						className="content"
+						style={{
+							fontSize: "16px",
+							color: "#616161",
+							marginBottom: "6px",
+							textAlign: "center",
+						}}
+					>
+						<span style={{ display: "block" }}>Wpłata bezpośrednio dla</span>
+						<strong>{transferTitle.replace(/^WS\d+ - /, "")}</strong>
+					</p>
+				)}
+				{showValueTextField && (
+					<div className="textfield-container">
+						<TextField
+							aria-label="Pole tekstowe na kwotę wpłaty"
+							required
+							id="outlined"
+							label="Kwota wpłaty (zł)"
+							value={value}
+							onChange={handleValueChange}
+							onKeyDown={handleKeyPress}
+							error={emptyValue || valueError}
+							helperText={valueError ? "Wartość musi być liczbą całkowitą" : ""}
+						/>
+					</div>
+				)}
+				<div className="textfield-container">
+					<TextField
+						aria-label="Pole tekstowe na email"
+						required
+						id="outlined"
+						label="Adres e-mail"
+						value={email}
+						onChange={handleEmailChange}
+						onKeyDown={handleKeyPress}
+						type="email"
+						error={emailError || emptyEmail}
+						helperText={emailError ? "Nieprawidłowy adres e-mail" : ""}
+					/>
+				</div>
+				<span
+					className="content"
+					style={{
+						fontSize: "14px",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<Checkbox
+						size="small"
+						required
+						sx={{ color: "#2383C5", marginRight: "5px", marginLeft: "-20px" }}
+						checked={acceptTermsAndConditionsCheckbox}
+						onClick={handleAcceptTermsAndConditions}
+					/>
+					<span
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							marginLeft: "0px",
+						}}
+					>
+						<span>
+							Akceptuję
+							<a
+								href={serviceRegulations}
+								style={{ color: "#EC1A3B" }}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="service-regualtions-link"
+							>
+								{" "}
+								regulamin serwisu{" "}
+							</a>
+						</span>
+						<span>
+							i
+							<a
+								href={privacyPolicy}
+								style={{ color: "#EC1A3B" }}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="privacy-policy-link"
+							>
+								{" "}
+								politykę prywatności
+							</a>
+							. *
+						</span>
+					</span>
+				</span>
 
-                <div className="button-container">
-                    {loading ? (
-                        <button type="submit" onClick={handlePayment}>
-                            <i className="fa fa-circle-o-notch fa-1x fa-spin" aria-hidden="true"></i>
-                        </button>
-                    ) : (
-                        <button type="submit" id={"buttonSubmit"} onClick={handlePayment} disabled={disabled === true}>
-                            Wesprzyj🤍
-                        </button>
-                    )}
-                    {showFundraiserBar && !specialFundraiser && (
-                        currentValue !== -1 && (
-                            <div style={{ marginTop: "20px" }}>
-                                <div className="progress">
-                                    <div
-                                        className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
-                                        role="progressbar"
-                                        style={{ width: `${percentage}%` }}
-                                        aria-valuenow={percentage}
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"
-                                    />
-                                </div>
-                                <div style={{ display: "grid", margin: "5px" }}>
-                                    <p style={{ marginBottom: "-3px" }}>{monthString} zebraliśmy </p>
-                                    <p>{currentValue} zł z {fundraiserGoal} zł</p>
-                                </div>
-                            </div>
-                        )
-                    )}
-                    {showKnowMoreAboutFundraiser &&
-                        <a href="/zbiorka/fundacja" className="aboutFundraiser">
-                            <p className="content" id="knowMoreAboutFundraiser">
-                                Dowiedz się więcej o zbiórce
-                            </p>
-                        </a>
-                    }
-                </div>
+				<div className="button-container">
+					{loading ? (
+						<button type="submit" onClick={handlePayment}>
+							<i
+								className="fa fa-circle-o-notch fa-1x fa-spin"
+								aria-hidden="true"
+							></i>
+						</button>
+					) : (
+						<button
+							type="submit"
+							id={"buttonSubmit"}
+							onClick={handlePayment}
+							disabled={disabled === true}
+						>
+							Wesprzyj🤍
+						</button>
+					)}
+					{showFundraiserBar && !specialFundraiser && currentValue !== -1 && (
+						<div style={{ marginTop: "20px" }}>
+							<div className="progress">
+								<div
+									className="progress-bar progress-bar-striped bg-danger progress-bar-animated"
+									role="progressbar"
+									style={{ width: `${percentage}%` }}
+									aria-valuenow={percentage}
+									aria-valuemin="0"
+									aria-valuemax="100"
+								/>
+							</div>
+							<div style={{ display: "grid", margin: "5px" }}>
+								<p style={{ marginBottom: "-3px" }}>
+									{monthString} zebraliśmy{" "}
+								</p>
+								<p>
+									{currentValue} zł z {fundraiserGoal} zł
+								</p>
+							</div>
+						</div>
+					)}
+					{showKnowMoreAboutFundraiser && (
+						<a href="/zbiorka/fundacja" className="aboutFundraiser">
+							<p className="content" id="knowMoreAboutFundraiser">
+								Dowiedz się więcej o zbiórce
+							</p>
+						</a>
+					)}
+				</div>
 
-                {specialFundraiser && (
-                    <div style={{ marginTop: "20px", borderTop: "1px solid #e0e0e0", paddingTop: "15px" }}>
-                        <p className="content" style={{ fontSize: "14px", color: "#616161", marginBottom: "8px" }}>Lub przelewem tradycyjnym:</p>
-                        <p className="content" style={{ fontSize: "14px" }}>Numer rachunku:</p>
-                        <p className="content" style={{ fontSize: "13px", fontWeight: "bold" }}>IBAN PL40 1140 2004 0000 3502 8436 9739</p>
-                        <p className="content" style={{ fontSize: "14px" }}>Tytuł przelewu:</p>
-                        <p className="content" style={{ fontSize: "13px", fontWeight: "bold" }}>{transferTitle}</p>
-                    </div>
-                )}
-            </>
-        </section >
-    );
+				{specialFundraiser && (
+					<div
+						style={{
+							marginTop: "20px",
+							borderTop: "1px solid #e0e0e0",
+							paddingTop: "15px",
+						}}
+					>
+						<p
+							className="content"
+							style={{
+								fontSize: "14px",
+								color: "#616161",
+								marginBottom: "8px",
+							}}
+						>
+							Lub przelewem tradycyjnym:
+						</p>
+						<p className="content" style={{ fontSize: "14px" }}>
+							Numer rachunku:
+						</p>
+						<p
+							className="content"
+							style={{ fontSize: "13px", fontWeight: "bold" }}
+						>
+							IBAN PL40 1140 2004 0000 3502 8436 9739
+						</p>
+						<p className="content" style={{ fontSize: "14px" }}>
+							Tytuł przelewu:
+						</p>
+						<p
+							className="content"
+							style={{ fontSize: "13px", fontWeight: "bold" }}
+						>
+							{transferTitle}
+						</p>
+					</div>
+				)}
+			</>
+		</section>
+	);
 }
