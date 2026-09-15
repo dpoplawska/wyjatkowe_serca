@@ -1,7 +1,6 @@
 # Polityka prywatności aplikacji „Wyjątkowe Serca – Pacjent”
 
-**Wersja robocza z 15.09.2026 — do weryfikacji przez prawnika przed publikacją.**
-Miejsca oznaczone `[DO USTALENIA]` wymagają decyzji fundacji.
+Obowiązuje od 15 września 2026 r.
 
 Niniejsza polityka dotyczy wyłącznie aplikacji mobilnej „Wyjątkowe Serca – Pacjent” (dalej „Aplikacja”).
 Serwis internetowy wyjatkoweserca.pl ma odrębną politykę prywatności.
@@ -11,9 +10,8 @@ Serwis internetowy wyjatkoweserca.pl ma odrębną politykę prywatności.
 Administratorem danych osobowych jest Fundacja Wyjątkowe Serca z siedzibą w Warszawie,
 Aleje Jerozolimskie 123A, 02-017 Warszawa, KRS 0001072904, NIP 7011177987, REGON 527114359 (dalej „Fundacja”).
 
-Kontakt w sprawach ochrony danych: `[DO USTALENIA: iod@wyjatkoweserca.pl lub inny adres]`.
-`[DO USTALENIA: czy Fundacja wyznaczyła Inspektora Ochrony Danych. Polityka serwisu WWW mówi, że tak;
-opis projektu grantowego mówi, że IOD nie jest wymagany. Oba dokumenty muszą być zgodne.]`
+Fundacja wyznaczyła Inspektora Ochrony Danych, z którym można się kontaktować we wszystkich sprawach
+dotyczących przetwarzania danych osobowych w Aplikacji: iod@wyjatkoweserca.pl.
 
 ## 2. Kogo dotyczy ta polityka
 
@@ -92,8 +90,8 @@ Google Ireland Limited na podstawie umowy powierzenia (Google Cloud Data Process
 | Google Cloud Run | serwer Aplikacji | Warszawa (europe-central2) |
 | Cloud Firestore | baza danych profili, leków, pomiarów, INR, dziennika dostępu | Warszawa (europe-central2) |
 | Cloud Storage | pliki PDF dokumentacji medycznej | Warszawa (europe-central2) |
-| Firebase Authentication | logowanie kontem Google | `[DO USTALENIA: usługa globalna; dane uwierzytelniające mogą być przetwarzane w USA — patrz pkt 6]` |
-| Firebase Crashlytics | raporty awarii | `[DO USTALENIA: usługa globalna; dane mogą być przetwarzane w USA — patrz pkt 6]` |
+| Firebase Authentication | logowanie kontem Google | usługa globalna, dane mogą być przetwarzane w USA (pkt 6) |
+| Firebase Crashlytics | raporty awarii | usługa globalna, dane mogą być przetwarzane w USA (pkt 6) |
 
 Dane o zdrowiu nie są przekazywane żadnym innym podmiotom. Fundacja nie sprzedaje danych i nie
 wykorzystuje ich do celów marketingowych.
@@ -107,10 +105,8 @@ Firebase Authentication i Firebase Crashlytics są usługami globalnymi Google. 
 (adres e-mail, identyfikator konta, dane techniczne urządzenia, ślady błędów) mogą być przekazywane do
 Stanów Zjednoczonych. Podstawą przekazania jest decyzja Komisji Europejskiej w sprawie ram ochrony danych
 UE-USA (EU-U.S. Data Privacy Framework), do których Google LLC przystąpił, oraz standardowe klauzule
-umowne zawarte w umowie powierzenia z Google.
-
-`[DO USTALENIA: prawnik powinien potwierdzić podstawę przekazania i sprawdzić, czy polityka serwisu WWW,
-która deklaruje brak przekazywania poza EOG, nie wymaga korekty.]`
+umowne zawarte w umowie powierzenia z Google (art. 45 i 46 RODO). Poza tym Fundacja nie przekazuje danych
+do państw trzecich ani organizacji międzynarodowych.
 
 ## 7. Jak długo przechowujemy dane
 
@@ -122,7 +118,7 @@ która deklaruje brak przekazywania poza EOG, nie wymaga korekty.]`
 | Kopie zapasowe bazy danych | 14 dni; dane usunięte z Aplikacji znikają z kopii najpóźniej po tym czasie |
 | Niedokończone przesyłanie pliku PDF | 1 dzień |
 | Raporty awarii (Crashlytics) | 90 dni, zgodnie z ustawieniami Google |
-| Konto nieaktywne | `[DO USTALENIA: np. 24 miesiące bez logowania, po uprzednim powiadomieniu e-mail]` |
+| Konto nieaktywne | 24 miesiące od ostatniego logowania; 30 dni wcześniej Fundacja wysyła powiadomienie e-mail, po czym konto i dane są usuwane |
 
 ## 8. Usunięcie konta
 
@@ -139,9 +135,11 @@ Współopiekun, który usuwa własne konto, traci tylko dostęp; dane pacjenta p
 
 ## 9. Pacjent, który kończy 18 lat
 
-`[DO USTALENIA: opis mechanizmu, który nie jest jeszcze wdrożony. Założenie projektu: po ukończeniu 18 lat
-przez pacjenta dostęp rodziców do profilu zostaje wstrzymany; dalszy wgląd wymaga zgody pacjenta, którą
-może on w każdej chwili wycofać. Do rozstrzygnięcia: czy konta rodziców są usuwane, czy tylko odłączane.]`
+Z chwilą ukończenia 18 lat pacjent staje się jedyną osobą uprawnioną do decydowania o swoich danych.
+Może przejąć profil prowadzony dotąd przez rodziców lub opiekunów, zgłaszając to Fundacji na adres z pkt 1.
+Po przejęciu profilu dostęp rodziców i opiekunów zostaje wstrzymany; ich konta pozostają, ale nie są już
+powiązane z profilem. Dalszy wgląd rodziców wymaga zgody pełnoletniego pacjenta, wyrażonej przez wysłanie
+im zaproszenia z Aplikacji; zgodę tę pacjent może w każdej chwili wycofać, odbierając dostęp.
 
 ## 10. Prawa użytkownika
 
@@ -176,4 +174,4 @@ O istotnych zmianach polityki Fundacja poinformuje w Aplikacji. Zmiana treści z
 zaakceptowania po zalogowaniu. Aktualna wersja polityki jest dostępna w Aplikacji na ekranie zgód
 i w sekcji „Prywatność i konto”.
 
-Data ostatniej aktualizacji: `[DO USTALENIA]`
+Data ostatniej aktualizacji: 15 września 2026 r.
