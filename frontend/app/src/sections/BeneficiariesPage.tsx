@@ -6,7 +6,7 @@ import { beneficiaries } from "./components/beneficiaries/BeneficiariesData.tsx"
 import { useState, type CSSProperties } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MedicalInformationOutlinedIcon from "@mui/icons-material/MedicalInformationOutlined";
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { Autocomplete, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import useSidePositionAdjustment from "./hooks/useSidePositionAdjustment.tsx";
 
 export default function BeneficiariesPage() {
@@ -48,12 +48,6 @@ export default function BeneficiariesPage() {
 		setOnlyAfterHeartTransplant(false);
 	};
 
-	const inputStyle = {
-		height: 44,
-		borderRadius: 12,
-		fontFamily: "Quicksand",
-		paddingLeft: 40,
-	};
 	const iconStyle: CSSProperties = {
 		position: "absolute",
 		left: 24,
@@ -93,38 +87,50 @@ export default function BeneficiariesPage() {
 					<div className="row justify-content-center g-2">
 						<div className="col-md-5 position-relative">
 							<SearchIcon fontSize="small" style={iconStyle} />
-							<input
-								list="names-list"
-								type="text"
-								className="form-control"
-								placeholder="Szukaj po imieniu"
+							<Autocomplete
+								freeSolo
+								options={names}
 								value={searchName}
-								onChange={(e) => setSearchName(e.target.value)}
-								style={inputStyle}
+								onInputChange={(_, newValue) => setSearchName(newValue)}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										placeholder="Szukaj po imieniu"
+										sx={{
+											"& .MuiOutlinedInput-root": {
+												height: 44,
+												borderRadius: 3,
+												fontFamily: "Quicksand",
+												paddingLeft: "40px !important",
+											},
+										}}
+									/>
+								)}
 							/>
-							<datalist id="names-list">
-								{names.map((n) => (
-									<option key={n} value={n} />
-								))}
-							</datalist>
 						</div>
 
 						<div className="col-md-5 position-relative">
 							<MedicalInformationOutlinedIcon fontSize="small" style={iconStyle} />
-							<input
-								list="disorders-list"
-								type="text"
-								className="form-control"
-								placeholder="Szukaj po schorzeniu"
+							<Autocomplete
+								freeSolo
+								options={disorders}
 								value={filterDisorder}
-								onChange={(e) => setFilterDisorder(e.target.value)}
-								style={inputStyle}
+								onInputChange={(_, newValue) => setFilterDisorder(newValue)}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										placeholder="Szukaj po schorzeniu"
+										sx={{
+											"& .MuiOutlinedInput-root": {
+												height: 44,
+												borderRadius: 3,
+												fontFamily: "Quicksand",
+												paddingLeft: "40px !important",
+											},
+										}}
+									/>
+								)}
 							/>
-							<datalist id="disorders-list">
-								{disorders.map((d) => (
-									<option key={d} value={d} />
-								))}
-							</datalist>
 						</div>
 						<div className="col-md-10 col-lg-12 d-flex justify-content-center align-items-center flex-wrap">
 							<FormControlLabel
