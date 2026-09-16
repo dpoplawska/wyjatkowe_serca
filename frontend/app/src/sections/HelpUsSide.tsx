@@ -281,11 +281,12 @@ export default function HelpUsSide({
 							fontSize: "16px",
 							color: "#616161",
 							marginBottom: "6px",
-							textAlign: "center",
+                            textAlign: "center",
+                            gap: '5px'
 						}}
 					>
-						<span style={{ display: "block" }}>Wpłata bezpośrednio dla</span>
-						<strong>{transferTitle.replace(/^WS\d+ - /, "")}</strong>
+                        <span style={{ display: "block" }}>Wpłata bezpośrednio dla </span>
+						<strong> {transferTitle.replace(/^WS\d+ - /, "")}</strong>
 					</p>
 				)}
 				{showValueTextField && (
