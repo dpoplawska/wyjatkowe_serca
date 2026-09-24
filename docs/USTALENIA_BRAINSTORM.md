@@ -78,8 +78,8 @@ Funkcje do dopisania **poza zakresem v1** (rozdz. 3.2), jako kierunek rozwoju:
       > serca — jesteśmy po to, żeby Ci pomóc. Zostaw swoje dane, a my skontaktujemy się z Tobą.
 - [ ] **Upload plików — zabezpieczenia**: limit wielkości pliku oraz włączenie uploadu
       **tylko dla użytkowników zatwierdzonych** przez fundację.
-- [ ] **Pełna lista wad serca**: obecnie słownik nie zawiera wszystkich wad — trzeba go
-      uzupełnić (uwaga: samą wzmiankę o słowniku usuwamy z wniosku, ale prace zostają).
+- [x] **Pełna lista wad serca** (24.09.2026): słownik przepisany z 52 na 125 pozycji na podstawie
+      ICD-10 Q20-Q26 i polskiej kardiologii dziecięcej; stare nazwy mapowane przez `WADY_SERCA_ALIASY`.
 - [ ] **Ukończenie 18 lat przez pacjenta**: po osiągnięciu pełnoletności odciąć dostęp
       rodziców do danych i pokazać pacjentowi zgodę na ewentualne przywrócenie im dostępu.
 

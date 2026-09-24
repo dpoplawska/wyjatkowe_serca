@@ -898,11 +898,13 @@ def build_story(styles: dict) -> list:
         ],
         [
             "Profil pacjenta",
-            "Imię i nazwisko, grupa krwi; słownik 51 wad serca z wyszukiwaniem i wielokrotnym wyborem; "
+            "Imię i nazwisko, grupa krwi; słownik 125 rozpoznań kardiologicznych "
+            "(wrodzone wady serca wg ICD-10 Q20-Q26 uzupełnione o jednostki kliniczne "
+            "i choroby nabyte) z wyszukiwaniem i wielokrotnym wyborem; "
             "zaburzenia rytmu (9 typów z opisem), rozrusznik (7 rodzajów), przebyte operacje "
             "(typ, data, liczba dni na intensywnej terapii), powikłania, choroby współistniejące, "
             "zespoły genetyczne; zapis automatyczny.",
-            "Panel danych opiekunów i rodziców, uzupełnienie słownika wad serca, "
+            "Panel danych opiekunów i rodziców, "
             "przejęcie konta przez pacjenta po 18. roku życia.",
         ],
         [

@@ -31,6 +31,7 @@ import {
 import {
   GRUPY_KRWI,
   WADY_SERCA,
+  WADY_SERCA_ALIASY,
   ZABURZENIA_RYTMU_TYPY,
   ROZRUSZNIKI,
   ZESPOLY_GENETYCZNE_TYPY,
@@ -54,6 +55,14 @@ function normalizeProfile(data: Partial<PatientProfileData> | null | undefined):
   const normalized = { ...data } as Partial<PatientProfileData> & { wada_serca?: string | string[] };
   if (typeof normalized.wada_serca === 'string') {
     normalized.wada_serca = normalized.wada_serca ? [normalized.wada_serca] : [];
+  }
+  if (Array.isArray(normalized.wada_serca)) {
+    // Profiles saved before the dictionary was rebuilt carry old spellings.
+    // Map them onto the current names so the chip still matches a list entry
+    // (and can therefore be unselected); drop duplicates the mapping creates.
+    normalized.wada_serca = Array.from(
+      new Set(normalized.wada_serca.map((w) => WADY_SERCA_ALIASY[w] ?? w)),
+    );
   }
   if (Array.isArray(normalized.przebyte_operacje)) {
     normalized.przebyte_operacje = normalized.przebyte_operacje.map(
