@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Main from './sections/Main.tsx';
 import Footer from './sections/Footer.tsx';
@@ -11,23 +11,13 @@ import Menu from './sections/Menu.tsx';
 import BeneficiariesPage from './sections/BeneficiariesPage.tsx';
 import ConnectedInCrisisPage from './sections/ConnectedInCrisisPage.tsx';
 import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
-import { AuthProvider } from './app/AuthContext.tsx';
-import AppLogin from './app/AppLogin.tsx';
-import AcceptInvite from './app/AcceptInvite.tsx';
-import PatientProfile from './app/PatientProfile.tsx';
-import Medications from './app/Medications.tsx';
-import InrCalculator from './app/InrCalculator.tsx';
-import Pomiary from './app/Pomiary.tsx';
 import { beneficiaries } from './sections/components/beneficiaries/BeneficiariesData.tsx';
 
 function AppContent() {
-  const location = useLocation();
-  const isAppSection = location.pathname.startsWith('/app');
-
   return (
     <>
       <div className="App">
-        {!isAppSection && <Menu />}
+        <Menu />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/dziekujemy" element={<ThankYou />} />
@@ -49,16 +39,10 @@ function AppContent() {
           <Route path="/sklep" element={<Shop />} />
           <Route path="/admin" element={<LoginPage />} />
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
-          <Route path="/app" element={<AppLogin />} />
-          <Route path="/app/accept" element={<AcceptInvite />} />
-          <Route path="/app/profil-pacjenta" element={<PatientProfile />} />
-          <Route path="/app/leki" element={<Medications />} />
-          <Route path="/app/kalkulator-inr" element={<InrCalculator />} />
-          <Route path="/app/pomiary" element={<Pomiary />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      {!isAppSection && <Footer />}
+      <Footer />
     </>
   );
 }
@@ -97,10 +81,8 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
