@@ -11,6 +11,7 @@ import Menu from './sections/Menu.tsx';
 import BeneficiariesPage from './sections/BeneficiariesPage.tsx';
 import ConnectedInCrisisPage from './sections/ConnectedInCrisisPage.tsx';
 import FinancialReportsPage from './sections/FinancialReportsPage.tsx';
+import PatientAppPage from './sections/PatientAppPage.tsx';
 import { beneficiaries } from './sections/components/beneficiaries/BeneficiariesData.tsx';
 
 function AppContent() {
@@ -39,6 +40,8 @@ function AppContent() {
           <Route path="/sklep" element={<Shop />} />
           <Route path="/admin" element={<LoginPage />} />
           <Route path="/raporty-finansowe" element={<FinancialReportsPage/>}/>
+          <Route path="/app" element={<PatientAppPage />} />
+          <Route path="/app/accept" element={<PatientAppPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
