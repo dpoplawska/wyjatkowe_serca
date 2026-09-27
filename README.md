@@ -39,7 +39,8 @@ The dev machine is WSL2; the phone (Pixel 8) plugs into Windows. App package:
   after typing, `KEYCODE_BACK` to close the keyboard, then tap another control to force
   the commit.
 - App structure: Google sign-in on first launch (needs a real Google account on the
-  device), then drawer/tab navigation between **Profil pacjenta / Leki / Pomiary / INR**,
+  device), then drawer/tab navigation between **Profil pacjenta / Leki / Pomiary / INR / Historia
+  leczenia**,
   plus PDF export and account-sharing flows. Logcat: `adb logcat -d` (RN logs under
   `ReactNativeJS`).
 
