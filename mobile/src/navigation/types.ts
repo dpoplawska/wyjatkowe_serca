@@ -15,6 +15,7 @@ export type MainTabParamList = {
   Leki: undefined;
   Pomiary: undefined;
   Inr: undefined;
+  Historia: undefined;
 };
 
 export type RootStackNav = NativeStackNavigationProp<RootStackParamList>;

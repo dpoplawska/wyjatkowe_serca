@@ -6,6 +6,7 @@ import PatientProfileScreen from '../screens/PatientProfileScreen';
 import MedicationsScreen from '../screens/MedicationsScreen';
 import PomiaryScreen from '../screens/PomiaryScreen';
 import InrScreen from '../screens/InrScreen';
+import HospitalizationsScreen from '../screens/HospitalizationsScreen';
 import { colors } from '../theme/colors';
 import { LogoutButton } from '../components/LogoutButton';
 
@@ -60,6 +61,17 @@ export default function MainTabs() {
           tabBarLabel: 'INR',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="water" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Historia"
+        component={HospitalizationsScreen}
+        options={{
+          title: 'Historia leczenia',
+          tabBarLabel: 'Historia',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="hospital-building" color={color} size={size} />
           ),
         }}
       />

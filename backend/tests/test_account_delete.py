@@ -26,6 +26,7 @@ def seed_owner(db, uid="owner"):
     db.store[f"medications/{uid}"] = {"leki": []}
     db.store[f"inrHistory/{uid}"] = {"entries": []}
     db.store[f"measurements/{uid}"] = {"entries": []}
+    db.store[f"hospitalizations/{uid}"] = {"entries": [{"id": "h1", "placowka": "CZD"}]}
     db.store[f"users/{uid}"] = {"uploadApproved": True, "consent": {"version": "x"}}
     db.store[f"patientDocuments/{uid}/items/d1"] = {"id": "d1", "objectPath": f"ready/{uid}/d1.pdf"}
     db.store["invitations/tok1"] = {"ownerUid": uid, "used": False}
@@ -69,6 +70,7 @@ def test_owner_with_guests_transfers_by_default(client, patched, db, fake_bucket
     assert res.status_code == 200
     assert res.json()["deleted_data"] is False
     assert db.store["patientProfiles/g1"]["imie_nazwisko"] == "Jan"
+    assert db.store["hospitalizations/g1"]["entries"][0]["placowka"] == "CZD"
     assert db.store["patientDocuments/g1/items/d1"]["objectPath"] == "ready/owner/d1.pdf"
     assert "userAccess/g1" not in db.store
     assert db.store["userAccess/g2"] == {"ownerUid": "g1", "grantedAt": "t-g2"}

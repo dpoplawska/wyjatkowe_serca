@@ -83,6 +83,23 @@ export interface MeasurementsData {
   entries: MeasurementEntry[];
 }
 
+export interface HospitalizacjaEntry {
+  id: string;
+  typ: string;
+  /** YYYY-MM-DD */
+  data_od: string;
+  /** YYYY-MM-DD; empty while the stay is still ongoing. */
+  data_do: string;
+  placowka: string;
+  oddzial: string;
+  powod: string;
+  przebieg: string;
+}
+
+export interface HospitalizationsData {
+  entries: HospitalizacjaEntry[];
+}
+
 export interface DevUser {
   uid: string;
   email: string;

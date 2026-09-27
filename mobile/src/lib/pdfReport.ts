@@ -13,6 +13,7 @@ import {
   Lek,
   MeasurementEntry,
   InrEntry,
+  HospitalizacjaEntry,
   EMPTY_PATIENT_PROFILE,
 } from '../types/api';
 import { frequencyLabel, normalizeHistory, CZAS_TRWANIA_LABELS, isDone } from './medications';
@@ -211,6 +212,45 @@ function row(label: string, value: string | number | null | undefined): string {
   return `<div class="row"><div class="label">${esc(label)}</div><div class="value">${esc(value) || '<span class="muted">—</span>'}</div></div>`;
 }
 
+function hospDate(iso: string): string {
+  return iso ? dayjs(iso).format('DD.MM.YYYY') : '';
+}
+
+function hospPeriod(e: HospitalizacjaEntry): string {
+  const from = hospDate(e.data_od);
+  if (!from) return '—';
+  if (!e.data_do) return `od ${from}<br/><span class="muted small">trwa</span>`;
+  const days = dayjs(e.data_do).startOf('day').diff(dayjs(e.data_od).startOf('day'), 'day') + 1;
+  const len = days >= 1 ? `<br/><span class="muted small">${days === 1 ? '1 dzień' : `${days} dni`}</span>` : '';
+  return `${from} –<br/>${hospDate(e.data_do)}${len}`;
+}
+
+function renderHospitalizations(entries: HospitalizacjaEntry[]): string {
+  if (entries.length === 0) {
+    return `<h2>Historia leczenia i hospitalizacji</h2><p class="muted">Brak zapisanych wpisów.</p>`;
+  }
+  // Newest first, same order the app shows; undated entries sink to the bottom.
+  const desc = [...entries].sort((a, b) => (b.data_od || '').localeCompare(a.data_od || ''));
+  return `<h2>Historia leczenia i hospitalizacji</h2>
+    <table class="data">
+      <thead><tr><th>Rodzaj</th><th>Okres</th><th>Placówka</th><th>Powód</th><th>Przebieg</th></tr></thead>
+      <tbody>
+        ${desc
+          .map(
+            (e) => `<tr>
+              <td>${esc(e.typ || '—')}</td>
+              <td>${hospPeriod(e)}</td>
+              <td>${esc(e.placowka || '—')}${e.oddzial ? `<br/><span class="muted small">${esc(e.oddzial)}</span>` : ''}</td>
+              <td>${esc(e.powod || '')}</td>
+              <td>${esc(e.przebieg || '')}</td>
+            </tr>`,
+          )
+          .join('')}
+      </tbody>
+    </table>
+  `;
+}
+
 function renderMedications(leki: Lek[]): string {
   if (leki.length === 0) {
     return `<h2>Leki</h2><p class="muted">Brak leków na liście.</p>`;
@@ -387,6 +427,7 @@ function renderInr(entries: InrEntry[]): string {
 
 function buildHtml(args: {
   profile: PatientProfileData;
+  hospitalizations: HospitalizacjaEntry[];
   leki: Lek[];
   measurements: MeasurementEntry[];
   inr: InrEntry[];
@@ -456,6 +497,7 @@ function buildHtml(args: {
   </header>
 
   <section>${renderProfile(args.profile)}</section>
+  <section>${renderHospitalizations(args.hospitalizations)}</section>
   <section>${renderMedications(args.leki)}</section>
   <section>${renderMeasurements(args.measurements)}</section>
   <section>${renderInr(args.inr)}</section>
@@ -467,11 +509,12 @@ export async function generatePatientPdf(getToken: TokenProvider): Promise<void>
   const api = makeApi(getToken);
   // Fetch concurrently. Each endpoint may return an empty object for a fresh
   // patient — normalise to safe defaults.
-  const [profileResp, medsResp, measResp, inrResp] = await Promise.all([
+  const [profileResp, medsResp, measResp, inrResp, hospResp] = await Promise.all([
     api.getPatientProfile().catch(() => ({})),
     api.getMedications().catch(() => ({})),
     api.getMeasurements().catch(() => ({})),
     api.getInr().catch(() => ({})),
+    api.getHospitalizations().catch(() => ({})),
   ]);
 
   const profile: PatientProfileData = {
@@ -487,8 +530,10 @@ export async function generatePatientPdf(getToken: TokenProvider): Promise<void>
   }));
   const measurements: MeasurementEntry[] = (measResp as { entries?: MeasurementEntry[] }).entries ?? [];
   const inr: InrEntry[] = (inrResp as { entries?: InrEntry[] }).entries ?? [];
+  const hospitalizations: HospitalizacjaEntry[] =
+    (hospResp as { entries?: HospitalizacjaEntry[] }).entries ?? [];
 
-  const html = buildHtml({ profile, leki, measurements, inr });
+  const html = buildHtml({ profile, hospitalizations, leki, measurements, inr });
 
   const { uri } = await Print.printToFileAsync({ html, base64: false });
   // expo-print writes to a temp file with an opaque name; rename it so the

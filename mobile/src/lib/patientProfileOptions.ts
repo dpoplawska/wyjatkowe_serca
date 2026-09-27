@@ -226,6 +226,14 @@ export const WADY_SERCA_ALIASY: Record<string, string> = {
   'Zespół wrodzonego braku zastawki tętnicy płucnej': 'Zespół wrodzonego braku zastawki tętnicy płucnej (APVS)',
 };
 
+export const TYPY_WPISU_HISTORII = [
+  'Hospitalizacja',
+  'Zabieg lub operacja',
+  'Konsultacja',
+  'Badanie',
+  'Inne',
+];
+
 export const ZABURZENIA_RYTMU_TYPY = [
   'Blok przedsionkowo-komorowy I°',
   'Blok przedsionkowo-komorowy II°',

@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, Request, Header, Depends
 from app.limiter import limiter
 from firebase_admin import auth as firebase_auth
 
-from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData, MedicationsData, InrData, MeasurementsData
+from app.models import PaymentRequest, PaymentResponse, PaymentNotification, PurchaseRequest, PurchaseResponse, PatientProfileData, MedicationsData, InrData, MeasurementsData, HospitalizationsData
 from app.utils import create_payment, load_secrets, create_purchase
 from app.db import get_firestore_client, initialize_firestore
 
@@ -316,6 +316,20 @@ def upsert_measurements(data: MeasurementsData, uid: str = Depends(require_conse
     db_client = get_firestore_client()
     db_client.collection("measurements").document(resolve_uid(uid)).set(data.model_dump())
     return {"message": "Pomiary zapisane pomyślnie"}
+
+
+@router.get("/hospitalizations")
+def get_hospitalizations(uid: str = Depends(require_consent)) -> dict:
+    db_client = get_firestore_client()
+    doc = db_client.collection("hospitalizations").document(resolve_uid(uid)).get()
+    return doc.to_dict() if doc.exists else {}
+
+
+@router.put("/hospitalizations")
+def upsert_hospitalizations(data: HospitalizationsData, uid: str = Depends(require_consent)) -> dict:
+    db_client = get_firestore_client()
+    db_client.collection("hospitalizations").document(resolve_uid(uid)).set(data.model_dump())
+    return {"message": "Historia leczenia zapisana pomyślnie"}
 
 
 @router.post("/invite")

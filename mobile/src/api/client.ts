@@ -5,6 +5,7 @@ import {
   MedicationsData,
   InrData,
   MeasurementsData,
+  HospitalizationsData,
   DevUser,
   InviteInfo,
   MeFlags,
@@ -86,6 +87,11 @@ export function makeApi(getToken: TokenProvider) {
       request<Partial<MeasurementsData>>('GET', '/measurements', getToken),
     putMeasurements: (data: MeasurementsData) =>
       request<{ message: string }>('PUT', '/measurements', getToken, data),
+
+    getHospitalizations: () =>
+      request<Partial<HospitalizationsData>>('GET', '/hospitalizations', getToken),
+    putHospitalizations: (data: HospitalizationsData) =>
+      request<{ message: string }>('PUT', '/hospitalizations', getToken, data),
 
     createInvite: () => request<{ token: string }>('POST', '/invite', getToken),
     getInvite: (token: string) =>

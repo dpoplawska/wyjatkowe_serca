@@ -23,7 +23,7 @@ from app.storage import get_bucket
 
 router = APIRouter()
 
-PATIENT_COLLECTIONS = ["patientProfiles", "medications", "inrHistory", "measurements"]
+PATIENT_COLLECTIONS = ["patientProfiles", "medications", "inrHistory", "measurements", "hospitalizations"]
 
 
 class ConsentRequest(BaseModel):

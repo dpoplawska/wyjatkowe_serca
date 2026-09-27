@@ -182,3 +182,87 @@ def test_upsert_measurements(client):
         res = client.put("/measurements", json={"entries": []}, headers=dev_auth())
 
     assert res.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# GET & PUT /hospitalizations
+# ---------------------------------------------------------------------------
+
+HOSP = {
+    "id": "h1",
+    "typ": "Hospitalizacja",
+    "data_od": "2026-03-01",
+    "data_do": "2026-03-09",
+    "placowka": "Centrum Zdrowia Dziecka",
+    "oddzial": "Kardiochirurgia",
+    "powod": "Korekcja całkowita",
+    "przebieg": "Bez powikłań, wypis do domu.",
+}
+
+
+def test_get_hospitalizations_returns_entries(client):
+    no_access = mock_doc(None)
+    h_doc = mock_doc({"entries": [HOSP]})
+    mock_db = MagicMock()
+    mock_db.collection().document().get.side_effect = [no_access, h_doc]
+
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.get("/hospitalizations", headers=dev_auth())
+
+    assert res.status_code == 200
+    assert res.json()["entries"][0]["placowka"] == "Centrum Zdrowia Dziecka"
+
+
+def test_get_hospitalizations_not_found_returns_empty(client):
+    mock_db = MagicMock()
+    mock_db.collection().document().get.side_effect = [mock_doc(None), mock_doc(None)]
+
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.get("/hospitalizations", headers=dev_auth())
+
+    assert res.status_code == 200
+    assert res.json() == {}
+
+
+def test_upsert_hospitalizations(client):
+    mock_db = MagicMock()
+    mock_db.collection().document().get.return_value = mock_doc(None)
+
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.put("/hospitalizations", json={"entries": [HOSP]}, headers=dev_auth())
+
+    assert res.status_code == 200
+    saved = mock_db.collection().document().set.call_args[0][0]
+    assert saved["entries"][0]["oddzial"] == "Kardiochirurgia"
+
+
+def test_upsert_hospitalizations_defaults_missing_fields(client):
+    """An ongoing stay is sent without data_do; the model fills the blanks."""
+    mock_db = MagicMock()
+    mock_db.collection().document().get.return_value = mock_doc(None)
+
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.put(
+            "/hospitalizations",
+            json={"entries": [{"id": "h2", "data_od": "2026-05-04"}]},
+            headers=dev_auth(),
+        )
+
+    assert res.status_code == 200
+    saved = mock_db.collection().document().set.call_args[0][0]
+    assert saved["entries"][0]["data_do"] == ""
+    assert saved["entries"][0]["przebieg"] == ""
+
+
+def test_guest_reads_owner_hospitalizations(client):
+    """resolve_uid redirects a guest to the owner's document."""
+    access_doc = mock_doc({"ownerUid": "owner-uid"})
+    h_doc = mock_doc({"entries": [HOSP]})
+    mock_db = MagicMock()
+    mock_db.collection().document().get.side_effect = [access_doc, h_doc]
+
+    with patch("app.routes.get_firestore_client", return_value=mock_db):
+        res = client.get("/hospitalizations", headers=dev_auth("guest-uid"))
+
+    assert res.status_code == 200
+    assert res.json()["entries"][0]["id"] == "h1"

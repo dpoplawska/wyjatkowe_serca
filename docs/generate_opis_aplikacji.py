@@ -909,9 +909,10 @@ def build_story(styles: dict) -> list:
         ],
         [
             "Historia leczenia i hospitalizacji",
-            "Funkcja nie istnieje.",
-            "Rejestr pobytów szpitalnych i etapów leczenia (daty, placówka, powód, przebieg) "
-            "jako oś czasu dostępna na wizycie i przy zmianie ośrodka.",
+            "Rejestr pobytów szpitalnych, zabiegów, konsultacji i badań (rodzaj, data od i do, "
+            "placówka, oddział, powód, przebieg) w formie osi czasu; wpis bez daty zakończenia "
+            "oznacza pobyt trwający.",
+            "Testy z rodzinami, dopracowanie osi czasu, powiązanie wpisów z wgraną dokumentacją.",
         ],
         [
             "Dokumentacja medyczna",
@@ -940,9 +941,9 @@ def build_story(styles: dict) -> list:
         ],
         [
             "Raport PDF",
-            "Eksport karty pacjenta z urządzenia: profil, leki, pomiary z wykresami oraz INR "
-            "z tabelą parametrów badania.",
-            "Uzupełnienie raportu o hospitalizacje i dokumentację, dopracowanie wydruku.",
+            "Eksport karty pacjenta z urządzenia: profil, historia leczenia i hospitalizacji, "
+            "leki, pomiary z wykresami oraz INR z tabelą parametrów badania.",
+            "Uzupełnienie raportu o dokumentację, dopracowanie wydruku.",
         ],
         [
             "Udostępnianie w rodzinie",

@@ -118,6 +118,22 @@ class MeasurementsData(BaseModel):
     entries: List[MeasurementEntry] = []
 
 
+class HospitalizacjaEntry(BaseModel):
+    """One stay or treatment step. `data_do` empty means the stay is ongoing."""
+    id: str = ""
+    typ: str = ""
+    data_od: str = ""
+    data_do: str = ""
+    placowka: str = ""
+    oddzial: str = ""
+    powod: str = ""
+    przebieg: str = ""
+
+
+class HospitalizationsData(BaseModel):
+    entries: List[HospitalizacjaEntry] = []
+
+
 class InvitationData(BaseModel):
     ownerUid: str
     createdAt: str
