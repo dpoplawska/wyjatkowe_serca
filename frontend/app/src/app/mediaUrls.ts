@@ -12,6 +12,8 @@ export const PDF_REGULATIONS = u('Regulamin_serwisu_FWS.pdf');
 export const PDF_STATUT = u('Statut.pdf');
 export const PDF_KONKURS = u('OGLOSZENIE_O_KONKURSIE.pdf');
 export const PDF_SPRAWOZDANIE_2024 = u('Sprawozdanie finansowe WyjatkoweSerca 2024.pdf');
+export const PDF_SPRAWOZDANIE_2025 = u('Sprawozdanie finansowe WyjatkoweSerca 2025.pdf');
+
 
 export const NERKA = [1, 2, 3, 4, 5, 6].map(n => u(`nerka/${n}.png`));
 
